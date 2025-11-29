@@ -11,11 +11,12 @@ using Steamworks;
 using PurrNet.UTP;
 using Unity.Services.Relay.Models;
 #endif
+
 public class ConnectionStarter : MonoBehaviour
 {
     private NetworkManager _networkManager;
     private LobbyDataHolder _lobbyDataHolder;
-
+    [SerializeField] private RadioVoiceManager _voiceManager;
     private void Awake()
     {
         if (!TryGetComponent(out _networkManager))
@@ -26,6 +27,8 @@ public class ConnectionStarter : MonoBehaviour
         _lobbyDataHolder = FindFirstObjectByType<LobbyDataHolder>();
         if (!_lobbyDataHolder)
             PurrLogger.LogError($"Failed to get {nameof(LobbyDataHolder)} component.", this);
+
+
     }
 
     private void Start()
@@ -50,11 +53,22 @@ public class ConnectionStarter : MonoBehaviour
 
         if (_networkManager.transport is SteamTransport)
         {
+            // Steam Lobi ID'sini ulong formatına çeviriyoruz
             if (!ulong.TryParse(_lobbyDataHolder.CurrentLobby.LobbyId, out ulong steamLobbyID))
             {
                 PurrLogger.LogError($"Failed to parse Steam Lobby ID!", this);
                 return;
             }
+
+            // -----------------------------------------------------------------
+            // <--- EKLENEN KISIM: VIVOX BAŞLATMA
+            // ID'yi başarıyla aldık, şimdi bu benzersiz ID ile sesli sohbeti başlatıyoruz.
+            if (_voiceManager != null)
+            {
+                // SteamID benzersizdir, bu yüzden kanal adı olarak kullanmak mükemmeldir.
+                _voiceManager.StartLobbyVoice(steamLobbyID.ToString());
+            }
+            // -----------------------------------------------------------------
 
             var lobbyOwner = SteamMatchmaking.GetLobbyOwner(new CSteamID(steamLobbyID));
             if (!lobbyOwner.IsValid())
@@ -67,12 +81,15 @@ public class ConnectionStarter : MonoBehaviour
         }
 
 #if UTP_LOBBYRELAY
-            else if(_networkManager.transport is UTPTransport) {
-                if(_lobbyDataHolder.CurrentLobby.IsOwner) {
-                    (_networkManager.transport as UTPTransport).InitializeRelayServer((Allocation)_lobbyDataHolder.CurrentLobby.ServerObject);
-                }
-                (_networkManager.transport as UTPTransport).InitializeRelayClient(_lobbyDataHolder.CurrentLobby.Properties["JoinCode"]);
+        else if(_networkManager.transport is UTPTransport) {
+            if(_lobbyDataHolder.CurrentLobby.IsOwner) {
+                (_networkManager.transport as UTPTransport).InitializeRelayServer((Allocation)_lobbyDataHolder.CurrentLobby.ServerObject);
             }
+            (_networkManager.transport as UTPTransport).InitializeRelayClient(_lobbyDataHolder.CurrentLobby.Properties["JoinCode"]);
+            
+            // Eğer Relay kullanıyorsanız Vivox'u burada başlatmak için JoinCode'u kullanabilirsiniz:
+            // if (_voiceManager != null) _voiceManager.StartLobbyVoice(_lobbyDataHolder.CurrentLobby.Properties["JoinCode"]);
+        }
 #else
         //P2P Connection, receive IP/Port from server
 #endif
@@ -88,4 +105,3 @@ public class ConnectionStarter : MonoBehaviour
         _networkManager.StartClient();
     }
 }
-
