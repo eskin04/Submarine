@@ -13,6 +13,7 @@ public class RadioVoiceManager : MonoBehaviour
     public AudioSource radioSFXSource;
     public AudioClip connectClip;
     public AudioClip disconnectClip;
+    private bool isLoggedIn = false;
 
     public async void StartLobbyVoice(string channelName = "GlobalOpsRadio")
     {
@@ -59,13 +60,14 @@ public class RadioVoiceManager : MonoBehaviour
         VivoxService.Instance.MuteInputDevice();
 
         await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.AudioOnly);
+        isLoggedIn = VivoxService.Instance.IsLoggedIn;
 
         Debug.Log($"Telsiz Kanalına Katılındı: {channelName}");
     }
 
     void Update()
     {
-        if (VivoxService.Instance.IsLoggedIn)
+        if (isLoggedIn)
         {
             if (Input.GetKeyDown(pushToTalkKey))
             {
@@ -81,7 +83,7 @@ public class RadioVoiceManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        if (VivoxService.Instance.IsLoggedIn)
+        if (isLoggedIn)
         {
 
             VivoxService.Instance.LogoutAsync();
