@@ -17,6 +17,12 @@ public class Interactable : MonoBehaviour, IInteractable
         outline.OutlineWidth = 3f;
         outline.enabled = false;
     }
+
+    void OnDestroy()
+    {
+        outline.enabled = false;
+        Destroy(outline);
+    }
     public string DisplayName => displayName;
 
     public bool CanInteract() => isInteractable;
@@ -34,6 +40,7 @@ public class Interactable : MonoBehaviour, IInteractable
 
     public void OnLoseFocus()
     {
-        outline.enabled = false;
+        if (outline != null)
+            outline.enabled = false;
     }
 }
