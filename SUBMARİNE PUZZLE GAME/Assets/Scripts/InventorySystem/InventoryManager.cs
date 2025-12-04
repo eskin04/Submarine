@@ -5,18 +5,21 @@ using PurrNet;
 
 public class InventoryManager : NetworkBehaviour
 {
+    public static Action<bool> OnItemEquipped;
     [SerializeField] private InventorySlot[] inventorySlots;
     private ItemData[] items;
     private Transform playerHandPosition;
     private Transform playerDropPosition;
     private GameObject currentEquippedItem;
     private ItemData currentEquippedItemData;
+    private Interactable currentInteractable;
     private int currentSlotIndex = -1;
 
 
     void Awake()
     {
         ItemLoot.OnItemLooted += AddItem;
+        ItemLoot.OnItemDropped += DropCurrentItem;
         PlayerInventory.OnSpawnPlayer += (handPos, dropPos) => HandlePlayerSpawn(handPos, dropPos);
     }
 
@@ -29,6 +32,7 @@ public class InventoryManager : NetworkBehaviour
     protected override void OnDestroy()
     {
         ItemLoot.OnItemLooted -= AddItem;
+        ItemLoot.OnItemDropped -= DropCurrentItem;
         PlayerInventory.OnSpawnPlayer -= (handPos, dropPos) => HandlePlayerSpawn(handPos, dropPos);
     }
 
@@ -37,6 +41,20 @@ public class InventoryManager : NetworkBehaviour
         playerHandPosition = handPos;
         playerDropPosition = dropPos;
         Debug.Log("Player inventory positions set.");
+    }
+
+    private void UnEquipCurrentItem()
+    {
+        if (currentEquippedItem != null)
+        {
+            OnItemEquipped?.Invoke(false);
+            Destroy(currentEquippedItem);
+            currentEquippedItem = null;
+            currentEquippedItemData = null;
+            currentInteractable = null;
+            inventorySlots[currentSlotIndex].SetHighlight(false);
+            currentSlotIndex = -1;
+        }
     }
 
     private bool AddItem(ItemData itemData)
@@ -57,6 +75,11 @@ public class InventoryManager : NetworkBehaviour
     private void EquipSlot(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= items.Length || items[slotIndex] == null) return;
+        if (items[slotIndex] == currentEquippedItemData)
+        {
+            UnEquipCurrentItem();
+            return;
+        }
 
         EquipItem(items[slotIndex]);
         HighlightSlot(slotIndex);
@@ -65,6 +88,7 @@ public class InventoryManager : NetworkBehaviour
 
     private void HighlightSlot(int slotIndex)
     {
+
 
         if (currentSlotIndex >= 0 && currentSlotIndex < inventorySlots.Length)
         {
@@ -81,10 +105,11 @@ public class InventoryManager : NetworkBehaviour
     {
         if (playerHandPosition == null || playerDropPosition == null) return;
         if (currentEquippedItem != null) Destroy(currentEquippedItem);
-
+        OnItemEquipped?.Invoke(true);
         currentEquippedItemData = itemData;
         currentEquippedItem = Instantiate(itemData.prefab, playerHandPosition.position, playerHandPosition.rotation, playerHandPosition);
-
+        currentInteractable = currentEquippedItem.GetComponent<Interactable>();
+        currentInteractable.SetInteracting(true);
         var rb = currentEquippedItem.GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
@@ -100,7 +125,7 @@ public class InventoryManager : NetworkBehaviour
         {
             currentEquippedItem.transform.SetParent(null);
             currentEquippedItem.transform.position = playerDropPosition.position;
-
+            OnItemEquipped?.Invoke(false);
             var rb = currentEquippedItem.GetComponent<Rigidbody>();
             if (rb != null) rb.isKinematic = false;
 
@@ -120,15 +145,16 @@ public class InventoryManager : NetworkBehaviour
 
             currentEquippedItem = null;
             currentEquippedItemData = null;
+            currentInteractable = null;
 
         }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
+        if (currentInteractable != null && Input.GetKeyDown(KeyCode.Escape) && currentInteractable.IsInteract())
         {
-            DropCurrentItem();
+            currentInteractable.StopInteract();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) EquipSlot(0);

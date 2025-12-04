@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1022334312375562918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2799650759124347730}
+  m_Layer: 0
+  m_Name: InspectPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2799650759124347730
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022334312375562918}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.375, z: 1.511}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3821038881943497407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2028285425090221022
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +243,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2799650759124347730}
   - {fileID: 4960467761367258317}
   - {fileID: 6038938218720320536}
   - {fileID: 428951127335330300}
@@ -476,6 +508,7 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   handPosition: {fileID: 1164954421322645208}
   dropPosition: {fileID: 8537955020095205841}
+  cameraPosition: {fileID: 4960467761367258317}
 --- !u!1 &6226801875632718425
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,7 +534,7 @@ Transform:
   m_GameObject: {fileID: 6226801875632718425}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.114, z: 0.959}
+  m_LocalPosition: {x: 0.44, y: 1.1, z: 1.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
