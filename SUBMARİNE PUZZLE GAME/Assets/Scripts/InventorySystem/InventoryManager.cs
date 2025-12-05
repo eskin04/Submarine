@@ -5,14 +5,14 @@ using PurrNet;
 
 public class InventoryManager : NetworkBehaviour
 {
-    public static Action<bool> OnItemEquipped;
+    public static Action<bool> OnEquipChange;
     [SerializeField] private InventorySlot[] inventorySlots;
     private ItemData[] items;
     private Transform playerHandPosition;
     private Transform playerDropPosition;
     private GameObject currentEquippedItem;
     private ItemData currentEquippedItemData;
-    private Interactable currentInteractable;
+    private IInteractable currentInteractable;
     private int currentSlotIndex = -1;
 
 
@@ -20,6 +20,8 @@ public class InventoryManager : NetworkBehaviour
     {
         ItemLoot.OnItemLooted += AddItem;
         ItemLoot.OnItemDropped += DropCurrentItem;
+        Interactor.OnInteract += Interactor_OnInteract;
+        LiftManager.OnDropItemToLıft += DropItemToLift;
         PlayerInventory.OnSpawnPlayer += (handPos, dropPos) => HandlePlayerSpawn(handPos, dropPos);
     }
 
@@ -33,6 +35,9 @@ public class InventoryManager : NetworkBehaviour
     {
         ItemLoot.OnItemLooted -= AddItem;
         ItemLoot.OnItemDropped -= DropCurrentItem;
+        Interactor.OnInteract -= Interactor_OnInteract;
+        LiftManager.OnDropItemToLıft -= DropItemToLift;
+
         PlayerInventory.OnSpawnPlayer -= (handPos, dropPos) => HandlePlayerSpawn(handPos, dropPos);
     }
 
@@ -40,22 +45,27 @@ public class InventoryManager : NetworkBehaviour
     {
         playerHandPosition = handPos;
         playerDropPosition = dropPos;
-        Debug.Log("Player inventory positions set.");
     }
 
-    private void UnEquipCurrentItem()
+    private void Interactor_OnInteract(IInteractable interactable)
     {
-        if (currentEquippedItem != null)
+        currentInteractable = interactable;
+        if (currentInteractable.transform.TryGetComponent<LiftInteract>(out var liftInteract))
         {
-            OnItemEquipped?.Invoke(false);
-            Destroy(currentEquippedItem);
-            currentEquippedItem = null;
-            currentEquippedItemData = null;
-            currentInteractable = null;
-            inventorySlots[currentSlotIndex].SetHighlight(false);
-            currentSlotIndex = -1;
+
+        }
+        else if (currentInteractable.transform.TryGetComponent<ItemLoot>(out var itemLoot))
+        {
+            currentInteractable.StopInteract();
+        }
+        else
+        {
+            UnEquipCurrentItem();
         }
     }
+
+
+
 
     private bool AddItem(ItemData itemData)
     {
@@ -100,16 +110,13 @@ public class InventoryManager : NetworkBehaviour
     }
 
 
-
     public void EquipItem(ItemData itemData)
     {
         if (playerHandPosition == null || playerDropPosition == null) return;
         if (currentEquippedItem != null) Destroy(currentEquippedItem);
-        OnItemEquipped?.Invoke(true);
+        OnEquipChange?.Invoke(true);
         currentEquippedItemData = itemData;
         currentEquippedItem = Instantiate(itemData.prefab, playerHandPosition.position, playerHandPosition.rotation, playerHandPosition);
-        currentInteractable = currentEquippedItem.GetComponent<Interactable>();
-        currentInteractable.SetInteracting(true);
         var rb = currentEquippedItem.GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
@@ -118,6 +125,22 @@ public class InventoryManager : NetworkBehaviour
 
 
     }
+
+    private void UnEquipCurrentItem()
+    {
+        if (currentEquippedItem != null)
+        {
+            Destroy(currentEquippedItem);
+            currentEquippedItem = null;
+            currentEquippedItemData = null;
+            inventorySlots[currentSlotIndex].SetHighlight(false);
+            currentSlotIndex = -1;
+            OnEquipChange?.Invoke(false);
+
+        }
+    }
+
+
     [ObserversRpc(runLocally: true)]
     private void DropCurrentItem()
     {
@@ -125,37 +148,47 @@ public class InventoryManager : NetworkBehaviour
         {
             currentEquippedItem.transform.SetParent(null);
             currentEquippedItem.transform.position = playerDropPosition.position;
-            OnItemEquipped?.Invoke(false);
-            var rb = currentEquippedItem.GetComponent<Rigidbody>();
-            if (rb != null) rb.isKinematic = false;
-
-            var collider = currentEquippedItem.GetComponent<Collider>();
-            if (collider != null) collider.enabled = true;
-
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i] == currentEquippedItemData)
-                {
-                    Debug.Log($"Dropped item {currentEquippedItemData.itemName} from inventory.");
-                    items[i] = null;
-                    inventorySlots[i].ClearSlot();
-                    break;
-                }
-            }
-
-            currentEquippedItem = null;
-            currentEquippedItemData = null;
-            currentInteractable = null;
-
+            SetItemDropSettings();
         }
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void DropItemToLift(Transform lift, float xPosRange)
+    {
+        if (currentEquippedItem == null) return;
+        currentEquippedItem.transform.SetParent(lift);
+        float randomX = UnityEngine.Random.Range(-xPosRange, xPosRange);
+        currentEquippedItem.transform.localPosition = new Vector3(randomX, 0, 0);
+        SetItemDropSettings();
+    }
+
+    private void SetItemDropSettings()
+    {
+        var rb = currentEquippedItem.GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = false;
+        OnEquipChange?.Invoke(false);
+
+        var collider = currentEquippedItem.GetComponent<Collider>();
+        if (collider != null) collider.enabled = true;
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] == currentEquippedItemData)
+            {
+                Debug.Log($"Dropped item {currentEquippedItemData.itemName} from inventory.");
+                items[i] = null;
+                inventorySlots[i].ClearSlot();
+                break;
+            }
+        }
+        currentEquippedItem = null;
+        currentEquippedItemData = null;
+
     }
 
     void Update()
     {
-        if (currentInteractable != null && Input.GetKeyDown(KeyCode.Escape) && currentInteractable.IsInteract())
-        {
-            currentInteractable.StopInteract();
-        }
+        if (currentInteractable != null && currentInteractable.IsInteracting()) return;
+        if (Input.GetKeyDown(KeyCode.G) && currentEquippedItem != null) DropCurrentItem();
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) EquipSlot(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) EquipSlot(1);

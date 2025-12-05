@@ -9,24 +9,30 @@ public class ModuleInteraction : MonoBehaviour
     [SerializeField] private Vector3 initialPositionOffset = new Vector3(0, 0, -1);
     [SerializeField] private Vector3 initialRotationOffset = Vector3.zero;
     [SerializeField] private bool isUnlockCursor = true;
+    [SerializeField] private bool isMoveable = false;
+
     private FirstPersonController playerController;
     private Transform playerCameraTransform;
     private Vector3 originalPosition;
     private Quaternion originalRotation;
+    private Vector3 originalCameraPosition;
+    private Quaternion originalCameraRotation;
+    private Transform playerOriginalParent;
     private Transform originalParent;
-    private Interactable interactable;
     private Rigidbody rb;
     private Collider colliderObject;
+    private float animDurationMultiplier = 1.5f;
+    private IInteractable ınteractable;
 
     void Awake()
     {
         PlayerInventory.OnAssignController += HandlePlayerController;
-        interactable = GetComponent<Interactable>();
         originalPosition = transform.position;
         originalRotation = transform.rotation;
         originalParent = transform.parent;
         rb = GetComponent<Rigidbody>();
         colliderObject = GetComponent<Collider>();
+        ınteractable = GetComponent<IInteractable>();
 
     }
     void OnDestroy()
@@ -38,18 +44,29 @@ public class ModuleInteraction : MonoBehaviour
     {
         playerController = controller;
         playerCameraTransform = camera;
+        originalCameraPosition = playerCameraTransform.localPosition;
+        originalCameraRotation = playerCameraTransform.localRotation;
+        playerOriginalParent = playerCameraTransform.parent;
+
+    }
+
+    private void Update()
+    {
+        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Escape))
+        {
+            StopInteract();
+        }
     }
 
 
 
-    public void InteractWithModule()
+    public void Interact()
     {
-        if (playerController != null)
+        if (playerCameraTransform != null)
         {
+
             playerController.enabled = false;
-            transform.parent = playerCameraTransform;
-            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase);
-            transform.DOLocalRotate(initialRotationOffset, animDuration).SetEase(animEase);
+            SetInteractPosition();
             if (rb != null) rb.isKinematic = true;
             if (colliderObject != null) colliderObject.enabled = false;
             if (isUnlockCursor)
@@ -60,14 +77,32 @@ public class ModuleInteraction : MonoBehaviour
         }
     }
 
-    public void StopInteractingWithModule()
+    private void SetInteractPosition()
     {
-        if (playerController != null)
+        if (isMoveable)
         {
+
+            transform.parent = playerCameraTransform;
+            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase);
+            transform.DOLocalRotate(initialRotationOffset, animDuration).SetEase(animEase);
+
+        }
+        else
+        {
+            playerCameraTransform.parent = transform;
+            playerCameraTransform.DOLocalMove(initialPositionOffset, animDuration * animDurationMultiplier).SetEase(animEase);
+            playerCameraTransform.DOLocalRotate(initialRotationOffset, animDuration * animDurationMultiplier).SetEase(animEase);
+        }
+    }
+
+
+    public void StopInteract()
+    {
+        if (playerCameraTransform != null)
+        {
+            ınteractable.StopInteract();
             playerController.enabled = true;
-            transform.parent = originalParent;
-            transform.DOMove(originalPosition, animDuration).SetEase(animEase);
-            transform.DORotateQuaternion(originalRotation, animDuration).SetEase(animEase);
+            SetCameraPositionBack();
             if (rb != null) rb.isKinematic = false;
             if (colliderObject != null) colliderObject.enabled = true;
             if (isUnlockCursor)
@@ -77,4 +112,21 @@ public class ModuleInteraction : MonoBehaviour
             }
         }
     }
+
+    private void SetCameraPositionBack()
+    {
+        if (isMoveable)
+        {
+            transform.parent = originalParent;
+            transform.DOMove(originalPosition, animDuration).SetEase(animEase);
+            transform.DORotateQuaternion(originalRotation, animDuration).SetEase(animEase);
+        }
+        else
+        {
+            playerCameraTransform.parent = playerOriginalParent;
+            playerCameraTransform.DOLocalMove(originalCameraPosition, animDuration * animDurationMultiplier).SetEase(animEase);
+            playerCameraTransform.DOLocalRotateQuaternion(originalCameraRotation, animDuration * animDurationMultiplier).SetEase(animEase);
+        }
+    }
+
 }

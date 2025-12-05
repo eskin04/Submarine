@@ -6,8 +6,7 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private string displayName = "Interact";
     [SerializeField] private bool isInteractable = true;
     [SerializeField] private UnityEvent onInteract;
-    [SerializeField] private UnityEvent onStopInteract;
-    [SerializeField] private bool isInteracting = false;
+    private bool isInteracting = false;
 
     private Outline outline;
 
@@ -28,12 +27,9 @@ public class Interactable : MonoBehaviour, IInteractable
     public string DisplayName => displayName;
 
     public bool CanInteract() => isInteractable;
-    public bool IsInteract() => isInteracting;
-    public void SetInteracting(bool value)
-    {
-        isInteracting = value;
-    }
+    public void SetInteractable(bool value) => isInteractable = value;
 
+    public bool IsInteracting() => isInteracting;
     public void Interact()
     {
         isInteracting = true;
@@ -43,7 +39,6 @@ public class Interactable : MonoBehaviour, IInteractable
 
     public void StopInteract()
     {
-        onStopInteract?.Invoke();
         isInteracting = false;
     }
 

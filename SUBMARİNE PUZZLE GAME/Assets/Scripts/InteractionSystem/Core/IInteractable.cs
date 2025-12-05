@@ -5,9 +5,9 @@ public interface IInteractable
     Transform transform { get; }
     string DisplayName { get; }
     bool CanInteract();
-    bool IsInteract();
-    void Interact();
+    bool IsInteracting();
     void StopInteract();
+    void Interact();
     void OnFocus();
     void OnLoseFocus();
 
