@@ -223,8 +223,9 @@ GameObject:
   - component: {fileID: 1243474485356468482}
   - component: {fileID: 567517513374734020}
   - component: {fileID: 5220962650864598758}
+  - component: {fileID: 7557586772225945039}
   m_Layer: 8
-  m_Name: Player
+  m_Name: Engineer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -509,6 +510,28 @@ MonoBehaviour:
   handPosition: {fileID: 1164954421322645208}
   dropPosition: {fileID: 8537955020095205841}
   cameraPosition: {fileID: 4960467761367258317}
+--- !u!114 &7557586772225945039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3685268969603328481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb82e22378a84f469eecd0d348d5762, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  role: 1
 --- !u!1 &6226801875632718425
 GameObject:
   m_ObjectHideFlags: 0

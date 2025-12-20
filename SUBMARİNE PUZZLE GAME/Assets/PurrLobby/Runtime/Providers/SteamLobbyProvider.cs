@@ -40,7 +40,7 @@ namespace PurrLobby.Providers
         public event UnityAction<List<LobbyUser>> OnLobbyPlayerListUpdated;
         public event UnityAction<List<FriendUser>> OnFriendListPulled;
         public event UnityAction<string> OnError;
-        
+
         [SerializeField] private bool handleSteamInit = false;
 
         private Steamworks.CallResult<Steamworks.LobbyCreated_t> _LobbyCreated;
@@ -86,7 +86,7 @@ namespace PurrLobby.Providers
             var handle = Steamworks.SteamMatchmaking.CreateLobby((Steamworks.ELobbyType)lobbyType, maxPlayers);
             _LobbyCreated.Set(handle, (result, ioError) =>
             {
-                if(!ioError && result.m_eResult == Steamworks.EResult.k_EResultOK)
+                if (!ioError && result.m_eResult == Steamworks.EResult.k_EResultOK)
                 {
                     lobbyId = new Steamworks.CSteamID(result.m_ulSteamIDLobby);
                     tcs.TrySetResult(true);
@@ -180,7 +180,7 @@ namespace PurrLobby.Providers
 
             if (handleSteamInit)
                 HandleSteamInit();
-            
+
             return Task.CompletedTask;
         }
 
@@ -197,7 +197,7 @@ namespace PurrLobby.Providers
                 RunSteamCallbacks();
             }
         }
-        
+
         private async void RunSteamCallbacks()
         {
             var runCallbacks = true;
@@ -264,7 +264,7 @@ namespace PurrLobby.Providers
 
         public Task LeaveLobbyAsync()
         {
-            if (!IsSteamClientAvailable || _currentLobby == Steamworks.CSteamID.Nil) 
+            if (!IsSteamClientAvailable || _currentLobby == Steamworks.CSteamID.Nil)
                 return Task.CompletedTask;
 
             Steamworks.SteamMatchmaking.LeaveLobby(_currentLobby);
@@ -444,13 +444,35 @@ namespace PurrLobby.Providers
                 }
             }
 
+            var roleString = Steamworks.SteamMatchmaking.GetLobbyMemberData(lobbyId, steamId, "Role");
+            PlayerRole role = PlayerRole.None;
+            if (!string.IsNullOrEmpty(roleString))
+            {
+                System.Enum.TryParse(roleString, out role);
+            }
+
             return new LobbyUser
             {
                 Id = steamId.m_SteamID.ToString(),
                 DisplayName = displayName,
                 IsReady = isReady,
+                Role = role,
                 Avatar = avatar
             };
+        }
+
+        public Task SetPlayerRoleAsync(string userId, PlayerRole role)
+        {
+            if (IsSteamClientAvailable && !string.IsNullOrEmpty(userId) && ulong.TryParse(userId, out var id)
+                && Steamworks.SteamUser.GetSteamID().m_SteamID == id)
+            {
+                Steamworks.SteamMatchmaking.SetLobbyMemberData(_currentLobby, "Role", role.ToString());
+                Debug.Log($"Set role {role} for user {userId}");
+
+                Steamworks.SteamMatchmaking.SetLobbyData(_currentLobby, "UpdateTrigger", DateTime.UtcNow.Ticks.ToString());
+            }
+
+            return Task.FromResult(Task.CompletedTask);
         }
 
         private void FlipTextureVertically(Texture2D texture)

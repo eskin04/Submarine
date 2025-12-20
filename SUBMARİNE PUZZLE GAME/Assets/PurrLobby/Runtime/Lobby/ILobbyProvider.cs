@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine.Events;
 
-namespace PurrLobby {
-    public interface ILobbyProvider {
+namespace PurrLobby
+{
+    public interface ILobbyProvider
+    {
         // Initialization
         Task InitializeAsync();
         void Shutdown();
@@ -21,6 +23,7 @@ namespace PurrLobby {
         Task<Lobby> JoinLobbyAsync(string lobbyId);
         Task<List<Lobby>> SearchLobbiesAsync(int maxRoomsToFind = 10, Dictionary<string, string> filters = null);
         Task SetIsReadyAsync(string userId, bool isReady);
+        Task SetPlayerRoleAsync(string userId, PlayerRole role);
         Task SetLobbyDataAsync(string key, string value);
         Task<string> GetLobbyDataAsync(string key);
         Task<List<LobbyUser>> GetLobbyMembersAsync();

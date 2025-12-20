@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using PurrNet;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FloodManager : NetworkBehaviour
@@ -24,22 +23,19 @@ public class FloodManager : NetworkBehaviour
         }
 
         List<StationController> shuffled = new List<StationController>(stations);
-        Debug.Log(shuffled.Count);
         System.Random rng = new System.Random();
         int n = shuffled.Count;
         while (n > 1)
         {
             n--;
             int k = rng.Next(n + 1);
-            (shuffled[k], shuffled[n]) = (shuffled[n], shuffled[k]); // Swap
+            (shuffled[k], shuffled[n]) = (shuffled[n], shuffled[k]);
         }
 
-        // 3. İlk X tanesini boz
         int count = Mathf.Min(brokenStationNum, shuffled.Count);
         for (int i = 0; i < count; i++)
         {
             shuffled[i].SetBroken();
-            Debug.Log($"Başlangıç Arızası: {shuffled[i].name}");
         }
     }
 
@@ -76,7 +72,6 @@ public class FloodManager : NetworkBehaviour
 
         int brokenCount = brokenStations.Count;
         int destroyedCount = destroyedStations.Count;
-        Debug.Log(brokenCount + "broken destroyed " + destroyedCount);
 
 
         float fillRate = DefaultFillRate + brokenFillRate * brokenCount + destroyedCount * brokenFillRate;

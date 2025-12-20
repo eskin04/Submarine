@@ -13,10 +13,11 @@ namespace PurrLobby
             CurrentLobby = newLobby;
             serializedLobby = newLobby;
         }
-        
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+            Application.targetFrameRate = 60;
         }
     }
 }

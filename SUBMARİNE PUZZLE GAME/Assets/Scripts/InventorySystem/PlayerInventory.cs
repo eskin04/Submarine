@@ -1,4 +1,5 @@
 using System;
+using PurrLobby;
 using PurrNet;
 using StarterAssets;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class PlayerInventory : NetworkBehaviour
             OnSpawnPlayer?.Invoke(handPosition, dropPosition);
             playerController = GetComponent<FirstPersonController>();
             OnAssignController?.Invoke(playerController, cameraPosition);
+
         }
     }
 
