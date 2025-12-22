@@ -24,8 +24,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _SampleTexture2D_209233e88e0f4571adaa1888abea45f4_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f3da190d3ef4f7a44b6214a5f0fef076, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_2109c09d171f4f28b6ee5ee19d8f5f30_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: 4ff90cfea2546aa4ca9bcd46f55ab244, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2a333601b2494314a2c876987f265900_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: def38abfcd465554bbbf0dccc028c66d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_88ff797b3ae34dc9adedf6e94269651d_Texture_1_Texture2D:
@@ -50,10 +58,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _MacroVariationTiling: 0.005
+    - _MacroVariationTiling2: 600
+    - _MicroTiling: 39.24
+    - _MicroTiling_1: 1307.07
+    - _MicroTiling_2: -3.8
+    - _NoiseContrast: 1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tiling: 14
-    m_Colors: []
+    - _Tiling: 10
+    m_Colors:
+    - _BaseColor: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+    - _MicroTint: {r: 0, g: 0, b: 0, a: 0}
+    - _NoiseColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+    - _Variationcolor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &1252304472649465017
