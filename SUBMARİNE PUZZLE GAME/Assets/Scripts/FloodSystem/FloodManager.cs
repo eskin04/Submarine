@@ -13,8 +13,24 @@ public class FloodManager : NetworkBehaviour
     private bool criticalEventTriggered = false;
     private List<StationController> brokenStations = new List<StationController>();
     private List<StationController> destroyedStations = new List<StationController>();
+    private bool isStart;
 
-    void Start()
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+
+        MainGameState.startGame += StartFlood;
+
+    }
+
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        MainGameState.startGame -= StartFlood;
+    }
+
+    private void StartFlood()
     {
         foreach (StationController station in stations)
         {
@@ -37,6 +53,7 @@ public class FloodManager : NetworkBehaviour
         {
             shuffled[i].SetBroken();
         }
+        isStart = true;
     }
 
     private void HandleStationState(StationState state, StationController station)
@@ -55,7 +72,7 @@ public class FloodManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!isServer) return;
+        if (!isServer && !isStart) return;
 
         CalculateWater();
 
@@ -77,7 +94,7 @@ public class FloodManager : NetworkBehaviour
         float fillRate = DefaultFillRate + brokenFillRate * brokenCount + destroyedCount * brokenFillRate;
         currentWater.value += fillRate * Time.deltaTime;
 
-        if (!criticalEventTriggered && currentWater.value >= 5f)
+        if (!criticalEventTriggered && currentWater.value >= 60f)
             TriggerCriticalEvent();
 
 

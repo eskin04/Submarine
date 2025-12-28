@@ -1,16 +1,15 @@
-using System.Collections.Generic;
-using PurrNet;
+using System;
 using PurrNet.StateMachine;
-using StarterAssets;
-using UnityEngine;
 
-public class MainGameState : StateNode<List<PlayerInventory>>
+public class MainGameState : StateNode
 {
+    public static Action startGame;
 
-    public override void Enter(List<PlayerInventory> data, bool asServer)
+    public override void Enter(bool asServer)
     {
         base.Enter(asServer);
         if (!asServer) return;
+        startGame?.Invoke();
     }
 
 

@@ -13,19 +13,25 @@ public class RadioVoiceManager : MonoBehaviour
     public AudioSource radioSFXSource;
     public AudioClip connectClip;
     public AudioClip disconnectClip;
+
+    [Tooltip("Kanal doluyken basılırsa çalacak 'Meşgul/Hata' sesi")]
+    public AudioClip busyErrorClip;
+
     private bool isLoggedIn = false;
+    private bool isTransmitting = false;
+    private bool isChannelBusy = false;
+
+    private string currentChannelName;
+
 
     public async void StartLobbyVoice(string channelName = "GlobalOpsRadio")
     {
-
         await UnityServices.InitializeAsync();
-
 
         if (!AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
-
 
         await InitializeVivoxAsync(channelName);
     }
@@ -37,7 +43,7 @@ public class RadioVoiceManager : MonoBehaviour
             await VivoxService.Instance.InitializeAsync();
 
             LoginOptions options = new LoginOptions();
-            options.DisplayName = "Operator_" + Random.Range(100, 999); // Rastgele isim
+            options.DisplayName = "Operator_" + Random.Range(100, 999);
 
             await VivoxService.Instance.LoginAsync(options);
 
@@ -53,9 +59,7 @@ public class RadioVoiceManager : MonoBehaviour
 
     private async void JoinRadioChannel(string channelName)
     {
-
-
-        Channel3DProperties properties = new Channel3DProperties();
+        currentChannelName = channelName;
 
         VivoxService.Instance.MuteInputDevice();
 
@@ -65,31 +69,58 @@ public class RadioVoiceManager : MonoBehaviour
         Debug.Log($"Telsiz Kanalına Katılındı: {channelName}");
     }
 
+
     void Update()
     {
         if (isLoggedIn)
         {
+            CheckChannelStatus();
+
             if (Input.GetKeyDown(pushToTalkKey))
             {
-                StartTransmission();
+                if (isChannelBusy && !isTransmitting)
+                {
+                    PlayBusySound();
+                    Debug.Log("KANAL MEŞGUL! Şu an başkası konuşuyor.");
+                }
+                else
+                {
+                    StartTransmission();
+                }
             }
 
             if (Input.GetKeyUp(pushToTalkKey))
             {
-                StopTransmission();
+                if (isTransmitting)
+                {
+                    StopTransmission();
+                }
             }
         }
     }
 
-    void OnApplicationQuit()
+    void CheckChannelStatus()
     {
-        if (isLoggedIn)
-        {
+        isChannelBusy = false;
 
-            VivoxService.Instance.LogoutAsync();
+        if (VivoxService.Instance.ActiveChannels == null || string.IsNullOrEmpty(currentChannelName))
+        {
+            return;
         }
 
+        if (VivoxService.Instance.ActiveChannels.TryGetValue(currentChannelName, out var participants))
+        {
+            foreach (var participant in participants)
+            {
+                if (!participant.IsSelf && participant.SpeechDetected)
+                {
+                    isChannelBusy = true;
+                    return;
+                }
+            }
+        }
     }
+
 
     void StartTransmission()
     {
@@ -99,6 +130,7 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.UnmuteInputDevice();
+        isTransmitting = true;
         Debug.Log("Telsiz AÇIK (Konuşuluyor...)");
     }
 
@@ -110,6 +142,24 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.MuteInputDevice();
+        isTransmitting = false;
         Debug.Log("Telsiz KAPALI");
+    }
+
+    void PlayBusySound()
+    {
+        if (radioSFXSource != null && busyErrorClip != null)
+        {
+            if (!radioSFXSource.isPlaying)
+                radioSFXSource.PlayOneShot(busyErrorClip, 0.5f);
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (isLoggedIn)
+        {
+            VivoxService.Instance.LogoutAsync();
+        }
     }
 }

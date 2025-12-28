@@ -1,6 +1,7 @@
 using StarterAssets;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 public class ModuleInteraction : MonoBehaviour
 {
@@ -64,7 +65,6 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (playerCameraTransform != null)
         {
-
             playerController.enabled = false;
             SetInteractPosition();
             if (rb != null) rb.isKinematic = true;

@@ -11,6 +11,7 @@ public class PlayerStats : NetworkBehaviour
     {
         base.OnSpawned();
         if (!isOwner) return;
+        InstanceHandler.GetInstance<PlayerSpawnView>()?.SetRoleText(role);
         InstanceHandler.GetInstance<MainGameView>()?.SetRoleText(role);
 
     }

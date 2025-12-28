@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using PurrNet;
 using PurrNet.StateMachine;
 using PurrLobby;
 using UnityEngine;
-using TMPro;
-// Steam kütüphanesini silebilirsin, burada gerek kalmadı.
+using System.Collections;
 
 public class PlayerSpawningState : StateNode
 {
@@ -30,6 +28,14 @@ public class PlayerSpawningState : StateNode
 
         SpawnPlayerSimple();
 
+        machine.StartCoroutine(SpawnView());
+    }
+
+    private IEnumerator SpawnView()
+    {
+        InstanceHandler.GetInstance<GameViewManager>().ShowView<PlayerSpawnView>(hideOthers: false);
+        yield return new WaitForSeconds(2);
+        InstanceHandler.GetInstance<GameViewManager>().HideView<PlayerSpawnView>();
         machine.Next();
     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using PurrNet.StateMachine;
 using UnityEngine;
+using PurrNet;
 
 public class WaitForPlayersState : StateNode
 {
@@ -15,6 +16,8 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
+        InstanceHandler.GetInstance<GameViewManager>().ShowView<LoadingView>(hideOthers: false);
+
         while (networkManager.players.Count < minPlayersToStart)
         {
             Debug.Log($"Current players: {networkManager.players.Count}. Waiting for at least {minPlayersToStart} players to start...");
@@ -22,6 +25,8 @@ public class WaitForPlayersState : StateNode
         }
 
         Debug.Log("Required number of players joined. Proceeding to next state...");
+        InstanceHandler.GetInstance<GameViewManager>().HideView<LoadingView>();
+
         machine.Next();
     }
 
