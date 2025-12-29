@@ -1,7 +1,6 @@
 using StarterAssets;
 using UnityEngine;
 using DG.Tweening;
-using System;
 
 public class ModuleInteraction : MonoBehaviour
 {
@@ -14,15 +13,13 @@ public class ModuleInteraction : MonoBehaviour
 
     private FirstPersonController playerController;
     private Transform playerCameraTransform;
+    private Transform playerInteractCameraTransform;
     private Vector3 originalPosition;
     private Quaternion originalRotation;
-    private Vector3 originalCameraPosition;
-    private Quaternion originalCameraRotation;
     private Transform playerOriginalParent;
     private Transform originalParent;
     private Rigidbody rb;
     private Collider colliderObject;
-    private float animDurationMultiplier = 1.5f;
     private IInteractable ınteractable;
 
     void Awake()
@@ -41,13 +38,12 @@ public class ModuleInteraction : MonoBehaviour
         PlayerInventory.OnAssignController -= HandlePlayerController;
     }
 
-    private void HandlePlayerController(FirstPersonController controller, Transform camera)
+    private void HandlePlayerController(FirstPersonController controller, Transform camera, Transform interactCamera)
     {
         playerController = controller;
         playerCameraTransform = camera;
-        originalCameraPosition = playerCameraTransform.localPosition;
-        originalCameraRotation = playerCameraTransform.localRotation;
-        playerOriginalParent = playerCameraTransform.parent;
+        playerInteractCameraTransform = interactCamera;
+        playerOriginalParent = playerInteractCameraTransform.parent;
 
     }
 
@@ -89,9 +85,10 @@ public class ModuleInteraction : MonoBehaviour
         }
         else
         {
-            playerCameraTransform.parent = transform;
-            playerCameraTransform.DOLocalMove(initialPositionOffset, animDuration * animDurationMultiplier).SetEase(animEase);
-            playerCameraTransform.DOLocalRotate(initialRotationOffset, animDuration * animDurationMultiplier).SetEase(animEase);
+            playerInteractCameraTransform.parent = transform;
+            playerInteractCameraTransform.localPosition = initialPositionOffset;
+            playerInteractCameraTransform.localEulerAngles = initialRotationOffset;
+            playerInteractCameraTransform.gameObject.SetActive(true);
         }
     }
 
@@ -123,9 +120,8 @@ public class ModuleInteraction : MonoBehaviour
         }
         else
         {
-            playerCameraTransform.parent = playerOriginalParent;
-            playerCameraTransform.DOLocalMove(originalCameraPosition, animDuration * animDurationMultiplier).SetEase(animEase);
-            playerCameraTransform.DOLocalRotateQuaternion(originalCameraRotation, animDuration * animDurationMultiplier).SetEase(animEase);
+            playerInteractCameraTransform.parent = playerOriginalParent;
+            playerInteractCameraTransform.gameObject.SetActive(false);
         }
     }
 

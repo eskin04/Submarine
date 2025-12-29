@@ -828,7 +828,7 @@ Transform:
   m_GameObject: {fileID: 2266538350046272487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.55, y: 0.27, z: 2.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1027,7 +1027,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 50ac851c048528f41b9c8a0328cb6b3a, type: 2}
+  - {fileID: 2100000, guid: 2cb56cf1005874f4cb1a19e69bd14f37, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1105,7 +1105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 1.9}
+  initialPositionOffset: {x: 0, y: 0, z: 1.5}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -1135,7 +1135,9 @@ MonoBehaviour:
     _value: 0
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
-  material: {fileID: 2100000, guid: 50ac851c048528f41b9c8a0328cb6b3a, type: 2}
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &2633808503455795598
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1284,7 +1286,7 @@ Transform:
   m_GameObject: {fileID: 3183895230984456736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.11, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1322,7 +1324,7 @@ Transform:
   m_GameObject: {fileID: 3392469244622301873}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.219, y: 1.516, z: -6.809}
+  m_LocalPosition: {x: 6.493, y: 1.516, z: -6.809}
   m_LocalScale: {x: 0.25, y: 0.375, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1428,7 +1430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.5}
+  initialPositionOffset: {x: 0, y: 0, z: 0.4}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 1
@@ -1835,8 +1837,8 @@ GameObject:
   m_Component:
   - component: {fileID: 348333865255137659}
   - component: {fileID: 2308599039184538599}
-  - component: {fileID: 5587856378366601656}
   - component: {fileID: 2244890089872307753}
+  - component: {fileID: 3422959138658205067}
   m_Layer: 0
   m_Name: RoeStation
   m_TagString: Untagged
@@ -1931,33 +1933,6 @@ MonoBehaviour:
   currentBoardSetup: []
   currentDailyRule: {fileID: 0}
   currentLevel: 3
---- !u!114 &5587856378366601656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4881298914570391646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 830170ad7103d2c4ba046534e00ecd42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StationStarter
-  onStart:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2308599039184538599}
-        m_TargetAssemblyTypeName: RoE_StationManager, Assembly-CSharp
-        m_MethodName: StartNewRound
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &2244890089872307753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1986,6 +1961,47 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15a58ac217fd04f469fd6eaa3b7bd851, type: 2}
   activeThreats: []
   mainManager: {fileID: 2308599039184538599}
+--- !u!114 &3422959138658205067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4881298914570391646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76b99f149a2a0744f93676ef303369c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StationController
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  stationType: 0
+  stationState:
+    _value: 0
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+  onStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2308599039184538599}
+        m_TargetAssemblyTypeName: RoE_StationManager, Assembly-CSharp
+        m_MethodName: StartNewRound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5185737554399693498
 GameObject:
   m_ObjectHideFlags: 0
@@ -3512,7 +3528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 14}
+  initialPositionOffset: {x: 0, y: 0, z: 11}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -3673,7 +3689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 2.3}
+  initialPositionOffset: {x: 0, y: 0, z: 1.5}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0

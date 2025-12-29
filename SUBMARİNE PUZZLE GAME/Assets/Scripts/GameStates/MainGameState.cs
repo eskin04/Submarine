@@ -9,6 +9,17 @@ public class MainGameState : StateNode
     {
         base.Enter(asServer);
         if (!asServer) return;
+        FloodManager.OnGameEnd += HandleGameEnd;
+    }
+
+    private void HandleGameEnd(bool isGameEnd)
+    {
+        if (isGameEnd)
+            machine.Next();
+    }
+
+    public void StartGame()
+    {
         startGame?.Invoke();
     }
 
@@ -17,5 +28,7 @@ public class MainGameState : StateNode
     public override void Exit(bool asServer)
     {
         base.Exit(asServer);
+        if (!asServer) return;
+        FloodManager.OnGameEnd -= HandleGameEnd;
     }
 }

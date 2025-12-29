@@ -6,6 +6,7 @@ using PurrNet;
 public class MainGameView : View
 {
     [SerializeField] private TMP_Text roleText;
+    [SerializeField] private TMP_Text waterLevelText;
 
     void Awake()
     {
@@ -24,6 +25,11 @@ public class MainGameView : View
     public override void OnShow()
     {
 
+    }
+
+    public void SetWaterLevelText(float currentWater, float maxWater)
+    {
+        waterLevelText.text = $"Water Level: {currentWater:F1} / {maxWater}";
     }
 
     public void SetRoleText(PlayerRole role)

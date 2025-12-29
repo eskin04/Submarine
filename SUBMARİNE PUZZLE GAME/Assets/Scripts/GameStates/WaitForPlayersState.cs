@@ -16,8 +16,7 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
-        InstanceHandler.GetInstance<GameViewManager>().ShowView<LoadingView>(hideOthers: false);
-
+        ShowLoadingView();
         while (networkManager.players.Count < minPlayersToStart)
         {
             Debug.Log($"Current players: {networkManager.players.Count}. Waiting for at least {minPlayersToStart} players to start...");
@@ -25,9 +24,21 @@ public class WaitForPlayersState : StateNode
         }
 
         Debug.Log("Required number of players joined. Proceeding to next state...");
+        HideLoadingView();
+        machine.Next();
+    }
+    [ObserversRpc]
+    private void ShowLoadingView()
+    {
+        InstanceHandler.GetInstance<GameViewManager>().ShowView<LoadingView>(hideOthers: false);
+
+    }
+
+    [ObserversRpc]
+    private void HideLoadingView()
+    {
         InstanceHandler.GetInstance<GameViewManager>().HideView<LoadingView>();
 
-        machine.Next();
     }
 
     public override void Exit(bool asServer)

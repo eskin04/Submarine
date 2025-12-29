@@ -27,16 +27,20 @@ public class PlayerSpawningState : StateNode
         Debug.Log("Sadeleştirilmiş Spawn Mantığı Başlıyor...");
 
         SpawnPlayerSimple();
+        SetView();
+        machine.Next();
 
+    }
+    [ObserversRpc]
+    private void SetView()
+    {
         machine.StartCoroutine(SpawnView());
     }
-
     private IEnumerator SpawnView()
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<PlayerSpawnView>(hideOthers: false);
         yield return new WaitForSeconds(2);
         InstanceHandler.GetInstance<GameViewManager>().HideView<PlayerSpawnView>();
-        machine.Next();
     }
 
     private void SpawnPlayerSimple()

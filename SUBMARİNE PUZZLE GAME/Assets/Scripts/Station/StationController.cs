@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using PurrNet;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class StationController : NetworkBehaviour
 {
@@ -8,19 +11,28 @@ public class StationController : NetworkBehaviour
 
     [SerializeField] private StationType stationType;
     [SerializeField] private SyncVar<StationState> stationState = new SyncVar<StationState>(StationState.Default);
-    [SerializeField] private Material material;
-    private Interactable interactable;
+    [SerializeField] private UnityEvent onStart;
+
+    private Interactable[] interactables;
 
     void Awake()
     {
         stationState.onChangedWithOld += OnStateChanged;
-        interactable = GetComponent<Interactable>();
+        interactables = GetComponentsInChildren<Interactable>();
     }
 
     private void OnStateChanged(StationState oldState, StationState newState)
     {
         UpdateVisual(newState);
         StateChanged.Invoke(newState, this);
+    }
+
+    private void SetInteractable(bool value)
+    {
+        foreach (var interactable in interactables)
+        {
+            interactable.SetInteractable(value);
+        }
     }
 
 
@@ -30,19 +42,20 @@ public class StationController : NetworkBehaviour
         switch (state)
         {
             case StationState.Operational:
-                material.color = Color.blue;
-                interactable.SetInteractable(false);
+                SetInteractable(false);
                 break;
             case StationState.Broken:
-                material.color = Color.red;
-                interactable.SetInteractable(true);
-
+                SetInteractable(true);
                 break;
             case StationState.Destroyed:
-                material.color = Color.black;
-                interactable.SetInteractable(false);
+                SetInteractable(false);
                 break;
         }
+    }
+
+    public void StartStation()
+    {
+        onStart?.Invoke();
     }
 
     public StationState GetCurrentState()

@@ -27,6 +27,7 @@ public class RoE_StationManager : NetworkBehaviour
     [Header("Settings")]
     public int currentLevel = 1;
     private bool isSimulationRunning = false;
+    private bool isRoundActive = false;
 
 
 
@@ -54,6 +55,7 @@ public class RoE_StationManager : NetworkBehaviour
         {
             engineerDisplay.UpdateRuleDisplay(currentDailyRule.ruleDescription);
         }
+        isRoundActive = true;
     }
 
 
@@ -102,7 +104,7 @@ public class RoE_StationManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void ActivateStationRPC()
     {
-        if (isSimulationRunning) return;
+        if (isSimulationRunning || !isRoundActive) return;
 
         isSimulationRunning = true;
 

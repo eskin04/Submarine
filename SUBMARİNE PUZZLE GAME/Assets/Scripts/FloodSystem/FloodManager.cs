@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
+using TMPro;
 
 public class FloodManager : NetworkBehaviour
 {
+    public static System.Action<bool> OnGameEnd;
     [SerializeField] private List<StationController> stations;
     [SerializeField] private int brokenStationNum;
     [SerializeField] private float maxWater;
@@ -14,6 +16,7 @@ public class FloodManager : NetworkBehaviour
     private List<StationController> brokenStations = new List<StationController>();
     private List<StationController> destroyedStations = new List<StationController>();
     private bool isStart;
+    private bool isGameOver;
 
     protected override void OnSpawned()
     {
@@ -52,6 +55,7 @@ public class FloodManager : NetworkBehaviour
         for (int i = 0; i < count; i++)
         {
             shuffled[i].SetBroken();
+            shuffled[i].StartStation();
         }
         isStart = true;
     }
@@ -72,7 +76,7 @@ public class FloodManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!isServer && !isStart) return;
+        if (!isServer || !isStart || isGameOver) return;
 
         CalculateWater();
 
@@ -82,6 +86,8 @@ public class FloodManager : NetworkBehaviour
     {
         if (currentWater >= maxWater)
         {
+            isGameOver = true;
+            OnGameEnd?.Invoke(isGameOver);
             Debug.Log("Game Over");
             return;
         }
@@ -93,11 +99,17 @@ public class FloodManager : NetworkBehaviour
 
         float fillRate = DefaultFillRate + brokenFillRate * brokenCount + destroyedCount * brokenFillRate;
         currentWater.value += fillRate * Time.deltaTime;
+        SetWaterLevelText();
 
         if (!criticalEventTriggered && currentWater.value >= 60f)
             TriggerCriticalEvent();
 
 
+    }
+    [ObserversRpc]
+    private void SetWaterLevelText()
+    {
+        InstanceHandler.GetInstance<MainGameView>().SetWaterLevelText(currentWater.value, maxWater);
     }
 
     private void TriggerCriticalEvent()
