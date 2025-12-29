@@ -21,8 +21,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Floor
-  m_Shader: {fileID: -6465566751694194690, guid: f032ffe92624bd04eb993b1e8abc1b3c, type: 3}
-  m_Parent: {fileID: -876546973899608171, guid: f032ffe92624bd04eb993b1e8abc1b3c, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: c1cfc0b52360e8141857a22e86b7e688, type: 3}
+  m_Parent: {fileID: 2100000, guid: 8e789d75e56a9ba40adbdd13ce74bc93, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -36,7 +36,15 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _SampleTexture2D_209233e88e0f4571adaa1888abea45f4_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f3da190d3ef4f7a44b6214a5f0fef076, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2a333601b2494314a2c876987f265900_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: def38abfcd465554bbbf0dccc028c66d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _OfsetX: 0
