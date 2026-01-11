@@ -27,6 +27,7 @@ namespace StarterAssets
 
 		[Header("Player Grounded")]
 		public bool Grounded = true;
+		public bool canJump = true;
 		public float GroundedOffset = -0.14f;
 		public float GroundedRadius = 0.5f;
 		public LayerMask GroundLayers;
@@ -93,7 +94,6 @@ namespace StarterAssets
 		{
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
-			Debug.Log("Starter Assets Inputs: " + _input);
 #if ENABLE_INPUT_SYSTEM
 			_playerInput = GetComponent<PlayerInput>();
 #else
@@ -107,9 +107,10 @@ namespace StarterAssets
 
 		private void Update()
 		{
-			JumpAndGravity();
+
 			GroundedCheck();
 			Move();
+			JumpAndGravity();
 		}
 
 		private void LateUpdate()
@@ -205,7 +206,7 @@ namespace StarterAssets
 					_verticalVelocity = -2f;
 				}
 				// Jump
-				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+				if (_input.jump && _jumpTimeoutDelta <= 0.0f && canJump)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
