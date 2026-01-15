@@ -5,6 +5,7 @@ using PurrNet;
 public class RoE_StationManager : NetworkBehaviour
 {
     [Header("Sub-Managers")]
+    public StationController stationController;
     public RoE_ThreatManager threatManager;
     public RoE_BoardManager boardManager;
 
@@ -26,8 +27,11 @@ public class RoE_StationManager : NetworkBehaviour
 
     [Header("Settings")]
     public int currentLevel = 1;
+    public float mistakePenalty = 3.0f;
+
     private bool isSimulationRunning = false;
     private bool isRoundActive = false;
+
 
 
 
@@ -141,7 +145,6 @@ public class RoE_StationManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void SubmitActionRPC(int threatIndex, Roe_PlayerAction action)
     {
-        // Tehdidi bul
         ActiveThreat threat = threatManager.GetThreat(threatIndex);
 
         if (threat == null || threat.isDestroyed)
@@ -170,7 +173,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
         }
-
+        stationController.ReportRepairMistake(mistakePenalty / 2);
         Debug.Log("EVADE Successful.");
         RpcSendFeedback("Avoided!", Color.cyan);
         DestroyThreat(threat);
@@ -186,6 +189,8 @@ public class RoE_StationManager : NetworkBehaviour
         }
         else
         {
+            stationController.ReportRepairMistake(mistakePenalty);
+
             RpcSendFeedback("failure!", Color.red);
 
             DestroyThreat(threat);
@@ -198,6 +203,42 @@ public class RoE_StationManager : NetworkBehaviour
         threat.isDestroyed = true;
 
         RpcThreatDestroyed(threatManager.activeThreats.IndexOf(threat));
+        CheckRoundCompletion();
+    }
+
+    private void CheckRoundCompletion()
+    {
+        bool allDestroyed = true;
+        foreach (var t in threatManager.activeThreats)
+        {
+            if (!t.isDestroyed)
+            {
+                allDestroyed = false;
+                break;
+            }
+        }
+
+        if (allDestroyed)
+        {
+            EndRoundAndRepair();
+        }
+    }
+
+    private void EndRoundAndRepair()
+    {
+        Debug.Log("RoE Station: All threats neutralized. Station Repaired!");
+
+        if (stationController != null)
+        {
+            stationController.SetReparied();
+        }
+
+        isRoundActive = false;
+        isSimulationRunning = false;
+
+        RpcSetSimulationState(false);
+
+
     }
 
     public bool GetSimulateRunning()
@@ -225,10 +266,14 @@ public class RoE_StationManager : NetworkBehaviour
     {
         isSimulationRunning = state;
         Debug.Log($"<color=yellow>[SİSTEM]</color> Simülasyon Durumu Değişti: {state.ToString().ToUpper()}");
+        if (state == false && technicianUI != null)
+        {
+            technicianUI.ForceClearInterface();
+        }
     }
 
     [ObserversRpc]
-    private void RpcSendFeedback(string message, Color msgColor) // bool kullanarak renk kararını basitleştirebiliriz
+    private void RpcSendFeedback(string message, Color msgColor)
     {
         if (technicianUI != null)
         {

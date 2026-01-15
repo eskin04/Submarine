@@ -230,6 +230,25 @@ public class RoE_TechnicianUI : MonoBehaviour
         }
     }
 
+    public void ForceClearInterface()
+    {
+        foreach (var kvp in activeBlips)
+        {
+            if (kvp.Value != null)
+            {
+                Destroy(kvp.Value);
+            }
+        }
+
+        activeBlips.Clear();
+        blipAngles.Clear();
+
+        currentVisualBlip = null;
+        currentSelectedCode = "";
+
+        UpdateSelectionPanel();
+    }
+
     private void OnDrawGizmos()
     {
         if (radarCenter != null)

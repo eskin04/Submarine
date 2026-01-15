@@ -828,7 +828,7 @@ Transform:
   m_GameObject: {fileID: 2266538350046272487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.55, y: 0.27, z: 2.75}
+  m_LocalPosition: {x: -4.55, y: 4.86, z: -0.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1131,6 +1131,7 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   stationType: 0
+  stationTier: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -1286,7 +1287,7 @@ Transform:
   m_GameObject: {fileID: 3183895230984456736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.11, y: 0, z: 0}
+  m_LocalPosition: {x: -1.11, y: 0.92, z: -0.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1756,7 +1757,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: asdasdasda
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1884,6 +1885,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  stationController: {fileID: 3422959138658205067}
   threatManager: {fileID: 2244890089872307753}
   boardManager: {fileID: 2377692300459648162}
   engineerDisplay: {fileID: 6062837359749049503}
@@ -1933,6 +1935,7 @@ MonoBehaviour:
   currentBoardSetup: []
   currentDailyRule: {fileID: 0}
   currentLevel: 3
+  mistakePenalty: 3
 --- !u!114 &2244890089872307753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1983,6 +1986,7 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   stationType: 0
+  stationTier: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -2054,7 +2058,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5185737554399693498}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -2067,7 +2071,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: aa25d19eea7e4d64ba3d5bf3f6c656bb, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

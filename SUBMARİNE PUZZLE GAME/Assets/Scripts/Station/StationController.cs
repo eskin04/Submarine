@@ -1,17 +1,16 @@
 using System;
-using System.Collections.Generic;
 using PurrNet;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class StationController : NetworkBehaviour
 {
     public Action<StationState, StationController> StateChanged;
-
-    [SerializeField] private StationType stationType;
+    public StationType stationType;
+    public StationTier stationTier;
     [SerializeField] private SyncVar<StationState> stationState = new SyncVar<StationState>(StationState.Default);
     [SerializeField] private UnityEvent onStart;
+
 
     private Interactable[] interactables;
 
@@ -77,5 +76,19 @@ public class StationController : NetworkBehaviour
     public void SetDestroyed()
     {
         stationState.value = StationState.Destroyed;
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void SetReparied()
+    {
+        if (stationState.value == StationState.Broken)
+            stationState.value = StationState.Reparied;
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void ReportRepairMistake(float penaltyAmount)
+    {
+        if (InstanceHandler.TryGetInstance<FloodManager>(out FloodManager instance))
+            instance.AddPenalty(penaltyAmount);
     }
 }

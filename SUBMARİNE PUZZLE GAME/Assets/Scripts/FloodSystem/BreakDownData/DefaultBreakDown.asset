@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83527263821b4a543b1656f4de7bbe15, type: 3}
+  m_Name: DefaultBreakDown
+  m_EditorClassIdentifier: Assembly-CSharp::BreakdownProfile
+  waves:
+  - waveName: First
+    startTime: 1
+    endTime: 40
+    startProbability: 10
+    endProbability: 100
+  - waveName: Second
+    startTime: 40
+    endTime: 120
+    startProbability: 20
+    endProbability: 100
+  - waveName: Third
+    startTime: 100
+    endTime: 150
+    startProbability: 0
+    endProbability: 100
+  - waveName: Fourth
+    startTime: 130
+    endTime: 180
+    startProbability: 10
+    endProbability: 100

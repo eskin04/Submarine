@@ -104,7 +104,7 @@ public class PlayerSpawningState : StateNode
     {
         foreach (var networkPlayer in networkManager.players)
         {
-            var instance = Instantiate(defaultPrefab, transform.position, Quaternion.identity);
+            var instance = Instantiate(defaultPrefab, engineerSpawnPoint.position, engineerSpawnPoint.rotation);
             instance.GiveOwnership(networkPlayer);
         }
     }
