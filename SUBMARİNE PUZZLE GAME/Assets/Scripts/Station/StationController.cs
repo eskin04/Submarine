@@ -16,14 +16,14 @@ public class StationController : NetworkBehaviour
 
     void Awake()
     {
-        stationState.onChangedWithOld += OnStateChanged;
+        stationState.onChanged += OnStateChanged;
         interactables = GetComponentsInChildren<Interactable>();
     }
 
-    private void OnStateChanged(StationState oldState, StationState newState)
+    private void OnStateChanged(StationState newState)
     {
         UpdateVisual(newState);
-        StateChanged.Invoke(newState, this);
+        StateChanged?.Invoke(newState, this);
     }
 
     private void SetInteractable(bool value)
@@ -47,7 +47,10 @@ public class StationController : NetworkBehaviour
                 SetInteractable(true);
                 break;
             case StationState.Destroyed:
-                SetInteractable(false);
+                StopInteraction();
+                break;
+            case StationState.Reparied:
+                StopInteraction();
                 break;
         }
     }
@@ -71,11 +74,24 @@ public class StationController : NetworkBehaviour
     public void SetBroken()
     {
         stationState.value = StationState.Broken;
+        StartStation();
     }
 
     public void SetDestroyed()
     {
         stationState.value = StationState.Destroyed;
+
+    }
+
+    public void StopInteraction()
+    {
+        foreach (var interactable in interactables)
+        {
+            if (interactable.IsInteracting())
+                interactable.GetComponent<ModuleInteraction>().StopInteract();
+        }
+        SetInteractable(false);
+
     }
 
     [ServerRpc(requireOwnership: false)]

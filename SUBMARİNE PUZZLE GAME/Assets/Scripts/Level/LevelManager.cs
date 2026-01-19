@@ -5,7 +5,7 @@ using System.Linq;
 
 public class LevelManager : NetworkBehaviour
 {
-    public static System.Action<List<StationController>> OnLevelStarted;
+    public static System.Action<List<StationController>, List<StationController>> OnLevelStarted;
 
     [Header("Level Data")]
     public LevelData currentLevelData;
@@ -13,7 +13,8 @@ public class LevelManager : NetworkBehaviour
     [Header("References")]
     public List<StationController> stationControllers;
 
-    public List<StationController> brokenStationsResult = new List<StationController>();
+    public List<StationController> resultMains = new List<StationController>();
+    public List<StationController> resultUtilities = new List<StationController>();
 
     protected override void OnSpawned()
     {
@@ -29,104 +30,99 @@ public class LevelManager : NetworkBehaviour
 
     private void StartLevel()
     {
-        Dictionary<StationTier, List<StationController>> stationsByTier = new Dictionary<StationTier, List<StationController>>();
+        Dictionary<StationTier, List<StationController>> mainPool = new Dictionary<StationTier, List<StationController>>();
+        Dictionary<StationTier, List<StationController>> utilityPool = new Dictionary<StationTier, List<StationController>>();
 
         foreach (var station in stationControllers)
         {
+            station.SetOperational();
+
             if (station.stationType == StationType.Main)
-            {
-                station.SetOperational();
-                if (!stationsByTier.ContainsKey(station.stationTier))
-                {
-                    stationsByTier[station.stationTier] = new List<StationController>();
-                }
-                stationsByTier[station.stationTier].Add(station);
-            }
+                AddToPool(mainPool, station);
+            else if (station.stationType == StationType.Utility)
+                AddToPool(utilityPool, station);
         }
 
-        float totalWeight = 0f;
-        foreach (var config in currentLevelData.stationConfigs)
-        {
-            totalWeight += config.TierRatio;
-        }
+        List<StationController> selectedMains = SelectStationsFromPool(mainPool, currentLevelData.mainStationCount);
+        List<StationController> selectedUtilities = SelectStationsFromPool(utilityPool, currentLevelData.utilityStationCount);
 
-        int targetBrokenCount = currentLevelData.mainStationCount;
-        List<StationController> selectedStations = new List<StationController>();
+        ShuffleList(selectedMains);
+        ShuffleList(selectedUtilities);
 
-        for (int i = 0; i < targetBrokenCount; i++)
-        {
-            if (stationsByTier.Values.Sum(list => list.Count) == 0)
-            {
-                Debug.LogWarning("Bozulacak yeterli Main istasyon kalmadı!");
-                break;
-            }
+        resultMains = new List<StationController>(selectedMains);
+        resultUtilities = new List<StationController>(selectedUtilities);
 
-            StationTier targetTier = GetRandomTierBasedOnWeight(totalWeight);
+        OnLevelStarted?.Invoke(selectedMains, selectedUtilities);
 
-            StationController pickedStation = GetRandomStationFromTier(stationsByTier, targetTier);
+        Debug.Log($"Level Başladı. Main: {selectedMains.Count}, Utility: {selectedUtilities.Count}");
+    }
 
-            if (pickedStation != null)
-            {
-                selectedStations.Add(pickedStation);
-            }
-        }
-
+    private void ShuffleList<T>(List<T> list)
+    {
         System.Random rng = new System.Random();
-        int n = selectedStations.Count;
+        int n = list.Count;
         while (n > 1)
         {
             n--;
             int k = rng.Next(n + 1);
-            (selectedStations[k], selectedStations[n]) = (selectedStations[n], selectedStations[k]);
+            (list[k], list[n]) = (list[n], list[k]);
         }
+    }
 
-        brokenStationsResult = new List<StationController>(selectedStations);
-        OnLevelStarted?.Invoke(selectedStations);
+    private List<StationController> SelectStationsFromPool(Dictionary<StationTier, List<StationController>> pool, int countToSelect)
+    {
+        List<StationController> selectedList = new List<StationController>();
+        float totalWeight = 0f;
+        foreach (var config in currentLevelData.stationConfigs) totalWeight += config.TierRatio;
 
-        Debug.Log($"Level Başladı. Seçilen İstasyon Sayısı: {selectedStations.Count}");
+        for (int i = 0; i < countToSelect; i++)
+        {
+            if (pool.Values.Sum(list => list.Count) == 0) break;
+
+            StationTier targetTier = GetRandomTierBasedOnWeight(totalWeight);
+            StationController picked = GetRandomStationFromTier(pool, targetTier);
+
+            if (picked != null) selectedList.Add(picked);
+        }
+        return selectedList;
+    }
+
+    private void AddToPool(Dictionary<StationTier, List<StationController>> pool, StationController station)
+    {
+        if (!pool.ContainsKey(station.stationTier)) pool[station.stationTier] = new List<StationController>();
+        pool[station.stationTier].Add(station);
     }
 
     private StationTier GetRandomTierBasedOnWeight(float totalWeight)
     {
         float randomValue = Random.Range(0, totalWeight);
         float cursor = 0;
-
         foreach (var config in currentLevelData.stationConfigs)
         {
             cursor += config.TierRatio;
-            if (randomValue <= cursor)
-            {
-                return config.stationTier;
-            }
+            if (randomValue <= cursor) return config.stationTier;
         }
-
         return currentLevelData.stationConfigs[0].stationTier;
     }
 
-    private StationController GetRandomStationFromTier(Dictionary<StationTier, List<StationController>> stationsByTier, StationTier preferredTier)
+    private StationController GetRandomStationFromTier(Dictionary<StationTier, List<StationController>> pool, StationTier preferredTier)
     {
-        if (stationsByTier.ContainsKey(preferredTier) && stationsByTier[preferredTier].Count > 0)
+        if (pool.ContainsKey(preferredTier) && pool[preferredTier].Count > 0)
         {
-            int randomIndex = Random.Range(0, stationsByTier[preferredTier].Count);
-            StationController station = stationsByTier[preferredTier][randomIndex];
-
-            stationsByTier[preferredTier].RemoveAt(randomIndex);
+            int randomIndex = Random.Range(0, pool[preferredTier].Count);
+            StationController station = pool[preferredTier][randomIndex];
+            pool[preferredTier].RemoveAt(randomIndex);
             return station;
         }
-
-        var availableTiers = stationsByTier.Keys.Where(k => stationsByTier[k].Count > 0).ToList();
-
+        var availableTiers = pool.Keys.Where(k => pool[k].Count > 0).ToList();
         if (availableTiers.Count > 0)
         {
             StationTier fallbackTier = availableTiers[Random.Range(0, availableTiers.Count)];
-
-            int randomIndex = Random.Range(0, stationsByTier[fallbackTier].Count);
-            StationController station = stationsByTier[fallbackTier][randomIndex];
-
-            stationsByTier[fallbackTier].RemoveAt(randomIndex);
+            int randomIndex = Random.Range(0, pool[fallbackTier].Count);
+            StationController station = pool[fallbackTier][randomIndex];
+            pool[fallbackTier].RemoveAt(randomIndex);
             return station;
         }
-
         return null;
     }
 }
