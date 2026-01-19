@@ -9,6 +9,7 @@ public class MainGameState : StateNode
     {
         base.Enter(asServer);
         if (!asServer) return;
+        startGame?.Invoke();
         FloodManager.OnGameEnd += HandleGameEnd;
     }
 

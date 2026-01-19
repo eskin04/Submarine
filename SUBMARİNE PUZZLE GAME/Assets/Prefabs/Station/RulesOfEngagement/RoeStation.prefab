@@ -828,7 +828,7 @@ Transform:
   m_GameObject: {fileID: 2266538350046272487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.55, y: 4.86, z: -0.91}
+  m_LocalPosition: {x: -4.55, y: 0.81, z: -0.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -967,7 +967,6 @@ GameObject:
   - component: {fileID: 1926028195687563183}
   - component: {fileID: 4195151606089477962}
   - component: {fileID: 7253578683372520156}
-  - component: {fileID: 6909052894903034505}
   - component: {fileID: 2633808503455795598}
   m_Layer: 0
   m_Name: TechnicianModule
@@ -1109,36 +1108,6 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
---- !u!114 &6909052894903034505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2598603968866630492}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76b99f149a2a0744f93676ef303369c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StationController
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  stationType: 0
-  stationTier: 0
-  stationState:
-    _value: 0
-    _ownerAuth: 0
-    _sendIntervalInSeconds: 0
-  onStart:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!65 &2633808503455795598
 BoxCollider:
   m_ObjectHideFlags: 0
