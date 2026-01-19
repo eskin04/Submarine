@@ -20,6 +20,7 @@ public class LightsOut_StationManager : NetworkBehaviour
     public LightsOut_TechnicianUI technicianUI;
     public LightsOut_EngineerUI engineerUI;
     public LightsOut_Lever lever;
+    public StationController stationController;
 
     private bool isCorrectSequence = false;
 
@@ -246,7 +247,10 @@ public class LightsOut_StationManager : NetworkBehaviour
         if (isCorrectSequence)
         {
             Debug.Log("SONUÇ: DOĞRU SIRALAMA! İstasyon Tamamlandı.");
-            // TODO: Oyunu Bitir (End Round)
+            if (stationController != null)
+            {
+                stationController.SetReparied();
+            }
         }
         else
         {

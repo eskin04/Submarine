@@ -1081,9 +1081,11 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   maxWater: 100
-  defaultFillRate: 0.25
-  brokenFillRate: 0.5
-  breakdownProfile: {fileID: 11400000, guid: 4c1d6d707ba0882408e53d9782e8b773, type: 2}
+  mainBaseFillRate: 0.25
+  mainExtraFillRate: 0.5
+  mainBreakdownProfile: {fileID: 11400000, guid: 4c1d6d707ba0882408e53d9782e8b773, type: 2}
+  utilityFillRate: 0.1
+  utilityBreakdownProfile: {fileID: 11400000, guid: 655d38fdd207936408953ad2f4ed9ee7, type: 2}
   currentWater:
     _value: 0
     _ownerAuth: 0
@@ -5301,7 +5303,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  minPlayersToStart: 1
+  minPlayersToStart: 2
 --- !u!4 &1917744875
 Transform:
   m_ObjectHideFlags: 0
@@ -5495,7 +5497,8 @@ MonoBehaviour:
   stationControllers:
   - {fileID: 732014914}
   - {fileID: 1125148375}
-  brokenStationsResult: []
+  resultMains: []
+  resultUtilities: []
 --- !u!4 &1997301212
 Transform:
   m_ObjectHideFlags: 0

@@ -69,6 +69,7 @@ public class ModuleInteraction : MonoBehaviour
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+
             }
         }
     }

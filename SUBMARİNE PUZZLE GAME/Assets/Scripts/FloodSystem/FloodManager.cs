@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
+using System.Linq;
 
 public class FloodManager : NetworkBehaviour
 {
@@ -8,26 +9,35 @@ public class FloodManager : NetworkBehaviour
 
     [Header("Ayarlar")]
     [SerializeField] private float maxWater = 100f;
-    [SerializeField] private float defaultFillRate = .25f;
-    [SerializeField] private float brokenFillRate = .5f;
 
-    // TABLO (Burayı doldurmayı unutma)
-    [Header("Bozulma Zaman Çizelgesi")]
-    public BreakdownProfile breakdownProfile;
+    [Header("Main İstasyon Ayarları")]
+    [SerializeField] private float mainBaseFillRate = 0.25f;
+    [SerializeField] private float mainExtraFillRate = 0.50f;
+    public BreakdownProfile mainBreakdownProfile;
+
+    [Header("Utility İstasyon Ayarları")]
+    [SerializeField] private float utilityFillRate = 0.10f;
+    public BreakdownProfile utilityBreakdownProfile;
 
     [Header("Network Verileri")]
     [SerializeField] private SyncVar<float> currentWater = new SyncVar<float>(0f);
 
     private bool criticalEventTriggered = false;
-    private Queue<StationController> pendingStationsQueue = new Queue<StationController>();
+
+    private Queue<StationController> pendingMainStations = new Queue<StationController>();
+    private Queue<StationController> pendingUtilityStations = new Queue<StationController>();
+
     private List<StationController> brokenStations = new List<StationController>();
     private StationController destroyedStation;
 
     private bool isStart;
     private bool isGameOver;
 
+    // Zamanlayıcılar
     private float gameTimeCounter = 0f;
-    private int currentWaveIndex = 0;
+    private int currentMainWaveIndex = 0;
+    private int currentUtilityWaveIndex = 0;
+
     private float nextProbabilityCheckTime = 0f;
 
     protected override void OnSpawned()
@@ -42,36 +52,46 @@ public class FloodManager : NetworkBehaviour
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        InstanceHandler.UnregisterInstance<FloodManager>();
         LevelManager.OnLevelStarted -= StartFlood;
         currentWater.onChanged -= OnWaterChanged;
     }
 
-    private void OnWaterChanged(float newVal)
+    private void StartFlood(List<StationController> mainStations, List<StationController> utilityStations)
     {
-        UpdateWaterUI(newVal);
-    }
-
-    private void StartFlood(List<StationController> stations)
-    {
-        if (breakdownProfile == null || breakdownProfile.waves.Count == 0)
+        if (mainBreakdownProfile == null || utilityBreakdownProfile == null)
         {
-            Debug.LogError("FloodManager: Breakdown Profile atanmamış veya içi boş!");
+            Debug.LogError("FloodManager: Profiller eksik!");
             return;
         }
-        pendingStationsQueue.Clear();
-        foreach (var station in stations)
-        {
-            station.StateChanged -= HandleStationState;
-            station.StateChanged += HandleStationState;
 
-            pendingStationsQueue.Enqueue(station);
+        pendingMainStations.Clear();
+        foreach (var station in mainStations)
+        {
+            PrepareStation(station);
+            pendingMainStations.Enqueue(station);
+        }
+
+        pendingUtilityStations.Clear();
+        foreach (var station in utilityStations)
+        {
+            PrepareStation(station);
+            pendingUtilityStations.Enqueue(station);
         }
 
         isStart = true;
         gameTimeCounter = 0f;
-        currentWaveIndex = 0;
+        currentMainWaveIndex = 0;
+        currentUtilityWaveIndex = 0;
+        nextProbabilityCheckTime = 1f;
 
+        Debug.Log($"FloodManager Başladı. Main: {mainStations.Count}, Utility: {utilityStations.Count}");
+    }
+
+    private void PrepareStation(StationController station)
+    {
+        station.StateChanged -= HandleStationState;
+        station.StateChanged += HandleStationState;
+        station.SetOperational();
     }
 
     private void Update()
@@ -81,7 +101,67 @@ public class FloodManager : NetworkBehaviour
         gameTimeCounter += Time.deltaTime;
 
         CalculateWater();
-        CalculateBrokenStations();
+
+        bool shouldRollDice = false;
+        if (gameTimeCounter >= nextProbabilityCheckTime)
+        {
+            shouldRollDice = true;
+            nextProbabilityCheckTime = gameTimeCounter + 1f;
+        }
+
+        ProcessBreakdownScenario(mainBreakdownProfile, pendingMainStations, ref currentMainWaveIndex, shouldRollDice);
+        ProcessBreakdownScenario(utilityBreakdownProfile, pendingUtilityStations, ref currentUtilityWaveIndex, shouldRollDice);
+    }
+
+    private void ProcessBreakdownScenario(BreakdownProfile profile, Queue<StationController> queue, ref int waveIndex, bool shouldRollDice)
+    {
+        if (queue.Count == 0 || waveIndex >= profile.waves.Count) return;
+
+        BreakdownWave currentWave = profile.waves[waveIndex];
+
+        if (gameTimeCounter < currentWave.startTime) return;
+
+        float totalDuration = currentWave.endTime - currentWave.startTime;
+        float timePassed = gameTimeCounter - currentWave.startTime;
+        float progress = Mathf.Clamp01(timePassed / totalDuration);
+
+        if (shouldRollDice)
+        {
+            float currentChance = Mathf.Lerp(currentWave.startProbability, currentWave.endProbability, progress);
+            float diceRoll = Random.Range(0f, 100f);
+
+            if (diceRoll <= currentChance)
+            {
+                BreakNextStation(queue);
+                waveIndex++;
+                return;
+            }
+        }
+
+        if (progress >= 1.0f)
+        {
+            if (currentWave.endProbability >= 99.9f)
+            {
+                BreakNextStation(queue);
+                Debug.Log("Süre doldu ve %100 ihtimal olduğu için kesin bozuldu.");
+            }
+            else
+            {
+                Debug.Log($"Dalga bitti ama şans yaver gitti. İstasyon bozulmadı. (EndProb: %{currentWave.endProbability})");
+            }
+
+            waveIndex++;
+        }
+    }
+
+    private void BreakNextStation(Queue<StationController> queue)
+    {
+        if (queue.Count > 0)
+        {
+            StationController victim = queue.Dequeue();
+            victim.SetBroken();
+            Debug.Log($"İstasyon Bozuldu ({victim.stationType}): {victim.name}");
+        }
     }
 
     private void CalculateWater()
@@ -90,73 +170,38 @@ public class FloodManager : NetworkBehaviour
         {
             isGameOver = true;
             OnGameEnd?.Invoke(isGameOver);
-            Debug.Log("Game Over");
             return;
         }
 
-        int totalBrokenCount = brokenStations.Count + (destroyedStation != null ? 1 : 0);
+        int brokenMainCount = brokenStations.Count(s => s.stationType == StationType.Main);
+        int brokenUtilityCount = brokenStations.Count(s => s.stationType == StationType.Utility);
 
-        float fillRate = 0f;
-
-
-        if (totalBrokenCount > 0)
+        if (destroyedStation != null)
         {
-            fillRate = defaultFillRate;
-
-            if (totalBrokenCount > 1)
-            {
-                fillRate += (totalBrokenCount - 1) * brokenFillRate;
-            }
+            if (destroyedStation.stationType == StationType.Main) brokenMainCount++;
+            else brokenUtilityCount++;
         }
 
-        if (fillRate > 0)
+        float totalFillRate = 0f;
+
+        if (brokenMainCount > 0)
         {
-            currentWater.value += fillRate * Time.deltaTime;
+            totalFillRate += mainBaseFillRate;
+            if (brokenMainCount > 1) totalFillRate += (brokenMainCount - 1) * mainExtraFillRate;
         }
 
-        if (!criticalEventTriggered && currentWater.value >= 60f)
+        if (brokenUtilityCount > 0)
+        {
+            totalFillRate += brokenUtilityCount * utilityFillRate;
+        }
+
+        if (totalFillRate > 0)
+        {
+            currentWater.value += totalFillRate * Time.deltaTime;
+        }
+
+        if (!criticalEventTriggered && currentWater.value >= (maxWater * 0.75f))
             TriggerCriticalEvent();
-    }
-
-    private void CalculateBrokenStations()
-    {
-        if (breakdownProfile == null) return;
-        if (pendingStationsQueue.Count == 0 || currentWaveIndex >= breakdownProfile.waves.Count) return;
-
-        BreakdownWave currentWave = breakdownProfile.waves[currentWaveIndex];
-        if (gameTimeCounter < currentWave.startTime) return;
-
-        if (gameTimeCounter >= nextProbabilityCheckTime)
-        {
-            nextProbabilityCheckTime = gameTimeCounter + 1f;
-
-            float totalDuration = currentWave.endTime - currentWave.startTime;
-            float timePassed = gameTimeCounter - currentWave.startTime;
-            float progress = Mathf.Clamp01(timePassed / totalDuration);
-
-            float currentChance = Mathf.Lerp(currentWave.startProbability, currentWave.endProbability, progress);
-
-
-            float diceRoll = Random.Range(0f, 100f);
-            Debug.Log($"Zaman: {gameTimeCounter:F1} | Dalga: {currentWave.waveName} | Şans: %{currentChance:F1} | Zar: {diceRoll:F1}");
-
-            if (diceRoll <= currentChance || progress >= 1.0f)
-            {
-                BreakNextStation();
-                currentWaveIndex++;
-            }
-        }
-    }
-
-    private void BreakNextStation()
-    {
-        if (pendingStationsQueue.Count > 0)
-        {
-            StationController victim = pendingStationsQueue.Dequeue();
-            victim.SetBroken();
-            victim.StartStation();
-            Debug.Log($"İstasyon Bozuldu: {victim.name}");
-        }
     }
 
     private void HandleStationState(StationState state, StationController station)
@@ -164,19 +209,16 @@ public class FloodManager : NetworkBehaviour
         switch (state)
         {
             case StationState.Broken:
-                if (!brokenStations.Contains(station))
-                    brokenStations.Add(station);
+                if (!brokenStations.Contains(station)) brokenStations.Add(station);
                 break;
 
             case StationState.Destroyed:
                 destroyedStation = station;
-                if (brokenStations.Contains(station))
-                    brokenStations.Remove(station);
+                if (brokenStations.Contains(station)) brokenStations.Remove(station);
                 break;
 
-            case StationState.Reparied:
-                if (brokenStations.Contains(station))
-                    brokenStations.Remove(station);
+            case StationState.Operational:
+                if (brokenStations.Contains(station)) brokenStations.Remove(station);
                 break;
         }
     }
@@ -184,40 +226,40 @@ public class FloodManager : NetworkBehaviour
     private void UpdateWaterUI(float value)
     {
         var view = InstanceHandler.GetInstance<MainGameView>();
-        if (view != null)
-            view.SetWaterLevelText(value, maxWater);
+        if (view != null) view.SetWaterLevelText(value, maxWater);
+    }
+
+    private void OnWaterChanged(float newVal)
+    {
+        UpdateWaterUI(newVal);
     }
 
     private void TriggerCriticalEvent()
     {
         criticalEventTriggered = true;
-        if (brokenStations.Count > 0)
+
+        var brokenMainStations = brokenStations.Where(s => s.stationType == StationType.Main).ToList();
+
+        if (brokenMainStations.Count > 0)
         {
-            var victim = brokenStations[Random.Range(0, brokenStations.Count)];
+            var victim = brokenMainStations[Random.Range(0, brokenMainStations.Count)];
             victim.SetDestroyed();
+            Debug.Log($"KRİTİK OLAY: {victim.name} (Main) kalıcı olarak yok edildi!");
+        }
+        else
+        {
+            Debug.Log("Kritik olay tetiklendi ancak yok edilecek bozuk bir Main istasyon bulunamadı.");
         }
     }
 
     public void AddPenalty(float penaltyAmount)
     {
         if (!isServer) return;
-
         currentWater.value += penaltyAmount;
-
-        Debug.Log($"<color=red>HATA YAPILDI! Su seviyesi {penaltyAmount} arttı.</color>");
-
-
         if (currentWater.value >= maxWater)
         {
             isGameOver = true;
             OnGameEnd?.Invoke(isGameOver);
-            Debug.Log("Game Over (Ceza sebebiyle)");
-        }
-
-        if (!criticalEventTriggered && currentWater.value >= 60f)
-        {
-            TriggerCriticalEvent();
         }
     }
 }
-

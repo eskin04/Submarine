@@ -1350,7 +1350,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  stationType: 0
+  stationType: 1
   stationTier: 0
   stationState:
     _value: 0
@@ -1405,6 +1405,7 @@ MonoBehaviour:
   technicianUI: {fileID: 2596523414361116706}
   engineerUI: {fileID: 7466423923657654417}
   lever: {fileID: 7886503976297416016}
+  stationController: {fileID: 4249653420332214630}
 --- !u!1 &4027054552566079539
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83527263821b4a543b1656f4de7bbe15, type: 3}
-  m_Name: DefaultBreakDown
+  m_Name: MainBreakDown
   m_EditorClassIdentifier: Assembly-CSharp::BreakdownProfile
   waves:
   - waveName: First
-    startTime: 1
+    startTime: 30
     endTime: 40
     startProbability: 10
     endProbability: 100
   - waveName: Second
-    startTime: 40
+    startTime: 80
     endTime: 120
     startProbability: 20
     endProbability: 100
