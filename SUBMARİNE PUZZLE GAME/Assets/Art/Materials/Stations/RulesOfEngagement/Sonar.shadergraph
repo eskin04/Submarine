@@ -131,6 +131,9 @@
         },
         {
             "m_Id": "bcec7ceec4e847cc90297196a9e4415a"
+        },
+        {
+            "m_Id": "efd0a1554bc24430ba1c48272ef2a584"
         }
     ],
     "m_GroupDatas": [],
@@ -411,7 +414,7 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "dd5b1e21f8f3439c98e6ad0521e1d076"
+                    "m_Id": "efd0a1554bc24430ba1c48272ef2a584"
                 },
                 "m_SlotId": 0
             }
@@ -526,6 +529,20 @@
                     "m_Id": "be1d33ef71e240c9baf88483b36c4952"
                 },
                 "m_SlotId": 2
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "efd0a1554bc24430ba1c48272ef2a584"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "dd5b1e21f8f3439c98e6ad0521e1d076"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -1681,6 +1698,30 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "4736def34173477589c3eae862d5983e",
+    "m_Id": 0,
+    "m_DisplayName": "In",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "In",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0,
+        "w": 1.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.ColorMaskNode",
     "m_ObjectId": "47a710a453f54f55abb53fb8c021cd7b",
     "m_Group": {
@@ -1809,6 +1850,30 @@
         "e31": 0.0,
         "e32": 0.0,
         "e33": 1.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "4fe729991e98427999cec283300375aa",
+    "m_Id": 1,
+    "m_DisplayName": "Out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
     }
 }
 
@@ -2272,10 +2337,10 @@
         "m_Expanded": false,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2751.99951171875,
-            "y": 425.99993896484377,
+            "x": -2751.000244140625,
+            "y": 437.0000305175781,
             "width": 79.0,
-            "height": 77.00003051757813
+            "height": 76.00003051757813
         }
     },
     "m_Slots": [
@@ -3498,10 +3563,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2809.99951171875,
-            "y": 387.9999694824219,
+            "x": -3128.000244140625,
+            "y": 388.0000305175781,
             "width": 152.0,
-            "height": 33.999969482421878
+            "height": 34.0
         }
     },
     "m_Slots": [
@@ -4444,6 +4509,46 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.OneMinusNode",
+    "m_ObjectId": "efd0a1554bc24430ba1c48272ef2a584",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "One Minus",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -2904.000244140625,
+            "y": 347.00006103515627,
+            "width": 128.0,
+            "height": 93.99993896484375
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "4736def34173477589c3eae862d5983e"
+        },
+        {
+            "m_Id": "4fe729991e98427999cec283300375aa"
+        }
+    ],
+    "synonyms": [
+        "complement",
+        "invert",
+        "opposite"
+    ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": false,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    }
 }
 
 {
