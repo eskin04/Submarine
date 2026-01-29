@@ -1350,8 +1350,13 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  utilityEventData: {fileID: 11400000, guid: 381331040854b8e458099f914cc5961b, type: 2}
   stationType: 1
   stationTier: 0
+  mistakeWaterPenalty: 3
+  mistakeStressPenalty: 10
+  repairStressReward: 15
+  timeoutStressPenalty: 20
   stationState:
     _value: 0
     _ownerAuth: 0

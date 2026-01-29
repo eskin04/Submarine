@@ -1904,7 +1904,6 @@ MonoBehaviour:
   currentBoardSetup: []
   currentDailyRule: {fileID: 0}
   currentLevel: 3
-  mistakePenalty: 3
 --- !u!114 &2244890089872307753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1954,8 +1953,13 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  utilityEventData: {fileID: 0}
   stationType: 0
   stationTier: 0
+  mistakeWaterPenalty: 3
+  mistakeStressPenalty: 10
+  repairStressReward: 15
+  timeoutStressPenalty: 20
   stationState:
     _value: 0
     _ownerAuth: 0

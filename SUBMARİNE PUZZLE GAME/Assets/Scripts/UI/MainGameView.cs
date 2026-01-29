@@ -7,6 +7,8 @@ public class MainGameView : View
 {
     [SerializeField] private TMP_Text roleText;
     [SerializeField] private TMP_Text waterLevelText;
+    [SerializeField] private TMP_Text timerText;
+
 
     void Awake()
     {
@@ -37,6 +39,14 @@ public class MainGameView : View
         if (roleText != null)
         {
             roleText.text = role.ToString();
+        }
+    }
+
+    public void SetTimerText(string timeString)
+    {
+        if (timerText != null)
+        {
+            timerText.text = timeString;
         }
     }
 

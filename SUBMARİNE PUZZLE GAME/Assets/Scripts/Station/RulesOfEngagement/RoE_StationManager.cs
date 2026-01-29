@@ -27,7 +27,6 @@ public class RoE_StationManager : NetworkBehaviour
 
     [Header("Settings")]
     public int currentLevel = 1;
-    public float mistakePenalty = 3.0f;
 
     private bool isSimulationRunning = false;
     private bool isRoundActive = false;
@@ -173,7 +172,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
         }
-        stationController.ReportRepairMistake(mistakePenalty / 2);
+        stationController.AvoidMistake();
         Debug.Log("EVADE Successful.");
         RpcSendFeedback("Avoided!", Color.cyan);
         DestroyThreat(threat);
@@ -189,7 +188,7 @@ public class RoE_StationManager : NetworkBehaviour
         }
         else
         {
-            stationController.ReportRepairMistake(mistakePenalty);
+            stationController.ReportRepairMistake();
 
             RpcSendFeedback("failure!", Color.red);
 
@@ -289,6 +288,15 @@ public class RoE_StationManager : NetworkBehaviour
         if (engineerDisplay != null)
         {
             engineerDisplay.OnTargetDestroyed(threat.displayName);
+        }
+    }
+
+    [ContextMenu("Debug: Start Round")]
+    private void DebugStartRound()
+    {
+        if (isServer)
+        {
+            StartNewRound();
         }
     }
 

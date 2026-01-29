@@ -5,6 +5,7 @@ using System.Linq;
 
 public class LightsOut_StationManager : NetworkBehaviour
 {
+    public static event System.Action<bool> OnPowerStatusChanged;
     [Header("Game State")]
     public List<CableData> allCables = new List<CableData>();
     public List<SwitchData> allSwitches = new List<SwitchData>();
@@ -95,7 +96,24 @@ public class LightsOut_StationManager : NetworkBehaviour
         RpcSyncPuzzle(allCables);
         CalculateAndSyncEngineerLights();
         RpcSyncSwitches(allSwitches);
+        RpcSetGlobalLights(false);
 
+    }
+
+    [ObserversRpc]
+    private void RpcSetGlobalLights(bool lightsOn)
+    {
+
+        OnPowerStatusChanged?.Invoke(lightsOn);
+
+        if (lightsOn)
+        {
+            Debug.Log("SİSTEM: Güç geri geldi!");
+        }
+        else
+        {
+            Debug.Log("SİSTEM: Güç kesildi!");
+        }
     }
 
     [ObserversRpc]
@@ -109,19 +127,7 @@ public class LightsOut_StationManager : NetworkBehaviour
     }
 
 
-    public StatusLightState GetEngineerLightState(int portIndex)
-    {
-        CableData attachedCable = allCables.Find(c => c.currentPortIndex == portIndex);
 
-        if (attachedCable == null) return StatusLightState.Red;
-
-        if (attachedCable.correctPortIndex == portIndex)
-        {
-            return StatusLightState.Green;
-        }
-
-        return StatusLightState.Yellow;
-    }
 
     [ServerRpc(requireOwnership: false)]
     public void ConnectCableRPC(int cableID, int targetPortIndex)
@@ -193,12 +199,44 @@ public class LightsOut_StationManager : NetworkBehaviour
 
     private void CalculateAndSyncEngineerLights()
     {
+        int totalPluggedCables = 0;
+        int correctConnectionCount = 0;
+
+        foreach (var cable in allCables)
+        {
+            if (cable.currentPortIndex != -1)
+            {
+                totalPluggedCables++;
+
+                if (cable.correctPortIndex == cable.currentPortIndex)
+                {
+                    correctConnectionCount++;
+                }
+            }
+        }
+
         List<StatusLightState> currentStates = new List<StatusLightState>();
 
-        for (int i = 0; i < 4; i++)
+        if (totalPluggedCables == 0)
         {
-            StatusLightState state = GetEngineerLightState(i);
-            currentStates.Add(state);
+            for (int i = 0; i < 4; i++)
+            {
+                currentStates.Add(StatusLightState.Yellow);
+            }
+        }
+        else
+        {
+            for (int lightIndex = 0; lightIndex < 4; lightIndex++)
+            {
+                if (lightIndex < correctConnectionCount)
+                {
+                    currentStates.Add(StatusLightState.Green);
+                }
+                else
+                {
+                    currentStates.Add(StatusLightState.Red);
+                }
+            }
         }
 
         RpcSyncEngineerLights(currentStates);
@@ -251,6 +289,7 @@ public class LightsOut_StationManager : NetworkBehaviour
             {
                 stationController.SetReparied();
             }
+            RpcSetGlobalLights(true);
         }
         else
         {

@@ -39,17 +39,19 @@ public class RoE_ThreatManager : NetworkBehaviour
     {
         activeThreats.Clear();
 
+        List<BoardEntry> availableIdentities = new List<BoardEntry>(incomingBoardSetup);
+
         int maxThreatCount = (level <= 4) ? level + 1 : 4;
         int threatCount = Random.Range(maxThreatCount - 1, maxThreatCount + 1);
 
         List<ThreatCodeName> availableNames = new List<ThreatCodeName>()
-        {
-            ThreatCodeName.Alpha, ThreatCodeName.Beta, ThreatCodeName.Charlie, ThreatCodeName.Delta
-        };
+    {
+        ThreatCodeName.Alpha, ThreatCodeName.Beta, ThreatCodeName.Charlie, ThreatCodeName.Delta
+    };
 
         for (int i = 0; i < threatCount; i++)
         {
-            if (availableNames.Count == 0) break;
+            if (availableNames.Count == 0 || availableIdentities.Count == 0) break;
 
             ActiveThreat threat = new ActiveThreat();
 
@@ -61,7 +63,10 @@ public class RoE_ThreatManager : NetworkBehaviour
 
             SetThreatStatsFromProfile(threat);
 
-            threat.realIdentity = incomingBoardSetup[Random.Range(0, incomingBoardSetup.Count)];
+            int randomIndex = Random.Range(0, availableIdentities.Count);
+            threat.realIdentity = availableIdentities[randomIndex];
+
+            availableIdentities.RemoveAt(randomIndex);
 
             activeThreats.Add(threat);
         }

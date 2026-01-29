@@ -5,17 +5,23 @@ using System.Linq;
 
 public class LevelManager : NetworkBehaviour
 {
-    public static System.Action<List<StationController>, List<StationController>> OnLevelStarted;
+    public static System.Action<List<StationController>> OnLevelStarted;
 
     [Header("Level Data")]
     public LevelData currentLevelData;
 
-    [Header("References")]
-    public List<StationController> stationControllers;
+    private List<StationController> availableMainStations = new List<StationController>();
+    [Header("Debug Info")]
 
     public List<StationController> resultMains = new List<StationController>();
-    public List<StationController> resultUtilities = new List<StationController>();
 
+
+    protected override void OnEarlySpawn()
+    {
+        base.OnEarlySpawn();
+        GlobalEvents.OnRegisterMainStation += RegisterMainStation;
+
+    }
     protected override void OnSpawned()
     {
         base.OnSpawned();
@@ -25,37 +31,47 @@ public class LevelManager : NetworkBehaviour
     protected override void OnDestroy()
     {
         base.OnDestroy();
+        GlobalEvents.OnRegisterMainStation -= RegisterMainStation;
         MainGameState.startGame -= StartLevel;
+    }
+
+    private void RegisterMainStation(StationController station)
+    {
+        if (!availableMainStations.Contains(station))
+        {
+            availableMainStations.Add(station);
+            station.SetOperational();
+            Debug.Log($"LevelManager: {station.name} havuza eklendi.");
+        }
     }
 
     private void StartLevel()
     {
         Dictionary<StationTier, List<StationController>> mainPool = new Dictionary<StationTier, List<StationController>>();
-        Dictionary<StationTier, List<StationController>> utilityPool = new Dictionary<StationTier, List<StationController>>();
 
-        foreach (var station in stationControllers)
+        foreach (var station in availableMainStations)
         {
             station.SetOperational();
+            AddToPool(mainPool, station);
+        }
 
-            if (station.stationType == StationType.Main)
-                AddToPool(mainPool, station);
-            else if (station.stationType == StationType.Utility)
-                AddToPool(utilityPool, station);
+        if (availableMainStations.Count == 0)
+        {
+            Debug.LogError("LevelManager: Sahnede hiç MAIN istasyon bulunamadı veya kayıt olamadılar!");
+            return;
         }
 
         List<StationController> selectedMains = SelectStationsFromPool(mainPool, currentLevelData.mainStationCount);
-        List<StationController> selectedUtilities = SelectStationsFromPool(utilityPool, currentLevelData.utilityStationCount);
 
         ShuffleList(selectedMains);
-        ShuffleList(selectedUtilities);
 
         resultMains = new List<StationController>(selectedMains);
-        resultUtilities = new List<StationController>(selectedUtilities);
 
-        OnLevelStarted?.Invoke(selectedMains, selectedUtilities);
+        OnLevelStarted?.Invoke(selectedMains);
 
-        Debug.Log($"Level Başladı. Main: {selectedMains.Count}, Utility: {selectedUtilities.Count}");
+        Debug.Log($"Level Başladı. Havuzdaki Main: {availableMainStations.Count}, Seçilen: {selectedMains.Count}");
     }
+
 
     private void ShuffleList<T>(List<T> list)
     {

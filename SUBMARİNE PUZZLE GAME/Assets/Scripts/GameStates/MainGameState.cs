@@ -4,11 +4,12 @@ using PurrNet.StateMachine;
 public class MainGameState : StateNode
 {
     public static Action startGame;
+    public bool isTestMode = false;
 
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        if (!asServer) return;
+        if (!asServer || isTestMode) return;
         startGame?.Invoke();
         FloodManager.OnGameEnd += HandleGameEnd;
     }
