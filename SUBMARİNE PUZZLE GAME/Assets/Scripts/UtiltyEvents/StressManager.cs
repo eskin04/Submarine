@@ -40,11 +40,14 @@ public class StressManager : NetworkBehaviour
     {
         base.OnSpawned();
         gameStats = GetComponent<GameStatistics>();
-        if (isServer)
-        {
-            Invoke(nameof(ActivateSystem), initialGracePeriod);
-        }
+        MainGameState.startGame += StartStressManager;
 
+    }
+
+    private void StartStressManager()
+    {
+        Debug.Log("StressManager: Başlangıç Gecikmesi başladı.");
+        Invoke(nameof(ActivateSystem), initialGracePeriod);
     }
 
     protected override void OnDestroy()
@@ -53,6 +56,8 @@ public class StressManager : NetworkBehaviour
         GlobalEvents.OnRegisterUtilityStation -= RegisterStation;
         GlobalEvents.OnAddStress -= IncreaseStress;
         GlobalEvents.OnReduceStress -= DecreaseStress;
+        MainGameState.startGame -= StartStressManager;
+
     }
 
 

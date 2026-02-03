@@ -9,7 +9,7 @@ public class WaitForPlayersState : StateNode
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        if (!asServer) return;
+        if (!isServer) return;
 
         machine.StartCoroutine(WaitForPlayers());
     }
@@ -24,6 +24,8 @@ public class WaitForPlayersState : StateNode
         }
 
         Debug.Log("Required number of players joined. Proceeding to next state...");
+        yield return new WaitForSeconds(1f);
+
         HideLoadingView();
         machine.Next();
     }
@@ -31,7 +33,7 @@ public class WaitForPlayersState : StateNode
     private void ShowLoadingView()
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<LoadingView>(hideOthers: false);
-
+        Debug.Log("Showing loading view to all clients.");
     }
 
     [ObserversRpc]

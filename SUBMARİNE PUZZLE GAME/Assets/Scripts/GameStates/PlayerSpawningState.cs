@@ -40,7 +40,7 @@ public class PlayerSpawningState : StateNode
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<PlayerSpawnView>(hideOthers: false);
         yield return new WaitForSeconds(2);
-        InstanceHandler.GetInstance<GameViewManager>().HideView<PlayerSpawnView>();
+        InstanceHandler.GetInstance<GameViewManager>().ShowView<MainGameView>(hideOthers: true);
     }
 
     private void SpawnPlayerSimple()

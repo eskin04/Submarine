@@ -64,7 +64,7 @@ public class LiftManager : NetworkBehaviour
 
     public void LiftInteract()
     {
-        OnDropItemToLıft(lift.transform, xPosRange);
+        OnDropItemToLıft?.Invoke(lift.transform, xPosRange);
         lift.GetComponent<Interactable>().StopInteract();
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using PurrLobby;
 using PurrNet;
 using StarterAssets;
 using UnityEngine;
@@ -10,7 +9,10 @@ public class PlayerInventory : NetworkBehaviour
     [SerializeField] private Transform dropPosition;
     [SerializeField] private Transform cameraPosition;
     [SerializeField] private Transform interactCameraPosition;
-    public static Action<Transform, Transform> OnSpawnPlayer;
+
+    public Transform HandPosition => handPosition;
+    public Transform DropPosition => dropPosition;
+
     public static Action<FirstPersonController, Transform, Transform> OnAssignController;
     private FirstPersonController playerController;
 
@@ -18,21 +20,8 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (isOwner)
         {
-            OnSpawnPlayer?.Invoke(handPosition, dropPosition);
             playerController = GetComponent<FirstPersonController>();
             OnAssignController?.Invoke(playerController, cameraPosition, interactCameraPosition);
-
         }
     }
-
-    protected override void OnDespawned()
-    {
-        if (isOwner)
-        {
-            OnSpawnPlayer = null;
-            OnAssignController = null;
-        }
-    }
-
-
 }

@@ -3,25 +3,24 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private Image iconImage;
     [SerializeField] private GameObject highlight;
 
-
-    // Başlangıç ayarı
-    private void Start()
+    void Awake()
     {
         ClearSlot();
+
     }
 
-    // Kutuya eşya koy
     public void AddItemToSlot(ItemData newItem)
     {
+        if (newItem == null) return;
+
         iconImage.sprite = newItem.icon;
         iconImage.enabled = true;
-
     }
 
-    // Kutuyu boşalt
     public void ClearSlot()
     {
         iconImage.sprite = null;
@@ -31,7 +30,7 @@ public class InventorySlot : MonoBehaviour
 
     public void SetHighlight(bool isHighlighted)
     {
-        highlight.SetActive(isHighlighted);
+        if (highlight != null)
+            highlight.SetActive(isHighlighted);
     }
-
 }

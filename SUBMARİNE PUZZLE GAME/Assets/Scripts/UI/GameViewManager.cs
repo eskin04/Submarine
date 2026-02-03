@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
+using DG.Tweening;
 
 public class GameViewManager : MonoBehaviour
 {
@@ -53,13 +54,13 @@ public class GameViewManager : MonoBehaviour
 
     private void ShowViewInternal(View view)
     {
-        view.canvasGroup.alpha = 1;
+        view.canvasGroup.DOFade(1f, 0.2f);
         view.OnShow();
     }
 
     private void HideViewInternal(View view)
     {
-        view.canvasGroup.alpha = 0;
+        view.canvasGroup.DOFade(0f, 0.2f);
         view.OnHide();
     }
 }

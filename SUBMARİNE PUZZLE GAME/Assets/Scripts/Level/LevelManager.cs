@@ -47,6 +47,7 @@ public class LevelManager : NetworkBehaviour
 
     private void StartLevel()
     {
+        Debug.Log("LevelManager: Level başlatılıyor...");
         Dictionary<StationTier, List<StationController>> mainPool = new Dictionary<StationTier, List<StationController>>();
 
         foreach (var station in availableMainStations)
