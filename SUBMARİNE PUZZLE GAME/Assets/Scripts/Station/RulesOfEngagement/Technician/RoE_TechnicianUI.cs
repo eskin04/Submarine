@@ -1,8 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 using System.Collections;
+
 
 public class RoE_TechnicianUI : MonoBehaviour
 {
@@ -19,12 +19,24 @@ public class RoE_TechnicianUI : MonoBehaviour
     public float selectionCooldown = 5.0f;
 
     [Header("Info Panel")]
-    public Button shootButton;
-    public Button passButton;
-    public Button evadeButton;
+    public RoE_PhysicalButton shootButton;
+    public RoE_PhysicalButton passButton;
+    public RoE_PhysicalButton evadeButton;
     public GameObject evadeGlassCover;
     public TMP_Text feedbackText;
 
+    [Header("Sonar Settings")]
+    public Material radarMaterial;
+    public string shaderProperty = "_ScanAngle";
+    public float sweepSpeed = 100f;
+    public float beamWidth = 20f;
+
+    public float visualOffset = 0f;
+
+
+    private float currentSweepAngle = 0f;
+
+    private Material activeMaterial;
     private string currentSelectedCode = "";
     private Coroutine displayCoroutine = null;
     private RoE_RadarBlip currentVisualBlip = null;
@@ -34,13 +46,62 @@ public class RoE_TechnicianUI : MonoBehaviour
     private Dictionary<string, GameObject> activeBlips = new Dictionary<string, GameObject>();
     private Dictionary<string, float> blipAngles = new Dictionary<string, float>();
 
+    private void Start()
+    {
+
+        activeMaterial = radarMaterial;
+
+    }
     private void Update()
     {
+
         if (stationManager == null || !stationManager.GetSimulateRunning()) return;
 
         UpdateRadarBlips();
         UpdateSelectionPanel();
+        ProcessSonarSweep();
+
     }
+
+
+
+    private void ProcessSonarSweep()
+    {
+        currentSweepAngle += sweepSpeed * Time.deltaTime;
+        currentSweepAngle %= 360f;
+
+        if (activeMaterial != null)
+        {
+            activeMaterial.SetFloat(shaderProperty, currentSweepAngle + visualOffset);
+        }
+
+        CheckBlipsInBeam();
+    }
+
+    private void CheckBlipsInBeam()
+    {
+        foreach (var kvp in activeBlips)
+        {
+            if (kvp.Value == null) continue;
+
+            RectTransform blipRect = kvp.Value.GetComponent<RectTransform>();
+
+            Vector2 direction = blipRect.anchoredPosition;
+            float blipAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            float logicAngle = currentSweepAngle;
+
+            float diff = Mathf.DeltaAngle(logicAngle, blipAngle);
+
+            if (Mathf.Abs(diff) < beamWidth / 2f)
+            {
+                var blipScript = kvp.Value.GetComponent<RoE_RadarBlip>();
+                if (blipScript) blipScript.Ping();
+            }
+        }
+    }
+
+
 
     public string GetCurrentSelectedCode()
     {
@@ -207,8 +268,8 @@ public class RoE_TechnicianUI : MonoBehaviour
     {
         bool hasSelection = !string.IsNullOrEmpty(currentSelectedCode);
 
-        if (shootButton) shootButton.interactable = hasSelection;
-        if (passButton) passButton.interactable = hasSelection;
+        if (shootButton) shootButton.SetInteractable(hasSelection);
+        if (passButton) passButton.SetInteractable(hasSelection);
 
 
         if (evadeButton != null)
@@ -224,7 +285,7 @@ public class RoE_TechnicianUI : MonoBehaviour
                 }
             }
 
-            evadeButton.interactable = canEvade;
+            evadeButton.SetInteractable(canEvade);
 
             if (evadeGlassCover) evadeGlassCover.SetActive(!canEvade);
         }

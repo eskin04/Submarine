@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8984317154859474300}
   - component: {fileID: 9125120858621439753}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerInteractCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -685,6 +685,7 @@ MonoBehaviour:
   amount: 0.055
   maxAmount: 0.15
   smoothAmount: 3.5
+  tiltAmount: 3
   moveSwayAmount: 0.01
   maxMoveSwayAmount: 0.02
   smoothMoveAmount: 4
@@ -731,7 +732,7 @@ GameObject:
   - component: {fileID: 4515122781748239963}
   - component: {fileID: 5554712028654960988}
   - component: {fileID: 594965917392464716}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: cm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

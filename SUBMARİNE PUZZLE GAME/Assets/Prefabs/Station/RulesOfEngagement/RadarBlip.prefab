@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4142609247520258073}
   - component: {fileID: 6866064266731302602}
   - component: {fileID: 4765936342693562423}
+  - component: {fileID: 2428830617082024080}
   m_Layer: 0
   m_Name: RadarBlip
   m_TagString: Untagged
@@ -137,10 +138,25 @@ MonoBehaviour:
   btn: {fileID: 6866064266731302602}
   blipImage: {fileID: 4142609247520258073}
   codeText: {fileID: 588268835950571031}
+  fadeInDuration: 0.3
+  stayVisibleTime: 0.2
+  fadeOutDuration: 0.8
   defaultColor: {r: 1, g: 0, b: 0, a: 1}
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
   defaultScale: 1
   selectedScale: 1.3
+--- !u!225 &2428830617082024080
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6593168973611971716}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6829842526040584058
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using StarterAssets;
 using UnityEngine;
 using DG.Tweening;
+using PurrNet;
 
 public class ModuleInteraction : MonoBehaviour
 {
@@ -61,6 +62,7 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (playerCameraTransform != null)
         {
+            InstanceHandler.GetInstance<GameViewManager>().HideView<MainGameView>();
             playerController.enabled = false;
             SetInteractPosition();
             if (rb != null) rb.isKinematic = true;
@@ -98,6 +100,8 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (playerCameraTransform != null)
         {
+            InstanceHandler.GetInstance<GameViewManager>().ShowView<MainGameView>(hideOthers: false);
+
             ınteractable.StopInteract();
             playerController.enabled = true;
             SetCameraPositionBack();
