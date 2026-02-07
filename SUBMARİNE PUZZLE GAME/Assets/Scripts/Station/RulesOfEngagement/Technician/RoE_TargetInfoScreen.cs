@@ -1,11 +1,13 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class RoE_TargetInfoScreen : MonoBehaviour
 {
     [Header("UI References")]
     public TextMeshProUGUI codeNameText;
     public TextMeshProUGUI distanceText;
+    public TextMeshProUGUI cooldownText;
 
     [Header("Managers")]
     public RoE_ThreatManager threatManager;
@@ -14,10 +16,53 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     private string lastKnownCode = "";
 
     private ActiveThreat cachedThreat = null;
+    private Coroutine cooldownCoroutine = null;
+    private bool isThreatSelected = false;
+
+    void OnEnable()
+    {
+        technicianUI.OnLockStateChanged += OnLockStateChanged;
+    }
+
+    void OnDisable()
+    {
+        technicianUI.OnLockStateChanged -= OnLockStateChanged;
+    }
+
+    private void OnLockStateChanged()
+    {
+        if (!isThreatSelected) isThreatSelected = true;
+        if (cooldownCoroutine != null)
+        {
+            StopCoroutine(cooldownCoroutine);
+            cooldownCoroutine = null;
+        }
+
+        cooldownCoroutine = StartCoroutine(LockCooldownRoutine());
+    }
+
+    private IEnumerator LockCooldownRoutine()
+    {
+        float cooldownDuration = technicianUI.selectionCooldown;
+        float elapsed = 0f;
+
+        while (elapsed < cooldownDuration)
+        {
+
+            float remaining = cooldownDuration - elapsed;
+            cooldownText.text = $"Locked: {remaining}s";
+            elapsed++;
+            yield return new WaitForSeconds(1f);
+        }
+
+        cooldownText.text = "";
+    }
+
+
 
     private void Update()
     {
-        if (threatManager == null || technicianUI == null) return;
+        if (threatManager == null || technicianUI == null || !isThreatSelected) return;
 
         string currentCode = technicianUI.GetCurrentSelectedCode();
 
@@ -42,13 +87,20 @@ public class RoE_TargetInfoScreen : MonoBehaviour
         }
     }
 
+
     private void UpdateNameDisplay(string newCode)
     {
         if (string.IsNullOrEmpty(newCode))
         {
             codeNameText.text = "NO TARGET";
-            distanceText.text = "---";
+            distanceText.text = "";
             cachedThreat = null;
+            if (cooldownCoroutine != null)
+            {
+                StopCoroutine(cooldownCoroutine);
+                cooldownText.text = "";
+                cooldownCoroutine = null;
+            }
         }
         else
         {

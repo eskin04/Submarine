@@ -165,6 +165,17 @@ public class RoE_StationManager : NetworkBehaviour
         ResolveResult(threat, action, isCorrect);
     }
 
+    public void RegisterHullBreach(ActiveThreat threat)
+    {
+
+        stationController.ReportRepairMistake();
+
+        DestroyThreat(threat);
+
+
+    }
+
+
     private void HandleEvade(ActiveThreat threat)
     {
         if (threat.currentDistance > 100f)

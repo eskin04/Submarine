@@ -433,23 +433,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4974695446635892002, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9999484
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4974695446635892002, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4974695446635892002, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.010163783
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4974695446635892002, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00000007078051
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4974695446635892002, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 1.165
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -515,8 +515,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
   movingPart: {fileID: 8016476362462573622}
-  pressDirection: {x: 0, y: -1, z: 0}
-  pressDistance: 0.02
+  pressDirection: {x: 0, y: 0, z: -1}
+  pressDistance: 0.0002
   pressDuration: 0.3
   OnClick:
     m_PersistentCalls:

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using System.Collections;
+using DG.Tweening;
 
 
 public class RoE_TechnicianUI : MonoBehaviour
@@ -30,17 +31,18 @@ public class RoE_TechnicianUI : MonoBehaviour
     public string shaderProperty = "_ScanAngle";
     public float sweepSpeed = 100f;
     public float beamWidth = 20f;
-
     public float visualOffset = 0f;
 
-
     private float currentSweepAngle = 0f;
-
     private Material activeMaterial;
     private string currentSelectedCode = "";
     private Coroutine displayCoroutine = null;
     private RoE_RadarBlip currentVisualBlip = null;
+
     private float nextSelectionTime = 0f;
+    private bool isCoverOpen = false;
+
+    public System.Action OnLockStateChanged;
 
 
     private Dictionary<string, GameObject> activeBlips = new Dictionary<string, GameObject>();
@@ -183,10 +185,10 @@ public class RoE_TechnicianUI : MonoBehaviour
         return Random.Range(0f, 360f);
     }
 
+
     public void OnThreatSelected(string codeName)
     {
         if (currentSelectedCode == codeName) return;
-
         if (Time.time < nextSelectionTime)
         {
             float remaining = nextSelectionTime - Time.time;
@@ -194,6 +196,13 @@ public class RoE_TechnicianUI : MonoBehaviour
 
             return;
         }
+        OnLockStateChanged?.Invoke();
+        if (displayCoroutine != null)
+        {
+            StopCoroutine(displayCoroutine);
+            feedbackText.text = "";
+        }
+
         nextSelectionTime = Time.time + selectionCooldown;
 
         if (currentVisualBlip != null)
@@ -287,7 +296,39 @@ public class RoE_TechnicianUI : MonoBehaviour
 
             evadeButton.SetInteractable(canEvade);
 
-            if (evadeGlassCover) evadeGlassCover.SetActive(!canEvade);
+            UpdateEvadeCoverState(canEvade);
+        }
+    }
+
+    private void UpdateEvadeCoverState(bool shouldOpen)
+    {
+        if (evadeGlassCover == null) return;
+
+        // OPTİMİZASYON: Eğer istenen durum zaten mevcut durumla aynıysa hiçbir şey yapma.
+        // Bu sayede Update içinde her karede DOTween çağırmamış oluruz.
+        if (isCoverOpen == shouldOpen) return;
+
+        // Durumu güncelle
+        isCoverOpen = shouldOpen;
+
+        // Eski animasyon varsa durdur (Çakışmayı önler)
+        evadeGlassCover.transform.DOKill();
+
+        if (isCoverOpen)
+        {
+            // --- AÇILMA (OPEN) ---
+            // Y ekseninde 90 dereceye dön. 
+            // Ease.OutBack: Hafifçe dışarı taşıp yerine oturur (Mekanik his verir).
+            evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 0.5f)
+                .SetEase(Ease.OutBack);
+        }
+        else
+        {
+            // --- KAPANMA (CLOSE) ---
+            // Y ekseninde 0 dereceye dön.
+            // Ease.OutBounce: Kapanırken "tak" diye çarpma efekti verir.
+            evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 0.5f)
+                .SetEase(Ease.OutBounce);
         }
     }
 

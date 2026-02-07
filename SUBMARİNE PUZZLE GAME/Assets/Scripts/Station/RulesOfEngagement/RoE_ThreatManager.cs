@@ -15,25 +15,30 @@ public class RoE_ThreatManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!mainManager.GetSimulateRunning()) return;
+        if (mainManager == null || !mainManager.GetSimulateRunning()) return;
 
         for (int i = 0; i < activeThreats.Count; i++)
         {
             var threat = activeThreats[i];
+
             if (!threat.isDestroyed)
             {
                 threat.currentDistance -= threat.approachSpeed * Time.deltaTime;
 
-                // Çarpışma Kontrolü
                 if (isServer)
                 {
-                    if (threat.currentDistance <= 0)
+                    if (threat.currentDistance <= 0f)
                     {
+                        mainManager.RegisterHullBreach(threat);
+
+                        threat.isDestroyed = true;
                     }
                 }
             }
         }
     }
+
+
 
     public void SpawnNewThreats(int level, List<BoardEntry> incomingBoardSetup)
     {
@@ -127,10 +132,12 @@ public class RoE_ThreatManager : NetworkBehaviour
 
             if (data.realObjectIndex >= 0 && data.realObjectIndex < objectDatabase.Count)
             {
-                BoardEntry entry = new BoardEntry();
-                entry.linkedObject = objectDatabase[data.realObjectIndex];
+                BoardEntry entry = new BoardEntry
+                {
+                    linkedObject = objectDatabase[data.realObjectIndex],
 
-                entry.assignedSymbols = new List<DecryptionSymbol>();
+                    assignedSymbols = new List<DecryptionSymbol>()
+                };
 
                 newThreat.realIdentity = entry;
             }
