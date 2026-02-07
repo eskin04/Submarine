@@ -30,7 +30,6 @@ public class LightsOut_StationManager : NetworkBehaviour
     {
         if (!isServer) return;
 
-        Debug.Log("Lights Out: Yeni bulmaca oluşturuluyor...");
         GeneratePuzzle();
 
     }
@@ -92,7 +91,6 @@ public class LightsOut_StationManager : NetworkBehaviour
         }
 
         isRoundActive = true;
-        Debug.Log("Lights Out: Bulmaca hazır.");
         RpcSyncPuzzle(allCables);
         CalculateAndSyncEngineerLights();
         RpcSyncSwitches(allSwitches);
@@ -106,14 +104,7 @@ public class LightsOut_StationManager : NetworkBehaviour
 
         OnPowerStatusChanged?.Invoke(lightsOn);
 
-        if (lightsOn)
-        {
-            Debug.Log("SİSTEM: Güç geri geldi!");
-        }
-        else
-        {
-            Debug.Log("SİSTEM: Güç kesildi!");
-        }
+
     }
 
     [ObserversRpc]
@@ -149,7 +140,6 @@ public class LightsOut_StationManager : NetworkBehaviour
 
             incomingCable.currentPortIndex = targetPortIndex;
 
-            Debug.Log($"Server: Kablo {incomingCable.physicalColor} -> Port {targetPortIndex} 'a takıldı.");
             RpcUpdateCableState(cableID, targetPortIndex);
             CalculateAndSyncEngineerLights();
         }
@@ -166,7 +156,6 @@ public class LightsOut_StationManager : NetworkBehaviour
             if (cable.currentPortIndex != -1)
             {
                 cable.currentPortIndex = -1;
-                Debug.Log($"Server: Kablo {cable.physicalColor} söküldü.");
 
                 RpcUpdateCableState(cableID, -1);
                 CalculateAndSyncEngineerLights();
@@ -217,7 +206,7 @@ public class LightsOut_StationManager : NetworkBehaviour
 
         List<StatusLightState> currentStates = new List<StatusLightState>();
 
-        if (totalPluggedCables == 0)
+        if (totalPluggedCables < 4)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -256,7 +245,6 @@ public class LightsOut_StationManager : NetworkBehaviour
     public void RegisterSwitchPressRPC(WireColor pressedColor)
     {
         playerInputSequence.Add(pressedColor);
-        Debug.Log($"Server: {pressedColor} rengine basıldı. (Toplam: {playerInputSequence.Count}/4)");
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -269,11 +257,9 @@ public class LightsOut_StationManager : NetworkBehaviour
     {
         if (!isServer) return;
 
-        Debug.Log("Server: Çözüm kontrol ediliyor...");
 
         if (playerInputSequence.Count != 4)
         {
-            Debug.Log("HATA: Eksik veya fazla tuşlaması yapıldı!");
             ResetPuzzlePenalty();
             RpcResetLever();
             return;
@@ -284,7 +270,6 @@ public class LightsOut_StationManager : NetworkBehaviour
 
         if (isCorrectSequence)
         {
-            Debug.Log("SONUÇ: DOĞRU SIRALAMA! İstasyon Tamamlandı.");
             if (stationController != null)
             {
                 stationController.SetReparied();
@@ -293,7 +278,6 @@ public class LightsOut_StationManager : NetworkBehaviour
         }
         else
         {
-            Debug.Log("SONUÇ: YANLIŞ SIRALAMA! Sistem Resetleniyor...");
             ResetPuzzlePenalty();
             RpcResetLever();
         }
@@ -341,7 +325,6 @@ public class LightsOut_StationManager : NetworkBehaviour
     [ContextMenu("TEST: Start Round (Generate Puzzle)")]
     public void Test_StartPuzzle()
     {
-        Debug.Log("--- TEST BAŞLIYOR ---");
         GeneratePuzzle();
     }
 

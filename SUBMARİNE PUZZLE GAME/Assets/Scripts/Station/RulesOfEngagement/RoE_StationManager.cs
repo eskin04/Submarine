@@ -40,7 +40,6 @@ public class RoE_StationManager : NetworkBehaviour
     {
         if (!isServer) return;
 
-        Debug.Log("RoE Station: Round Starting...");
 
         currentDailyRule = allRules[Random.Range(0, allRules.Count)];
 
@@ -125,7 +124,6 @@ public class RoE_StationManager : NetworkBehaviour
 
         if (threat != null)
         {
-            Debug.Log($"Server: {threat.displayName} selected. Sending symbols...");
             List<int> symbolIndicesToSend = new List<int>();
 
             foreach (var sym in threat.realIdentity.assignedSymbols)
@@ -136,7 +134,6 @@ public class RoE_StationManager : NetworkBehaviour
 
             RpcUpdateEngineerScreen(symbolIndicesToSend, threat.displayName);
 
-            RpcUpdateTechnicianSelection(threat.displayName);
         }
     }
 
@@ -148,7 +145,6 @@ public class RoE_StationManager : NetworkBehaviour
 
         if (threat == null || threat.isDestroyed)
         {
-            Debug.LogWarning("Target not found or already destroyed.");
             return;
         }
 
@@ -184,7 +180,6 @@ public class RoE_StationManager : NetworkBehaviour
             return;
         }
         stationController.AvoidMistake();
-        Debug.Log("EVADE Successful.");
         RpcSendFeedback("Avoided!", Color.cyan);
         DestroyThreat(threat);
     }
@@ -236,7 +231,6 @@ public class RoE_StationManager : NetworkBehaviour
 
     private void EndRoundAndRepair()
     {
-        Debug.Log("RoE Station: All threats neutralized. Station Repaired!");
 
         if (stationController != null)
         {
@@ -265,17 +259,12 @@ public class RoE_StationManager : NetworkBehaviour
         }
     }
 
-    [ObserversRpc]
-    private void RpcUpdateTechnicianSelection(string selectedCodeName)
-    {
-        Debug.Log($"System: {selectedCodeName} is now ACTIVE.");
-    }
+
 
     [ObserversRpc]
     private void RpcSetSimulationState(bool state)
     {
         isSimulationRunning = state;
-        Debug.Log($"<color=yellow>[SİSTEM]</color> Simülasyon Durumu Değişti: {state.ToString().ToUpper()}");
         if (state == false && technicianUI != null)
         {
             technicianUI.ForceClearInterface();

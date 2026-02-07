@@ -25,7 +25,6 @@ public class GameStatistics : MonoBehaviour
         }
         stats[statType] += amount;
 
-        Debug.Log($"STAT GÜNCELLENDİ: {statType} = {stats[statType]}");
     }
 
     public int GetStat(StatType statName)

@@ -81,10 +81,7 @@ public class LightsOut_TechnicianUI : NetworkBehaviour
             {
                 port.SetLightColor(cableData.outputLightColor);
             }
-            else
-            {
-                Debug.LogWarning("Client: Kablo verisi yerel listede bulunamadı!");
-            }
+
         }
         else
         {

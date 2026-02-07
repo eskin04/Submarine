@@ -8,6 +8,7 @@ public class MainGameView : View
     [SerializeField] private TMP_Text roleText;
     [SerializeField] private TMP_Text waterLevelText;
     [SerializeField] private TMP_Text timerText;
+    [SerializeField] private TMP_Text stressText;
 
 
     void Awake()
@@ -32,6 +33,11 @@ public class MainGameView : View
     public void SetWaterLevelText(float currentWater, float maxWater)
     {
         waterLevelText.text = $"Water Level: {currentWater:F1} / {maxWater}";
+    }
+
+    public void SetStressText(float stress)
+    {
+        stressText.text = $"Stress: {stress:F1}";
     }
 
     public void SetRoleText(PlayerRole role)

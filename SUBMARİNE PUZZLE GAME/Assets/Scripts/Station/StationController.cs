@@ -32,7 +32,6 @@ public class StationController : NetworkBehaviour
     protected override void OnSpawned()
     {
         base.OnSpawned();
-        SetInteractable(false);
 
         if (isServer)
         {
@@ -148,7 +147,6 @@ public class StationController : NetworkBehaviour
             }
 
 
-            Debug.Log($"<color=green>{gameObject.name} TAMİR EDİLDİ!</color>");
         }
     }
 
@@ -158,7 +156,6 @@ public class StationController : NetworkBehaviour
         GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty);
         GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty);
 
-        Debug.Log($"<color=red>{gameObject.name} HATA YAPILDI!</color>");
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -167,7 +164,6 @@ public class StationController : NetworkBehaviour
         GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty / 2);
         GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty / 2);
 
-        Debug.Log($"<color=red>{gameObject.name} HATA YAPILDI!</color>");
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -175,6 +171,5 @@ public class StationController : NetworkBehaviour
     {
         GlobalEvents.OnAddStress?.Invoke(timeoutStressPenalty);
 
-        Debug.Log($"<color=red>{gameObject.name} SÜRE DOLDU!</color>");
     }
 }

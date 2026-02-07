@@ -81,7 +81,6 @@ public class RoE_ThreatManager : NetworkBehaviour
     {
         if (spawnProfiles == null || spawnProfiles.Count == 0)
         {
-            Debug.LogWarning("Spawn profili atanmamış! Varsayılan değerler kullanılıyor.");
             threat.currentDistance = 800f;
             threat.approachSpeed = 10f;
             return;
@@ -145,7 +144,6 @@ public class RoE_ThreatManager : NetworkBehaviour
             activeThreats.Add(newThreat);
         }
 
-        Debug.Log($"[CLIENT] Tehdit listesi güncellendi. {activeThreats.Count} adet.");
     }
 
 }

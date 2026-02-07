@@ -41,7 +41,6 @@ public class RadioVoiceManager : MonoBehaviour
 
             await VivoxService.Instance.LoginAsync(options);
 
-            Debug.Log("Vivox Girişi Başarılı!");
 
             JoinRadioChannel(channelName);
         }
@@ -59,7 +58,6 @@ public class RadioVoiceManager : MonoBehaviour
         await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.AudioOnly);
         isLoggedIn = VivoxService.Instance.IsLoggedIn;
 
-        Debug.Log($"Telsiz Kanalına Katılındı: {channelName}");
     }
 
 
@@ -93,7 +91,6 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.UnmuteInputDevice();
-        Debug.Log("Telsiz AÇIK");
     }
 
     void StopTransmission()
@@ -104,7 +101,6 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.MuteInputDevice();
-        Debug.Log("Telsiz KAPALI");
     }
 
 

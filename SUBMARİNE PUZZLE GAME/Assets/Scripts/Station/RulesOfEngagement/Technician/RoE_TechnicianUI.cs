@@ -192,7 +192,6 @@ public class RoE_TechnicianUI : MonoBehaviour
         if (Time.time < nextSelectionTime)
         {
             float remaining = nextSelectionTime - Time.time;
-            Debug.LogWarning($"<color=orange>SİNYAL KARIŞIKLIĞI! {remaining:F1} sn bekle.</color>");
 
             return;
         }
@@ -264,7 +263,6 @@ public class RoE_TechnicianUI : MonoBehaviour
         {
             Roe_PlayerAction action = (Roe_PlayerAction)actionIndex;
             stationManager.SubmitActionRPC(index, action);
-            Debug.Log(action);
         }
 
         currentSelectedCode = "";
@@ -304,29 +302,19 @@ public class RoE_TechnicianUI : MonoBehaviour
     {
         if (evadeGlassCover == null) return;
 
-        // OPTİMİZASYON: Eğer istenen durum zaten mevcut durumla aynıysa hiçbir şey yapma.
-        // Bu sayede Update içinde her karede DOTween çağırmamış oluruz.
         if (isCoverOpen == shouldOpen) return;
 
-        // Durumu güncelle
         isCoverOpen = shouldOpen;
 
-        // Eski animasyon varsa durdur (Çakışmayı önler)
         evadeGlassCover.transform.DOKill();
 
         if (isCoverOpen)
         {
-            // --- AÇILMA (OPEN) ---
-            // Y ekseninde 90 dereceye dön. 
-            // Ease.OutBack: Hafifçe dışarı taşıp yerine oturur (Mekanik his verir).
             evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 0.5f)
                 .SetEase(Ease.OutBack);
         }
         else
         {
-            // --- KAPANMA (CLOSE) ---
-            // Y ekseninde 0 dereceye dön.
-            // Ease.OutBounce: Kapanırken "tak" diye çarpma efekti verir.
             evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 0.5f)
                 .SetEase(Ease.OutBounce);
         }

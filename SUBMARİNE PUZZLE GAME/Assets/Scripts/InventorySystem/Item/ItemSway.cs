@@ -43,7 +43,6 @@ public class ItemSway : NetworkBehaviour
     private void Update()
     {
         if (!isOwner || !isEquipped) return;
-        Debug.Log("ItemSway: Updating item sway...");
 
         float mouseX = Input.GetAxis("Mouse X") * amount;
         float mouseY = Input.GetAxis("Mouse Y") * amount;

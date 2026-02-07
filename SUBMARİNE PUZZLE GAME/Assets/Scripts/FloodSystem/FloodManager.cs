@@ -62,7 +62,6 @@ public class FloodManager : NetworkBehaviour
     {
         if (mainBreakdownProfile == null)
         {
-            Debug.LogError("FloodManager: Main Profil eksik!");
             return;
         }
 
@@ -78,7 +77,6 @@ public class FloodManager : NetworkBehaviour
         currentMainWaveIndex = 0;
         nextProbabilityCheckTime = 1f;
 
-        Debug.Log($"FloodManager Başladı. Main İstasyon Sayısı: {mainStations.Count}");
     }
 
     private void HandleStationStatusChanged(StationController station, StationState state)
@@ -178,7 +176,6 @@ public class FloodManager : NetworkBehaviour
         {
             StationController victim = queue.Dequeue();
             victim.SetBroken();
-            Debug.Log($"İstasyon Bozuldu ({victim.stationType}): {victim.name}");
         }
     }
 
@@ -259,7 +256,6 @@ public class FloodManager : NetworkBehaviour
         {
             var victim = brokenMainStations[Random.Range(0, brokenMainStations.Count)];
             victim.SetDestroyed();
-            Debug.Log($"KRİTİK OLAY: {victim.name} (Main) kalıcı olarak yok edildi!");
         }
     }
 

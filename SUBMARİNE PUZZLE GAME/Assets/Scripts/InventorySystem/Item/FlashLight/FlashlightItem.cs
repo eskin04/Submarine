@@ -24,11 +24,42 @@ public class FlashlightItem : NetworkBehaviour, IInventoryItem
     private float UIbatteryUpdateTimer = .5f;
     private bool amIOwner;
 
+    private Transform originalLightParent;
+    private Vector3 originalLightPos;
+    private Quaternion originalLightRot;
+
     protected override void OnSpawned()
     {
         storedBattery.value = maxBattery;
         itemInfoView = InstanceHandler.GetInstance<ItemInfoView>();
-        if (lightSource) lightSource.enabled = false;
+        if (lightSource)
+        {
+            lightSource.enabled = false;
+            originalLightParent = lightSource.transform.parent;
+            originalLightPos = lightSource.transform.localPosition;
+            originalLightRot = lightSource.transform.localRotation;
+        }
+    }
+
+    public void SetInteractionMode(bool isInteracting, Transform targetCamera = null)
+    {
+        if (lightSource == null) return;
+
+        if (isInteracting && targetCamera != null)
+        {
+
+            lightSource.transform.SetParent(targetCamera);
+            lightSource.transform.localPosition = new Vector3(0, 0, -.7f);
+            lightSource.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            lightSource.transform.SetParent(originalLightParent);
+            lightSource.transform.localPosition = originalLightPos;
+            lightSource.transform.localRotation = originalLightRot;
+
+
+        }
     }
 
 

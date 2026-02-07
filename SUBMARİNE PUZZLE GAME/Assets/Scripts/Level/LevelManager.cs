@@ -41,13 +41,11 @@ public class LevelManager : NetworkBehaviour
         {
             availableMainStations.Add(station);
             station.SetOperational();
-            Debug.Log($"LevelManager: {station.name} havuza eklendi.");
         }
     }
 
     private void StartLevel()
     {
-        Debug.Log("LevelManager: Level başlatılıyor...");
         Dictionary<StationTier, List<StationController>> mainPool = new Dictionary<StationTier, List<StationController>>();
 
         foreach (var station in availableMainStations)
@@ -58,7 +56,6 @@ public class LevelManager : NetworkBehaviour
 
         if (availableMainStations.Count == 0)
         {
-            Debug.LogError("LevelManager: Sahnede hiç MAIN istasyon bulunamadı veya kayıt olamadılar!");
             return;
         }
 

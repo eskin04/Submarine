@@ -18,6 +18,7 @@ public class InventoryManager : NetworkBehaviour
     private InventoryUI inventoryUI;
     private IInteractable currentInteractable;
     private ItemSway itemSwayScript;
+    private bool isHeldItemHidden = false;
 
     [Serializable]
     private class InventoryItemContainer
@@ -76,12 +77,33 @@ public class InventoryManager : NetworkBehaviour
         }
         if (monoObj.GetComponentInParent<LiftManager>() != null) return;
 
-        UnequipCurrent();
+        if (currentSlotIndex != -1 && !containers[currentSlotIndex].IsEmpty)
+        {
+            ToggleItemVisuals(false);
+            isHeldItemHidden = true;
+        }
+
+        HandleFlashlightLight(true);
     }
 
     private void Update()
     {
         if (!isOwner) return;
+
+
+
+        if (currentInteractable != null && !currentInteractable.IsInteracting())
+        {
+            HandleFlashlightLight(false);
+
+            if (isHeldItemHidden)
+            {
+                ToggleItemVisuals(true);
+                isHeldItemHidden = false;
+            }
+            currentInteractable = null;
+
+        }
         if (currentInteractable != null && currentInteractable.IsInteracting()) return;
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) EquipItem(0);
@@ -90,6 +112,10 @@ public class InventoryManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha4)) EquipItem(3);
         if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
     }
+
+
+
+
 
 
     // =================================================================================================
@@ -330,6 +356,33 @@ public class InventoryManager : NetworkBehaviour
             }
             currentSlotIndex = -1;
             OnEquipChange?.Invoke(false);
+        }
+    }
+
+    private void ToggleItemVisuals(bool isActive)
+    {
+        if (currentSlotIndex == -1) return;
+        var container = containers[currentSlotIndex];
+        if (container.IsEmpty || container.PhysicalObject == null) return;
+
+        Renderer[] renderers = container.PhysicalObject.GetComponentsInChildren<Renderer>();
+        foreach (var rend in renderers) rend.enabled = isActive;
+
+        Canvas[] canvases = container.PhysicalObject.GetComponentsInChildren<Canvas>();
+        foreach (var canvas in canvases) canvas.enabled = isActive;
+
+    }
+
+    private void HandleFlashlightLight(bool isInteracting)
+    {
+        if (currentSlotIndex == -1 || containers[currentSlotIndex].IsEmpty) return;
+
+        var flashlight = containers[currentSlotIndex].PhysicalObject.GetComponent<FlashlightItem>();
+
+        if (flashlight != null)
+        {
+            Transform targetCam = isInteracting ? playerInventory.InteractCameraTrans : null;
+            flashlight.SetInteractionMode(isInteracting, targetCam);
         }
     }
 }

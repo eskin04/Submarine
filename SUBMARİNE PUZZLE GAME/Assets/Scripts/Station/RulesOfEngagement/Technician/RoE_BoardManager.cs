@@ -48,7 +48,6 @@ public class RoE_BoardManager : NetworkBehaviour
                 else safetyCounter++;
             }
 
-            if (!uniqueFound) Debug.LogError($"{obj.objectName} için benzersiz sembol bulunamadı!");
 
             newSetup.Add(entry);
         }
@@ -105,6 +104,5 @@ public class RoE_BoardManager : NetworkBehaviour
             newItem.GetComponent<RoE_BoardItem>().Setup(realObj, realSymbols);
         }
 
-        Debug.Log($"[BOARD MANAGER] Pano güncellendi. {packet.Count} öğe çizildi.");
     }
 }

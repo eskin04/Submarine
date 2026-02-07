@@ -24,7 +24,6 @@ public class PlayerSpawningState : StateNode
         if (!asServer) return;
 
         DeSpawnPlayers();
-        Debug.Log("Sadeleştirilmiş Spawn Mantığı Başlıyor...");
 
         SpawnPlayerSimple();
         SetView();
@@ -49,7 +48,6 @@ public class PlayerSpawningState : StateNode
 
         if (dataHolder == null || !dataHolder.CurrentLobby.IsValid)
         {
-            Debug.LogError("Lobi verisi yok! Default spawn çalışıyor.");
             SpawnDefault();
             return;
         }
@@ -97,7 +95,6 @@ public class PlayerSpawningState : StateNode
 
         instance.GiveOwnership(ownerPlayer);
 
-        Debug.Log($"Oyuncu Spawnlandı -> Rol: {role}");
     }
 
     private void SpawnDefault()

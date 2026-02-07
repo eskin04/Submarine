@@ -19,7 +19,6 @@ public class GameEndState : StateNode
 
     private IEnumerator StartAgain()
     {
-        Debug.Log("Try Again...");
         yield return new WaitForSeconds(3);
 
         HideGameEndView();

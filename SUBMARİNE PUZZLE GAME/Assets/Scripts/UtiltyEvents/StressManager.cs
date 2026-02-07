@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PurrNet;
+using TMPro;
 using UnityEngine;
 
 public class StressManager : NetworkBehaviour
@@ -41,12 +42,13 @@ public class StressManager : NetworkBehaviour
         base.OnSpawned();
         gameStats = GetComponent<GameStatistics>();
         MainGameState.startGame += StartStressManager;
+        currentStress.onChanged += (newVal) => { InstanceHandler.GetInstance<MainGameView>().SetStressText(newVal); };
+
 
     }
 
     private void StartStressManager()
     {
-        Debug.Log("StressManager: Başlangıç Gecikmesi başladı.");
         Invoke(nameof(ActivateSystem), initialGracePeriod);
     }
 
@@ -57,6 +59,7 @@ public class StressManager : NetworkBehaviour
         GlobalEvents.OnAddStress -= IncreaseStress;
         GlobalEvents.OnReduceStress -= DecreaseStress;
         MainGameState.startGame -= StartStressManager;
+        currentStress.onChanged -= (newVal) => { InstanceHandler.GetInstance<MainGameView>().SetStressText(newVal); };
 
     }
 
@@ -96,7 +99,6 @@ public class StressManager : NetworkBehaviour
     private void ActivateSystem()
     {
         isActive = true;
-        Debug.Log("STRESS SYSTEM ONLINE");
     }
 
     private void Update()
@@ -110,7 +112,6 @@ public class StressManager : NetworkBehaviour
             {
                 isInCooldown = false;
                 currentStress.value = 0f;
-                Debug.Log("Stress System: Cooldown bitti.");
             }
             return;
         }
@@ -176,7 +177,6 @@ public class StressManager : NetworkBehaviour
             if (randomPoint <= cursor)
             {
                 selectedEvent = evt;
-                Debug.Log($"[StressManager] Seçilen Event: {evt.eventData.targetStatName} (Ağırlık: {evt.currentWeight})");
                 break;
             }
         }
@@ -198,7 +198,6 @@ public class StressManager : NetworkBehaviour
         passiveTimer = 0f;
         diceTimer = 0f;
 
-        Debug.Log($"<color=red>EVENT TETİKLENDİ: {currentEventName.value}</color>");
 
         TriggerUIEffectRPC(currentEventName.value);
     }

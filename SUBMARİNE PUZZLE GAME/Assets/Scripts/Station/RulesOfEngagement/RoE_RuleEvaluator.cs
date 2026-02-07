@@ -64,7 +64,6 @@ public static class RoE_RuleEvaluator
 
 
             default:
-                Debug.LogError($"[RuleEvaluator] Tanımlanmamış Kural Tipi: {currentRule.logicType}");
                 return false;
         }
     }

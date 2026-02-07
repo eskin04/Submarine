@@ -1,6 +1,7 @@
 using System;
 using PurrNet;
 using StarterAssets;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerInventory : NetworkBehaviour
@@ -12,9 +13,14 @@ public class PlayerInventory : NetworkBehaviour
 
     public Transform HandPosition => handPosition;
     public Transform DropPosition => dropPosition;
+    public Transform InteractCameraTrans => interactCameraPosition;
+
+
 
     public static Action<FirstPersonController, Transform, Transform> OnAssignController;
     private FirstPersonController playerController;
+
+
 
     protected override void OnSpawned()
     {
@@ -22,6 +28,9 @@ public class PlayerInventory : NetworkBehaviour
         {
             playerController = GetComponent<FirstPersonController>();
             OnAssignController?.Invoke(playerController, cameraPosition, interactCameraPosition);
+
         }
     }
+
+
 }
