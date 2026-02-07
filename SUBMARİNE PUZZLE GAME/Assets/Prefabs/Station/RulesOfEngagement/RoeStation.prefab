@@ -1831,8 +1831,8 @@ MonoBehaviour:
   maxGameDistance: 500
   minAngleSpacing: 20
   selectionCooldown: 5
-  shootButton: {fileID: 6895068427944065347}
-  passButton: {fileID: 3311558147039082378}
+  shootButton: {fileID: 8893549217725870617}
+  passButton: {fileID: 6197565073152183721}
   evadeButton: {fileID: 0}
   evadeGlassCover: {fileID: 0}
   feedbackText: {fileID: 2524506619724945921}
@@ -3399,224 +3399,47 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_RulesOfEngagement 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3332136494343645897, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 5252237514890669556, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
+    - target: {fileID: 7317686718026715716, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
+    - target: {fileID: 8415869613250412989, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8872539091014153970, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8251753325446736030}
-    - targetCorrespondingSourceObject: {fileID: 8872539091014153970, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6895068427944065347}
-    - targetCorrespondingSourceObject: {fileID: 7226354254539034312, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5702960603090034513}
-    - targetCorrespondingSourceObject: {fileID: 7226354254539034312, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3311558147039082378}
-    - targetCorrespondingSourceObject: {fileID: 2437170578064991770, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3998931998182268638}
-    - targetCorrespondingSourceObject: {fileID: 2437170578064991770, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1570834809674702907}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
---- !u!4 &819146992980206302 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4094255898260880691, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1323240734539774455 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2437170578064991770, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &3998931998182268638
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1323240734539774455}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0013530736, y: 0.0013530737, z: 0.00025436666}
-  m_Center: {x: 0.000000007508788, y: 4.3621823e-17, z: 0.000000002233719}
---- !u!114 &1570834809674702907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1323240734539774455}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
-  movingPart: {fileID: 6687765262876060635}
-  pressDirection: {x: 0, y: -1, z: 0}
-  pressDistance: 0.02
-  pressDuration: 0.3
-  OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2378838127280634816}
-        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
-        m_MethodName: OnClick_SubmitAction
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  isInteractable: 0
 --- !u!4 &1577129298470617200 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
   m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &3674831094322604697 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 103607790532146548, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5237157084585486623 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8872539091014153970, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &8251753325446736030
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5237157084585486623}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0013530737, y: 0.0013530737, z: 0.00025436646}
-  m_Center: {x: 0.0000000037252903, y: 0.000000007450581, z: -6.548362e-11}
---- !u!114 &6895068427944065347
+--- !u!114 &6197565073152183721 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7317686718026715716, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5237157084585486623}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
-  movingPart: {fileID: 3674831094322604697}
-  pressDirection: {x: 1, y: 0, z: 0}
-  pressDistance: 0.02
-  pressDuration: 0.3
-  OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2378838127280634816}
-        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
-        m_MethodName: OnClick_SubmitAction
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  isInteractable: 0
---- !u!1 &6324922212682273061 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7226354254539034312, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+--- !u!114 &8893549217725870617 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5252237514890669556, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
   m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &5702960603090034513
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6324922212682273061}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0013530737, y: 0.0013530737, z: 0.00025436646}
-  m_Center: {x: 0.0000000037252903, y: 0.0000000037252903, z: -6.548362e-11}
---- !u!114 &3311558147039082378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6324922212682273061}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
-  movingPart: {fileID: 819146992980206302}
-  pressDirection: {x: 1, y: 0, z: 0}
-  pressDistance: 0.02
-  pressDuration: 0.3
-  OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2378838127280634816}
-        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
-        m_MethodName: OnClick_SubmitAction
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  isInteractable: 0
---- !u!4 &6687765262876060635 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8016476362462573622, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
