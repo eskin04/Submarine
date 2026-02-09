@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using PurrNet;
+using Cinemachine;
 
 public class RoE_StationManager : NetworkBehaviour
 {
@@ -27,6 +28,8 @@ public class RoE_StationManager : NetworkBehaviour
 
     [Header("Settings")]
     public int currentLevel = 1;
+
+    public CinemachineImpulseSource hullBreachImpulse;
 
     private bool isSimulationRunning = false;
     private bool isRoundActive = false;
@@ -167,8 +170,19 @@ public class RoE_StationManager : NetworkBehaviour
         stationController.ReportRepairMistake();
 
         DestroyThreat(threat);
+        RpcTriggerImpactEffect();
 
 
+    }
+
+    [ObserversRpc]
+    private void RpcTriggerImpactEffect()
+    {
+
+        if (hullBreachImpulse != null)
+        {
+            hullBreachImpulse.GenerateImpulse(.2f);
+        }
     }
 
 
