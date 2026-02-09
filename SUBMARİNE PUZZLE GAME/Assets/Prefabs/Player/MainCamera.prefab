@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9119788786621017317}
   - component: {fileID: 5160382215579191363}
   - component: {fileID: 3508419941885557654}
+  - component: {fileID: 3423339459287810223}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -205,3 +206,25 @@ MonoBehaviour:
   stationUILayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &3423339459287810223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9005220659476430823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c11265b855408d42af33d62691f5194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineIndependentImpulseListener
+  m_ChannelMask: 1
+  m_Gain: 1
+  m_Use2DDistance: 0
+  m_UseLocalSpace: 1
+  m_ReactionSettings:
+    m_SecondaryNoise: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+    m_AmplitudeGain: 3
+    m_FrequencyGain: 10
+    m_Duration: 0.3
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
