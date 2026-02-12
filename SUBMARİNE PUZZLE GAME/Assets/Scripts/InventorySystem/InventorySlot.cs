@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class InventorySlot : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Image iconImage;
-    [SerializeField] private GameObject highlight;
 
     void Awake()
     {
@@ -25,12 +25,10 @@ public class InventorySlot : MonoBehaviour
     {
         iconImage.sprite = null;
         iconImage.enabled = false;
-        SetHighlight(false);
     }
 
     public void SetHighlight(bool isHighlighted)
     {
-        if (highlight != null)
-            highlight.SetActive(isHighlighted);
+        transform.DOScale(isHighlighted ? 1.2f : 1f, 0.2f).SetEase(Ease.OutBack);
     }
 }

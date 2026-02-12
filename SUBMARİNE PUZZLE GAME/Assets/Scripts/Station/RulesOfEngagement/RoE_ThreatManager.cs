@@ -12,6 +12,24 @@ public class RoE_ThreatManager : NetworkBehaviour
     public List<ActiveThreat> activeThreats = new List<ActiveThreat>();
 
     public RoE_StationManager mainManager;
+    private int currentLevel = 1;
+
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+        LevelManager.OnCurrentLevelData += SetCurrentLevel;
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        LevelManager.OnCurrentLevelData -= SetCurrentLevel;
+    }
+
+    private void SetCurrentLevel(int level)
+    {
+        currentLevel = level;
+    }
 
     private void Update()
     {
@@ -40,13 +58,13 @@ public class RoE_ThreatManager : NetworkBehaviour
 
 
 
-    public void SpawnNewThreats(int level, List<BoardEntry> incomingBoardSetup)
+    public void SpawnNewThreats(List<BoardEntry> incomingBoardSetup)
     {
         activeThreats.Clear();
 
         List<BoardEntry> availableIdentities = new List<BoardEntry>(incomingBoardSetup);
-
-        int maxThreatCount = (level <= 4) ? level + 1 : 4;
+        Debug.Log(currentLevel + "current level");
+        int maxThreatCount = (currentLevel <= 4) ? currentLevel + 1 : 4;
         int threatCount = Random.Range(maxThreatCount - 1, maxThreatCount + 1);
 
         List<ThreatCodeName> availableNames = new List<ThreatCodeName>()

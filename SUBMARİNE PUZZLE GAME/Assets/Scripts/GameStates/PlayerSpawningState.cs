@@ -99,10 +99,15 @@ public class PlayerSpawningState : StateNode
 
     private void SpawnDefault()
     {
-        foreach (var networkPlayer in networkManager.players)
+        if (networkManager.playerCount > 0)
         {
-            var instance = Instantiate(defaultPrefab, engineerSpawnPoint.position, engineerSpawnPoint.rotation);
-            instance.GiveOwnership(networkPlayer);
+            SpawnByRole(networkManager.players[0], PlayerRole.Engineer);
+
+        }
+        if (networkManager.playerCount > 1)
+        {
+            SpawnByRole(networkManager.players[1], PlayerRole.Technician);
+
         }
     }
 

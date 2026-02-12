@@ -45,6 +45,7 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     {
         float cooldownDuration = technicianUI.selectionCooldown;
         float elapsed = 0f;
+        cooldownText.color = Color.orange;
 
         while (elapsed < cooldownDuration)
         {
@@ -54,8 +55,9 @@ public class RoE_TargetInfoScreen : MonoBehaviour
             elapsed++;
             yield return new WaitForSeconds(1f);
         }
+        cooldownText.text = "Locked: 0s";
+        cooldownText.color = Color.green;
 
-        cooldownText.text = "";
     }
 
 

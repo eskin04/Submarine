@@ -6,6 +6,7 @@ using System.Linq;
 public class LevelManager : NetworkBehaviour
 {
     public static System.Action<List<StationController>> OnLevelStarted;
+    public static System.Action<int> OnCurrentLevelData;
 
     [Header("Level Data")]
     public LevelData currentLevelData;
@@ -26,6 +27,7 @@ public class LevelManager : NetworkBehaviour
     {
         base.OnSpawned();
         MainGameState.startGame += StartLevel;
+        OnCurrentLevelData?.Invoke(currentLevelData.levelID);
     }
 
     protected override void OnDestroy()

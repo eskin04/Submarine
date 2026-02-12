@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using PurrNet;
+using PurrLobby;
 
 [RequireComponent(typeof(PlayerInventory))]
 public class InventoryManager : NetworkBehaviour
@@ -10,6 +11,9 @@ public class InventoryManager : NetworkBehaviour
 
     [Header("Settings")]
     [SerializeField] private int inventorySize = 4;
+
+    [Header("Starting Items")]
+    [SerializeField] private GameObject handbookPrefab;
 
     private InventoryItemContainer[] containers;
     private int currentSlotIndex = -1;
@@ -37,11 +41,12 @@ public class InventoryManager : NetworkBehaviour
     protected override void OnSpawned()
     {
         playerInventory = GetComponent<PlayerInventory>();
-
         if (playerInventory.HandPosition)
         {
             itemSwayScript = playerInventory.HandPosition.GetComponent<ItemSway>();
         }
+
+
 
         if (!isOwner) return;
 
@@ -54,6 +59,10 @@ public class InventoryManager : NetworkBehaviour
         LiftManager.OnDropItemToLıft += HandleLiftDrop;
         Interactor.OnInteract += Interactor_OnInteract;
         OnLocalInventoryReady?.Invoke(this);
+
+        HandleStartingItems();
+
+        EquipSlot(0);
     }
 
     protected override void OnDestroy()
@@ -77,9 +86,9 @@ public class InventoryManager : NetworkBehaviour
         }
         if (monoObj.GetComponentInParent<LiftManager>() != null) return;
 
-        if (currentSlotIndex != -1 && !containers[currentSlotIndex].IsEmpty)
+        if (!containers[currentSlotIndex].IsEmpty)
         {
-            ToggleItemVisuals(false);
+            SetCurrentItemVisibility(false);
             isHeldItemHidden = true;
         }
 
@@ -98,7 +107,7 @@ public class InventoryManager : NetworkBehaviour
 
             if (isHeldItemHidden)
             {
-                ToggleItemVisuals(true);
+                SetCurrentItemVisibility(true);
                 isHeldItemHidden = false;
             }
             currentInteractable = null;
@@ -106,14 +115,90 @@ public class InventoryManager : NetworkBehaviour
         }
         if (currentInteractable != null && currentInteractable.IsInteracting()) return;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1)) EquipItem(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) EquipItem(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) EquipItem(2);
-        if (Input.GetKeyDown(KeyCode.Alpha4)) EquipItem(3);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) EquipSlot(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) EquipSlot(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) EquipSlot(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) EquipSlot(3);
+
         if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
     }
 
+    // =================================================================================================
+    // STARTING ITEMS
+    // =================================================================================================
 
+    private void HandleStartingItems()
+    {
+
+        if (handbookPrefab != null)
+        {
+            GameObject newItem = Instantiate(handbookPrefab);
+
+            int targetSlot = inventorySize - 1;
+
+            PickupServerRpc(newItem, targetSlot);
+        }
+    }
+
+    // =================================================================================================
+    // SLOT MANAGEMENT
+    // =================================================================================================
+
+
+    public void EquipSlot(int index)
+    {
+        if (!isOwner || index < 0 || index >= inventorySize) return;
+
+        if (currentSlotIndex == index) return;
+
+        HideCurrentItem();
+
+        currentSlotIndex = index;
+        if (inventoryUI) inventoryUI.HighlightSlot(index);
+
+        RefreshActiveSlot();
+    }
+
+
+    private void RefreshActiveSlot()
+    {
+        if (currentSlotIndex == -1) return;
+        var container = containers[currentSlotIndex];
+
+        if (!container.IsEmpty)
+        {
+            GameObject itemObj = container.PhysicalObject;
+            itemObj.SetActive(true);
+
+            if (itemSwayScript) itemSwayScript.SetActiveItem(true);
+
+            var itemLogic = itemObj.GetComponent<IInventoryItem>();
+            itemLogic?.OnEquip();
+
+            OnEquipChange?.Invoke(true);
+        }
+        else
+        {
+            if (itemSwayScript) itemSwayScript.SetActiveItem(false);
+            OnEquipChange?.Invoke(false);
+        }
+    }
+
+    private void HideCurrentItem()
+    {
+        if (currentSlotIndex == -1) return;
+
+        var container = containers[currentSlotIndex];
+        if (!container.IsEmpty)
+        {
+            GameObject itemObj = container.PhysicalObject;
+
+            var itemLogic = itemObj.GetComponent<IInventoryItem>();
+            itemLogic?.OnUnequip();
+
+            itemObj.SetActive(false);
+        }
+    }
 
 
 
@@ -123,16 +208,25 @@ public class InventoryManager : NetworkBehaviour
     // =================================================================================================
 
 
-    private bool HandleLootAttempt(ItemLoot loot)
+    private void HandleLootAttempt(ItemLoot loot)
     {
-        if (!isOwner || loot == null) return false;
-        if (Vector3.Distance(transform.position, loot.transform.position) > 5f) return false;
+        if (!isOwner || loot == null) return;
+        if (Vector3.Distance(transform.position, loot.transform.position) > 5f) return;
 
-        int emptySlot = GetFirstEmptySlot();
-        if (emptySlot == -1) return false;
+        int targetSlot = -1;
 
-        PickupServerRpc(loot.gameObject, emptySlot);
-        return true;
+        if (containers[currentSlotIndex].IsEmpty)
+        {
+            targetSlot = currentSlotIndex;
+        }
+        else
+        {
+            targetSlot = GetFirstEmptySlot();
+        }
+
+        if (targetSlot == -1) return;
+
+        PickupServerRpc(loot.gameObject, targetSlot);
     }
 
     [ServerRpc(runLocally: true, requireOwnership: false)]
@@ -144,6 +238,7 @@ public class InventoryManager : NetworkBehaviour
         if (netObj != null) netObj.GiveOwnership(owner);
 
 
+
         SetItemSettings(itemObj, true);
         if (isServer) ObserversPickupRpc(itemObj);
 
@@ -151,8 +246,17 @@ public class InventoryManager : NetworkBehaviour
         if (playerInventory.HandPosition)
         {
             itemObj.transform.SetParent(playerInventory.HandPosition);
-            itemObj.transform.localPosition = Vector3.zero;
-            itemObj.transform.localRotation = Quaternion.identity;
+            ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
+            if (lootComponent)
+            {
+                itemObj.transform.localPosition = lootComponent.Data.positionOffset;
+                itemObj.transform.localRotation = Quaternion.Euler(lootComponent.Data.rotationOffset);
+            }
+            else
+            {
+                itemObj.transform.localPosition = Vector3.zero;
+                itemObj.transform.localRotation = Quaternion.identity;
+            }
         }
 
         if (isOwner)
@@ -164,7 +268,12 @@ public class InventoryManager : NetworkBehaviour
                 containers[slotIndex].Data = loot.Data;
                 containers[slotIndex].PhysicalObject = itemObj;
                 if (inventoryUI) inventoryUI.UpdateSlot(slotIndex, loot.Data);
+                itemObj.SetActive(false);
+                RefreshActiveSlot();
             }
+
+
+
         }
 
     }
@@ -177,61 +286,7 @@ public class InventoryManager : NetworkBehaviour
     }
 
 
-    // =================================================================================================
-    // EQUIP
-    // =================================================================================================
 
-    public void EquipItem(int index)
-    {
-        if (!isOwner || index < 0 || index >= inventorySize) return;
-
-        if (currentSlotIndex == index)
-        {
-            UnequipCurrent();
-            return;
-        }
-
-        UnequipCurrent();
-
-        var container = containers[index];
-        if (!container.IsEmpty)
-        {
-            currentSlotIndex = index;
-            if (inventoryUI) inventoryUI.HighlightSlot(index);
-
-            GameObject itemObj = container.PhysicalObject;
-
-            itemObj.SetActive(true);
-
-            if (itemSwayScript) itemSwayScript.SetActiveItem(true);
-            var itemLogic = itemObj.GetComponent<IInventoryItem>();
-            itemLogic?.OnEquip();
-
-
-            OnEquipChange?.Invoke(true);
-        }
-    }
-
-    private void UnequipCurrent()
-    {
-        if (currentSlotIndex != -1)
-        {
-            var container = containers[currentSlotIndex];
-            if (!container.IsEmpty)
-            {
-                var itemObj = container.PhysicalObject;
-
-                var itemLogic = itemObj.GetComponent<IInventoryItem>();
-                itemLogic?.OnUnequip();
-
-                itemObj.SetActive(false);
-            }
-            if (itemSwayScript) itemSwayScript.SetActiveItem(false);
-            if (inventoryUI) inventoryUI.HighlightSlot(-1);
-            currentSlotIndex = -1;
-            OnEquipChange?.Invoke(false);
-        }
-    }
 
     // =================================================================================================
     //  DROP
@@ -308,6 +363,10 @@ public class InventoryManager : NetworkBehaviour
     }
 
 
+
+
+
+
     // =================================================================================================
     // HELPERS
     // =================================================================================================
@@ -318,8 +377,8 @@ public class InventoryManager : NetworkBehaviour
 
         var netTransform = itemObj.GetComponent<NetworkTransform>();
         if (netTransform) netTransform.enabled = !isPickedUp;
-
-        itemObj.SetActive(!isPickedUp);
+        if (!isOwner)
+            itemObj.SetActive(!isPickedUp);
 
         var rb = itemObj.GetComponent<Rigidbody>();
         if (rb)
@@ -352,25 +411,23 @@ public class InventoryManager : NetworkBehaviour
             if (inventoryUI)
             {
                 inventoryUI.ClearSlot(currentSlotIndex);
-                inventoryUI.HighlightSlot(-1);
+                inventoryUI.HighlightSlot(currentSlotIndex);
             }
-            currentSlotIndex = -1;
             OnEquipChange?.Invoke(false);
         }
     }
 
-    private void ToggleItemVisuals(bool isActive)
+    private void SetCurrentItemVisibility(bool isVisible)
     {
         if (currentSlotIndex == -1) return;
         var container = containers[currentSlotIndex];
         if (container.IsEmpty || container.PhysicalObject == null) return;
 
         Renderer[] renderers = container.PhysicalObject.GetComponentsInChildren<Renderer>();
-        foreach (var rend in renderers) rend.enabled = isActive;
+        foreach (var rend in renderers) rend.enabled = isVisible;
 
         Canvas[] canvases = container.PhysicalObject.GetComponentsInChildren<Canvas>();
-        foreach (var canvas in canvases) canvas.enabled = isActive;
-
+        foreach (var canvas in canvases) canvas.enabled = isVisible;
     }
 
     private void HandleFlashlightLight(bool isInteracting)

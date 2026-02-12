@@ -27,7 +27,6 @@ public class RoE_StationManager : NetworkBehaviour
     public RoE_RuleData currentDailyRule;
 
     [Header("Settings")]
-    public int currentLevel = 1;
 
     public CinemachineImpulseSource hullBreachImpulse;
 
@@ -53,7 +52,7 @@ public class RoE_StationManager : NetworkBehaviour
         }
 
 
-        threatManager.SpawnNewThreats(currentLevel, currentBoardSetup);
+        threatManager.SpawnNewThreats(currentBoardSetup);
 
         SetDataPackage();
         if (engineerDisplay != null)
@@ -167,7 +166,7 @@ public class RoE_StationManager : NetworkBehaviour
     public void RegisterHullBreach(ActiveThreat threat)
     {
 
-        stationController.ReportRepairMistake();
+        stationController.ReportTimeOutFailure();
 
         DestroyThreat(threat);
         RpcTriggerImpactEffect();

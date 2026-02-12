@@ -13,6 +13,8 @@ public class StationController : NetworkBehaviour
     public StationTier stationTier;
 
     public float mistakeWaterPenalty = 3.0f;
+    public float timeoutWaterPenalty = 6.0f;
+
     public float mistakeStressPenalty = 10.0f;
     public float repairStressReward = 15.0f;
     public float timeoutStressPenalty = 20.0f;
@@ -170,6 +172,8 @@ public class StationController : NetworkBehaviour
     public void ReportTimeOutFailure()
     {
         GlobalEvents.OnAddStress?.Invoke(timeoutStressPenalty);
+        GlobalEvents.OnAddFloodPenalty?.Invoke(timeoutWaterPenalty);
+
 
     }
 }

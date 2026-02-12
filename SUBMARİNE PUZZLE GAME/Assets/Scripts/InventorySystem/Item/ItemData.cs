@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
-    public string itemName;
-    public Sprite icon;        // UI'da görünecek resim
-    public GameObject prefab;  // Yere atınca oluşacak 3D model
+    public Sprite icon;
+    public Vector3 positionOffset;
+    public Vector3 rotationOffset;
 }

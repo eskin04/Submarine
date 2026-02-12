@@ -146,7 +146,7 @@ public class StressManager : NetworkBehaviour
     {
         if (availableEvents.Count == 0) return;
 
-        float roll = Random.Range(0f, 100f);
+        int roll = Random.Range(0, 100);
         Debug.Log($"[ZAR] Atılan: {roll}, Stres: {currentStress.value}");
 
         if (roll < currentStress.value)
