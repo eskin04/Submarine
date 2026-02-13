@@ -21,6 +21,7 @@ public class InventoryManager : NetworkBehaviour
     private PlayerInventory playerInventory;
     private InventoryUI inventoryUI;
     private IInteractable currentInteractable;
+    private IInteractable currentFocusedInteractable;
     private ItemSway itemSwayScript;
     private bool isHeldItemHidden = false;
 
@@ -58,6 +59,7 @@ public class InventoryManager : NetworkBehaviour
         ItemLoot.OnLootAttempt += HandleLootAttempt;
         LiftManager.OnDropItemToLıft += HandleLiftDrop;
         Interactor.OnInteract += Interactor_OnInteract;
+        Interactor.OnInteractableChanged += Interactor_OnInteractableChanged;
         OnLocalInventoryReady?.Invoke(this);
 
         HandleStartingItems();
@@ -70,7 +72,13 @@ public class InventoryManager : NetworkBehaviour
         ItemLoot.OnLootAttempt -= HandleLootAttempt;
         LiftManager.OnDropItemToLıft -= HandleLiftDrop;
         Interactor.OnInteract -= Interactor_OnInteract;
+        Interactor.OnInteractableChanged -= Interactor_OnInteractableChanged;
         base.OnDestroy();
+    }
+
+    private void Interactor_OnInteractableChanged(IInteractable ınteractable)
+    {
+        currentFocusedInteractable = ınteractable;
     }
 
     private void Interactor_OnInteract(IInteractable ınteractable)
@@ -119,6 +127,7 @@ public class InventoryManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) EquipSlot(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) EquipSlot(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) EquipSlot(3);
+
 
         if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
     }
@@ -294,6 +303,8 @@ public class InventoryManager : NetworkBehaviour
 
     private void DropCurrentItem()
     {
+        if (currentFocusedInteractable != null && currentFocusedInteractable.transform.GetComponentInParent<LiftManager>() != null) return;
+        Debug.Log("Drop Attempt");
         if (currentSlotIndex != -1 && !containers[currentSlotIndex].IsEmpty)
         {
             GameObject itemToDrop = containers[currentSlotIndex].PhysicalObject;
@@ -319,7 +330,7 @@ public class InventoryManager : NetworkBehaviour
         if (!container.IsEmpty)
         {
             float rndX = UnityEngine.Random.Range(-range, range);
-            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(rndX, 0.5f, 0));
+            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(rndX, 0.3f, -.3f));
 
             DropServerRpc(container.PhysicalObject, liftTransform.gameObject, worldPos, Quaternion.identity);
         }

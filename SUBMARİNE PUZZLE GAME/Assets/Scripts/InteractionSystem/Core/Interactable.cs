@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class Interactable : MonoBehaviour, IInteractable
 {
     [SerializeField] private string displayName = "Interact";
+    [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private bool isInteractable = true;
     [SerializeField] private UnityEvent onInteract;
     private bool isInteracting = false;
@@ -25,6 +27,8 @@ public class Interactable : MonoBehaviour, IInteractable
         Destroy(outline);
     }
     public string DisplayName => displayName;
+
+    public KeyCode InteractKey => interactKey;
 
     public bool CanInteract() => isInteractable;
     public void SetInteractable(bool value) => isInteractable = value;

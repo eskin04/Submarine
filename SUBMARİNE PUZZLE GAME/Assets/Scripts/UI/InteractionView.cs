@@ -4,7 +4,6 @@ using UnityEngine;
 public class InteractionView : View
 {
     [SerializeField] private TMP_Text interactionText;
-    [SerializeField] private string keyHintText = "[E]";
 
     void Awake()
     {
@@ -24,6 +23,7 @@ public class InteractionView : View
             return;
         }
         string interactableName = ınteractable.DisplayName;
+        string keyHintText = $"[{ınteractable.InteractKey}]";
         interactionText.text = $"{keyHintText} {interactableName}";
     }
 

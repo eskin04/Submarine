@@ -8,6 +8,7 @@ public class Interactor : MonoBehaviour
     public static Action<IInteractable> OnInteractableChanged;
     public static Action<IInteractable> OnInteract;
     private IInteractable currentInteractable;
+    private KeyCode interactKey = KeyCode.E;
 
 
     void Update()
@@ -15,7 +16,7 @@ public class Interactor : MonoBehaviour
 
 
         CheckForInteractable();
-        if (Input.GetKeyDown(KeyCode.E) && currentInteractable != null && currentInteractable.CanInteract())
+        if (Input.GetKeyDown(interactKey) && currentInteractable != null && currentInteractable.CanInteract())
         {
             currentInteractable.Interact();
             OnInteract?.Invoke(currentInteractable);
@@ -45,6 +46,7 @@ public class Interactor : MonoBehaviour
                     currentInteractable = interactable;
                     currentInteractable?.OnFocus();
                     InstanceHandler.GetInstance<GameViewManager>().ShowView<InteractionView>(hideOthers: false);
+                    interactKey = currentInteractable.InteractKey;
                     OnInteractableChanged?.Invoke(currentInteractable);
                 }
                 return;
