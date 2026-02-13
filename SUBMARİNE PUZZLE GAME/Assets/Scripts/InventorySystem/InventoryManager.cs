@@ -11,6 +11,7 @@ public class InventoryManager : NetworkBehaviour
 
     [Header("Settings")]
     [SerializeField] private int inventorySize = 4;
+    [SerializeField] private float maxDropInteractionDistance = 2.0f;
 
     [Header("Starting Items")]
     [SerializeField] private GameObject handbookPrefab;
@@ -76,8 +77,10 @@ public class InventoryManager : NetworkBehaviour
         base.OnDestroy();
     }
 
+
     private void Interactor_OnInteractableChanged(IInteractable ınteractable)
     {
+
         currentFocusedInteractable = ınteractable;
     }
 
@@ -304,21 +307,35 @@ public class InventoryManager : NetworkBehaviour
     private void DropCurrentItem()
     {
         if (currentFocusedInteractable != null && currentFocusedInteractable.transform.GetComponentInParent<LiftManager>() != null) return;
-        Debug.Log("Drop Attempt");
         if (currentSlotIndex != -1 && !containers[currentSlotIndex].IsEmpty)
         {
             GameObject itemToDrop = containers[currentSlotIndex].PhysicalObject;
 
-            Vector3 targetPos = itemToDrop.transform.position;
-            Quaternion targetRot = itemToDrop.transform.rotation;
-
-            if (playerInventory.DropPosition)
+            Vector3 finalPos;
+            Quaternion finalRot = itemToDrop.transform.rotation;
+            var lookHit = Interactor.CurrentLookHit;
+            bool isValidHit = lookHit.HasValue && lookHit.Value.distance <= maxDropInteractionDistance;
+            if (isValidHit)
             {
-                targetPos = playerInventory.DropPosition.position;
-                targetRot = playerInventory.DropPosition.rotation;
+                RaycastHit hit = lookHit.Value;
+                finalPos = hit.point + (hit.normal * 0.3f);
             }
 
-            DropServerRpc(itemToDrop, null, targetPos, targetRot);
+            else
+            {
+                // --- BOŞLUĞA BAKIYORUZ ---
+                if (playerInventory.DropPosition)
+                {
+                    finalPos = playerInventory.DropPosition.position;
+                    finalRot = playerInventory.DropPosition.rotation;
+                }
+                else
+                {
+                    finalPos = transform.position + transform.forward * 1.5f;
+                }
+            }
+
+            DropServerRpc(itemToDrop, null, finalPos, finalRot);
         }
     }
 

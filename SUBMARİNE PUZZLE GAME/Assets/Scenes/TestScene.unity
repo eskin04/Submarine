@@ -1416,7 +1416,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6385863359267013288, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 750957643400115762, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
 --- !u!4 &1256691750 stripped
 Transform:
@@ -2408,6 +2414,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Start Game
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:

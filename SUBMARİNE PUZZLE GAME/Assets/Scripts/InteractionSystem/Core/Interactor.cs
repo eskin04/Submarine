@@ -5,6 +5,7 @@ using UnityEngine;
 public class Interactor : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 3f;
+    public static RaycastHit? CurrentLookHit { get; private set; }
     public static Action<IInteractable> OnInteractableChanged;
     public static Action<IInteractable> OnInteract;
     private IInteractable currentInteractable;
@@ -13,7 +14,6 @@ public class Interactor : MonoBehaviour
 
     void Update()
     {
-
 
         CheckForInteractable();
         if (Input.GetKeyDown(interactKey) && currentInteractable != null && currentInteractable.CanInteract())
@@ -32,6 +32,7 @@ public class Interactor : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactionRange))
         {
+            CurrentLookHit = hit;
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable != null && interactable.CanInteract())
             {
@@ -52,12 +53,17 @@ public class Interactor : MonoBehaviour
                 return;
             }
         }
+        else
+        {
+            CurrentLookHit = null;
+        }
 
         if (currentInteractable != null)
         {
             currentInteractable?.OnLoseFocus();
             InstanceHandler.GetInstance<GameViewManager>().HideView<InteractionView>();
             currentInteractable = null;
+            OnInteractableChanged?.Invoke(null);
         }
     }
 
