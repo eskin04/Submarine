@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_Wall
+  m_Shader: {fileID: -6465566751694194690, guid: 0e8585fb892473849ba967b7aefd0861, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _ALPHATEST_ON
+  m_InvalidKeywords: []
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: TransparentCutout
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ARMBaseTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ARMSecondTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseColorTexture:
+        m_Texture: {fileID: 2800000, guid: 179506d86b4a3dc429c254df0f4b3652, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMetallicTexture:
+        m_Texture: {fileID: 2800000, guid: 70da5d515546bc74299e1029ec61e563, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseNormal:
+        m_Texture: {fileID: 2800000, guid: 6719b19e80ea7b64bb836c21b9a81dfc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseTextureAO:
+        m_Texture: {fileID: 2800000, guid: 3bfc0102cf9738449895d2727f784c2e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseTextureSmoothness:
+        m_Texture: {fileID: 2800000, guid: cce67db04afbff2419aeb455ed5b4985, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondMetallicTexture:
+        m_Texture: {fileID: 2800000, guid: 70da5d515546bc74299e1029ec61e563, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondTexture:
+        m_Texture: {fileID: 2800000, guid: 179506d86b4a3dc429c254df0f4b3652, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondTextureAO:
+        m_Texture: {fileID: 2800000, guid: 3bfc0102cf9738449895d2727f784c2e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondTextureNormal_1:
+        m_Texture: {fileID: 2800000, guid: 6719b19e80ea7b64bb836c21b9a81dfc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondTextureSmoothness:
+        m_Texture: {fileID: 2800000, guid: cce67db04afbff2419aeb455ed5b4985, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ARM_AO_ntensity: 0
+    - _ARM_Metallic_ntensity: 0
+    - _ARM_SecondAO_ntensity: 0
+    - _ARM_SecondMetallic_ntensity: 0
+    - _ARM_SecondSmoothness_ntensity: 0
+    - _ARM_Smoothness_ntensity: 0
+    - _AlphaClip: 1
+    - _AlphaToMask: 1
+    - _BASETEXTUREARM: 0
+    - _BaseMetallicIntensity: 1
+    - _BaseNormalStrength: 0.5
+    - _BaseSmoothness_ntensity: 0.5
+    - _BaseTextureAO_1: 1
+    - _BaseTextureAO_ntensity: 1
+    - _BaseTextureMetallic: 1
+    - _BaseTextureNormal: 1
+    - _BaseTextureSmoothness_1: 1
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 1
+    - _CastShadows: 1
+    - _Cull: 2
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _MaxHeight: 0
+    - _MicroTiling: 5
+    - _MicroVariationAlphaTiling: 1
+    - _MicroVariationTiling: 2
+    - _MinHeight: 0
+    - _NoiseContrast: 2
+    - _NoiseScale: 0
+    - _Offset: 1
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _Rotate: 0
+    - _SECONDTEXTUREARM: 0
+    - _SecondMetallic_ntensity: 1
+    - _SecondNormalStrenght: 0.5
+    - _SecondSmoothness_ntensity: 0.5
+    - _SecondTextureAO_1: 1
+    - _SecondTextureAO_ntensity: 1
+    - _SecondTextureMetallic: 1
+    - _SecondTextureNormal: 1
+    - _SecondTextureOffset: 0
+    - _SecondTextureRotate: 0
+    - _SecondTextureSmoothness_1: 1
+    - _SecondTextureTiling: 1
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _Tiling: 1
+    - _VariationNoise: 1
+    - _VariationOpacity: 0.6
+    - _WorkflowMode: 1
+    - _WorldAlignTexture: 0
+    - _ZTest: 4
+    - _ZWrite: 1
+    - _ZWriteControl: 0
+    m_Colors:
+    - _MicroTint: {r: 1, g: 1, b: 1, a: 1}
+    - _MicroVariationTint: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &5941605324634020611
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10
