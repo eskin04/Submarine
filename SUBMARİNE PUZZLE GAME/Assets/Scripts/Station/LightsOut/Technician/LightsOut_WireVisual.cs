@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
-[RequireComponent(typeof(UILineRenderer))]
+
+[RequireComponent(typeof(LineRenderer))]
 public class LightsOut_WireVisual : MonoBehaviour
 {
     [Header("Settings")]
@@ -11,18 +10,21 @@ public class LightsOut_WireVisual : MonoBehaviour
     public int segmentCount = 20;
 
     [Header("Physics Settings")]
-    public float baseSagAmount = 150f;
+    public float baseSagAmount = .5f;
     [Range(0f, 1f)]
-    public float tensionFactor = 0.5f;
+    public float tensionFactor = 0.8f;
 
-    private UILineRenderer uiLine;
-    private RectTransform rectTransform;
+    private LineRenderer lineRenderer;
 
     private void Awake()
     {
-        uiLine = GetComponent<UILineRenderer>();
-        rectTransform = GetComponent<RectTransform>();
-        uiLine.raycastTarget = false;
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.positionCount = segmentCount;
+
+        // Kablo kalınlığını buradan veya editörden ayarlayabilirsin
+        // lineRenderer.startWidth = 0.05f;
+        // lineRenderer.endWidth = 0.05f;
     }
 
     private void LateUpdate()
@@ -33,54 +35,53 @@ public class LightsOut_WireVisual : MonoBehaviour
 
     public void SetColor(Color color)
     {
-        if (uiLine == null) uiLine = GetComponent<UILineRenderer>();
-        uiLine.color = color;
+        if (lineRenderer == null) lineRenderer = GetComponent<LineRenderer>();
+
+        // LineRenderer'ın materyal rengini değiştiriyoruz
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
+
+        // Materyalin kendisine de renk atıyoruz (Emission vs. için)
+        if (lineRenderer.material != null)
+        {
+            lineRenderer.material.color = color;
+            // Eğer HDR/Emission kullanıyorsan:
+            // lineRenderer.material.SetColor("_EmissionColor", color);
+        }
     }
 
     private void DrawBezierCurve()
     {
-        Vector2 p0, p2;
+        Vector3 p0 = startPoint.position;
+        Vector3 p2 = endPoint.position;
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            rectTransform,
-            RectTransformUtility.WorldToScreenPoint(null, startPoint.position),
-            null,
-            out p0
-        );
+        // İki nokta arasındaki mesafe
+        float distance = Vector3.Distance(p0, p2);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            rectTransform,
-            RectTransformUtility.WorldToScreenPoint(null, endPoint.position),
-            null,
-            out p2
-        );
-
-
-        float distance = Vector2.Distance(p0, p2);
-
+        // Mesafe arttıkça sarkma (sag) azalır (Kablo gerilir)
         float currentSag = Mathf.Max(0, baseSagAmount - (distance * tensionFactor));
 
+        // Orta noktanın biraz aşağısı (Sarkma noktası)
+        // Vector3.down, dünyada "aşağı" demektir.
+        Vector3 midPoint = (p0 + p2) / 2f;
+        Vector3 p1 = midPoint + (Vector3.down * currentSag);
 
-        Vector2 midPoint = (p0 + p2) / 2f;
-        Vector2 p1 = midPoint + (Vector2.down * currentSag);
-
-        List<Vector2> pointList = new List<Vector2>();
-
+        // Bezier eğrisini çiz
         for (int i = 0; i < segmentCount; i++)
         {
             float t = i / (float)(segmentCount - 1);
-            Vector2 pixel = CalculateQuadraticBezierPoint(t, p0, p1, p2);
-            pointList.Add(pixel);
+            Vector3 pixel = CalculateQuadraticBezierPoint(t, p0, p1, p2);
+            lineRenderer.SetPosition(i, pixel);
         }
-
-        uiLine.SetPoints(pointList);
     }
 
-    private Vector2 CalculateQuadraticBezierPoint(float t, Vector2 p0, Vector2 p1, Vector2 p2)
+    private Vector3 CalculateQuadraticBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
     {
         float u = 1 - t;
         float tt = t * t;
         float uu = u * u;
-        return (uu * p0) + (2 * u * t * p1) + (tt * p2);
+
+        Vector3 p = (uu * p0) + (2 * u * t * p1) + (tt * p2);
+        return p;
     }
 }
