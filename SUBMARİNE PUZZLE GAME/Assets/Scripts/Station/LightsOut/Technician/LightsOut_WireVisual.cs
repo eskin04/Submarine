@@ -22,9 +22,6 @@ public class LightsOut_WireVisual : MonoBehaviour
         lineRenderer.useWorldSpace = true;
         lineRenderer.positionCount = segmentCount;
 
-        // Kablo kalınlığını buradan veya editörden ayarlayabilirsin
-        // lineRenderer.startWidth = 0.05f;
-        // lineRenderer.endWidth = 0.05f;
     }
 
     private void LateUpdate()
@@ -37,16 +34,12 @@ public class LightsOut_WireVisual : MonoBehaviour
     {
         if (lineRenderer == null) lineRenderer = GetComponent<LineRenderer>();
 
-        // LineRenderer'ın materyal rengini değiştiriyoruz
         lineRenderer.startColor = color;
         lineRenderer.endColor = color;
 
-        // Materyalin kendisine de renk atıyoruz (Emission vs. için)
         if (lineRenderer.material != null)
         {
             lineRenderer.material.color = color;
-            // Eğer HDR/Emission kullanıyorsan:
-            // lineRenderer.material.SetColor("_EmissionColor", color);
         }
     }
 
@@ -55,18 +48,13 @@ public class LightsOut_WireVisual : MonoBehaviour
         Vector3 p0 = startPoint.position;
         Vector3 p2 = endPoint.position;
 
-        // İki nokta arasındaki mesafe
         float distance = Vector3.Distance(p0, p2);
 
-        // Mesafe arttıkça sarkma (sag) azalır (Kablo gerilir)
         float currentSag = Mathf.Max(0, baseSagAmount - (distance * tensionFactor));
 
-        // Orta noktanın biraz aşağısı (Sarkma noktası)
-        // Vector3.down, dünyada "aşağı" demektir.
         Vector3 midPoint = (p0 + p2) / 2f;
         Vector3 p1 = midPoint + (Vector3.down * currentSag);
 
-        // Bezier eğrisini çiz
         for (int i = 0; i < segmentCount; i++)
         {
             float t = i / (float)(segmentCount - 1);

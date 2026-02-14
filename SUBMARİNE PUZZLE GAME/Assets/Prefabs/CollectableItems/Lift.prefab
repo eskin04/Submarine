@@ -237,6 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Up
+  interactKey: 101
   isInteractable: 0
   onInteract:
     m_PersistentCalls:
@@ -566,6 +567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Down
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -667,6 +669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Drop Item
+  interactKey: 103
   isInteractable: 0
   onInteract:
     m_PersistentCalls:

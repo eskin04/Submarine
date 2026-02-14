@@ -1,35 +1,69 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LightsOut_Port : MonoBehaviour
 {
     public int portID;
 
     [Header("Visuals")]
-    public Image connectionLight;
+    [SerializeField] private MeshRenderer statusLightRenderer;
+    [SerializeField] private int materialIndex = 0;
+
     public Transform snapPoint;
+
+
+    private static readonly int LightSelectionProp = Shader.PropertyToID("_LIGHTSELECTION");
+    private static readonly int IsGlowProp = Shader.PropertyToID("_ISGLOW");
+
+    private Material runtimeMaterial;
 
     private void Awake()
     {
-        if (connectionLight) connectionLight.color = Color.black;
+        if (statusLightRenderer != null)
+        {
+            runtimeMaterial = statusLightRenderer.materials[materialIndex];
+            TurnOffLight();
+        }
     }
+
+
 
     public void SetLightColor(WireColor color)
     {
-        if (connectionLight == null) return;
-
+        if (runtimeMaterial == null) return;
+        int selectionIndex = 0;
         switch (color)
         {
-            case WireColor.Yellow: connectionLight.color = Color.yellow; break;
-            case WireColor.Green: connectionLight.color = Color.green; break;
-            case WireColor.Blue: connectionLight.color = Color.blue; break;
-            case WireColor.Red: connectionLight.color = Color.red; break;
-            default: connectionLight.color = Color.black; break; // Kapalı
+            case WireColor.Red: selectionIndex = 0; break;
+            case WireColor.Green: selectionIndex = 1; break;
+            case WireColor.Yellow: selectionIndex = 2; break;
+            case WireColor.Blue: selectionIndex = 3; break;
         }
+
+        runtimeMaterial.SetInt(LightSelectionProp, selectionIndex);
+
+
+        runtimeMaterial.SetFloat(IsGlowProp, 1.0f);
+
     }
 
     public void TurnOffLight()
     {
-        if (connectionLight) connectionLight.color = Color.black;
+        if (runtimeMaterial == null) return;
+
+
+        runtimeMaterial.SetFloat(IsGlowProp, 0.0f);
+
+    }
+
+    [ContextMenu("Test Light On (Yellow)")]
+    public void TestLightOn()
+    {
+        SetLightColor(WireColor.Yellow);
+    }
+
+    [ContextMenu("Test Light Off")]
+    public void TestLightOff()
+    {
+        TurnOffLight();
     }
 }
