@@ -42,7 +42,6 @@ public class LightsOut_StationManager : NetworkBehaviour
         allSwitches.Clear();
         correctSolutionSequence.Clear();
 
-        // Renk havuzu
         List<WireColor> colors = new List<WireColor>()
         {
             WireColor.Yellow, WireColor.Green, WireColor.Blue, WireColor.Red

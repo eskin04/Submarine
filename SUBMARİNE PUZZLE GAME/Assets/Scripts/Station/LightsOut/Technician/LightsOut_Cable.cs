@@ -1,10 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
-[RequireComponent(typeof(CanvasGroup))]
-public class LightsOut_Cable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+[RequireComponent(typeof(Collider))]
+public class LightsOut_Cable : MonoBehaviour
 {
     [Header("Identity")]
     public int cableID;
@@ -12,83 +9,90 @@ public class LightsOut_Cable : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     [Header("References")]
     public LightsOut_TechnicianUI uiManager;
-    private RectTransform rectTransform;
-    private CanvasGroup canvasGroup;
-    private Transform parentRect;
-    private Vector2 dragOffset;
+
+    private MeshRenderer meshRenderer;
+
+    private bool isDragging = false;
+    private Plane dragPlane;
+    private LightsOut_Port currentConnectedPort;
+    private BoxCollider movementBounds;
 
     private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
-        canvasGroup = GetComponent<CanvasGroup>();
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    public void Setup(int id, WireColor color, LightsOut_TechnicianUI manager)
+    public void Setup(int id, WireColor color, LightsOut_TechnicianUI manager, BoxCollider bounds)
     {
         cableID = id;
         myPhysicalColor = color;
         uiManager = manager;
+        movementBounds = bounds;
 
-        GetComponent<Image>().color = GetColorValue(color);
-    }
-
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        canvasGroup.blocksRaycasts = false;
-        LightsOut_Port currentPort = GetComponentInParent<LightsOut_Port>();
-        if (currentPort != null)
+        if (meshRenderer != null)
         {
-            currentPort.TurnOffLight();
-        }
-        parentRect = transform.parent;
-        transform.SetParent(uiManager.dragLayer);
-        parentRect = uiManager.dragLayer.GetComponent<RectTransform>();
-
-        Vector2 localMousePos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            (RectTransform)parentRect,
-            eventData.position,
-            eventData.pressEventCamera,
-            out localMousePos
-        );
-
-        dragOffset = rectTransform.anchoredPosition - localMousePos;
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        Vector2 localMousePos;
-
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            (RectTransform)parentRect,
-            eventData.position,
-            eventData.pressEventCamera,
-            out localMousePos
-        ))
-        {
-            rectTransform.anchoredPosition = localMousePos + dragOffset;
+            meshRenderer.material.color = GetColorValue(color);
         }
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+
+    private void OnMouseDown()
     {
-        canvasGroup.blocksRaycasts = true;
+        if (uiManager == null) return;
 
+        isDragging = true;
 
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-        LightsOut_Port foundPort = null;
-
-        foreach (RaycastResult result in results)
+        if (currentConnectedPort != null)
         {
-            LightsOut_Port port = result.gameObject.GetComponentInParent<LightsOut_Port>();
+            currentConnectedPort.TurnOffLight();
+            currentConnectedPort = null;
+        }
 
-            if (port != null)
+        dragPlane = new Plane(-Camera.main.transform.forward, transform.position);
+    }
+
+    private void OnMouseDrag()
+    {
+        if (!isDragging) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (dragPlane.Raycast(ray, out float enterDist))
+        {
+            Vector3 hitPoint = ray.GetPoint(enterDist);
+            if (movementBounds != null)
             {
+                transform.position = movementBounds.ClosestPoint(hitPoint);
+            }
+            else
+            {
+                transform.position = hitPoint;
+            }
+
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        isDragging = false;
+        CheckDrop();
+    }
+
+
+    private void CheckDrop()
+    {
+        LightsOut_Port foundPort = null;
+        float closestDist = float.MaxValue;
+        float snapRange = 0.5f;
+
+        foreach (var port in uiManager.ports)
+        {
+            float dist = Vector3.Distance(transform.position, port.snapPoint.position);
+
+            if (dist < snapRange && dist < closestDist)
+            {
+                closestDist = dist;
                 foundPort = port;
-                break;
             }
         }
 
@@ -99,25 +103,21 @@ public class LightsOut_Cable : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         else
         {
             ResetPosition();
-
             uiManager.OnCableDisconnected(this);
         }
     }
 
     public void SnapToPort(LightsOut_Port port)
     {
-        transform.SetParent(port.transform);
-        rectTransform.position = port.snapPoint.position;
+        currentConnectedPort = port;
+        transform.position = port.snapPoint.position;
     }
 
     public void ResetPosition()
     {
+        currentConnectedPort = null;
         Transform myHomeSlot = uiManager.startSlots[cableID];
-
-        transform.SetParent(myHomeSlot);
-
-        rectTransform.anchoredPosition = Vector2.zero;
-
+        transform.position = myHomeSlot.position;
     }
 
     private Color GetColorValue(WireColor c)

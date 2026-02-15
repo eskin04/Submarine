@@ -8,6 +8,7 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private bool isInteractable = true;
     [SerializeField] private UnityEvent onInteract;
+    [SerializeField] private UnityEvent onStopInteract;
     private bool isInteracting = false;
 
     private Outline outline;
@@ -44,6 +45,7 @@ public class Interactable : MonoBehaviour, IInteractable
     public void StopInteract()
     {
         isInteracting = false;
+        onStopInteract?.Invoke();
     }
 
     public void OnFocus()

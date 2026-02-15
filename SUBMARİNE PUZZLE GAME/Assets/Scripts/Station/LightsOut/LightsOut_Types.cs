@@ -5,7 +5,7 @@ public enum WireColor
     Yellow,
     Green,
     Blue,
-    Red
+    Red,
 }
 
 public enum StatusLightState
