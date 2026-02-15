@@ -24,10 +24,10 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 235a6381f533e6145b1a17d008a861f4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _LIGHTSELECTION_BLUE
+  m_ValidKeywords: []
   m_InvalidKeywords:
   - _ISGLOW
+  - _LIGHTSELECTION_BLUE
   - _LIGHTSELECTION_C
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -58,6 +58,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ColorIndex: 0
     - _Distance: 33.3
     - _ENUM: 0
     - _Edge1: 87
