@@ -25,9 +25,14 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+<<<<<<< Updated upstream
   - _ISGLOW
   - _LIGHTSELECTION_GREEN
+=======
+  - _LIGHTSELECTION_YELLOW
+>>>>>>> Stashed changes
   m_InvalidKeywords:
+  - _ISGLOW
   - _LIGHTSELECTION_C
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -78,6 +83,7 @@ Material:
     - _SpecularSize: 17.3
     - _TestFloat: 65
     - _power: -0.9
+    - _sGlow: 0
     m_Colors:
     - _Blue: {r: 0, g: 0, b: 1, a: 1}
     - _Color: {r: 0.6155723, g: 0, b: 0, a: 1}
