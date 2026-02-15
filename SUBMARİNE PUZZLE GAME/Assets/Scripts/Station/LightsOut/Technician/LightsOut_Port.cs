@@ -12,7 +12,7 @@ public class LightsOut_Port : MonoBehaviour
 
 
     private static readonly int LightSelectionProp = Shader.PropertyToID("_LIGHTSELECTION");
-    private static readonly int IsGlowProp = Shader.PropertyToID("_ISGLOW");
+    private static readonly int IsGlowProp = Shader.PropertyToID("_sGlow");
 
     private Material runtimeMaterial;
 
@@ -42,7 +42,7 @@ public class LightsOut_Port : MonoBehaviour
         runtimeMaterial.SetInt(LightSelectionProp, selectionIndex);
 
 
-        runtimeMaterial.SetFloat(IsGlowProp, 1.0f);
+        runtimeMaterial.SetFloat(IsGlowProp, 0.0f);
 
     }
 
@@ -51,7 +51,7 @@ public class LightsOut_Port : MonoBehaviour
         if (runtimeMaterial == null) return;
 
 
-        runtimeMaterial.SetFloat(IsGlowProp, 0.0f);
+        runtimeMaterial.SetFloat(IsGlowProp, 1.0f);
 
     }
 
