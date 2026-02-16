@@ -20,6 +20,10 @@ public class LightsOut_WireVisual : MonoBehaviour
     public float tensionFactor = 0.5f;
     public float sagLimitFactor = 1.2f;
 
+    [Header("Depth Separation")]
+    public int sortingOrder = 0;
+    public float depthStep = 0.02f;
+
     private Mesh cableMesh;
     private MeshFilter meshFilter;
     private Vector3[] curvePoints;
@@ -61,12 +65,19 @@ public class LightsOut_WireVisual : MonoBehaviour
 
         Vector3 p1 = p0 + (startPoint.forward * (distance * 0.3f));
 
+
         float targetSag = Mathf.Max(0, baseSagAmount - (distance * tensionFactor));
         float physicalLimit = distance * sagLimitFactor;
         float currentSag = Mathf.Min(targetSag, physicalLimit);
 
         Vector3 midBase = (p1 + p3) / 2f;
         Vector3 p2 = midBase + (Vector3.down * currentSag);
+
+        Vector3 depthOffset = startPoint.right * (sortingOrder * depthStep);
+
+
+        p1 += depthOffset;
+        p2 += depthOffset;
 
         p0 = transform.InverseTransformPoint(p0);
         p1 = transform.InverseTransformPoint(p1);

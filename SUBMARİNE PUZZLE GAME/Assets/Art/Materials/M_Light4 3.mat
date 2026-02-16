@@ -20,15 +20,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Light1
+  m_Name: M_Light4 3
   m_Shader: {fileID: -6465566751694194690, guid: 235a6381f533e6145b1a17d008a861f4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ISGLOW
+  - _LIGHTSELECTION_BLUE
   - _LIGHTSELECTION_C
-  - _LIGHTSELECTION_RED
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -58,7 +58,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorIndex: 4
+    - _ColorIndex: 0
     - _Distance: 33.3
     - _ENUM: 0
     - _Edge1: 87
@@ -68,7 +68,7 @@ Material:
     - _Fresnel: 0
     - _FresnelPower: 3
     - _ISGLOW: 1
-    - _LIGHTSELECTION: 0
+    - _LIGHTSELECTION: 3
     - _LightIntensity: 0
     - _Light_ntensity: 3
     - _Power: 1

@@ -66,6 +66,8 @@ public class LightsOut_TechnicianUI : NetworkBehaviour
                 if (d.cableID < wireAnchors.Count)
                     wireVis.endPoint = wireAnchors[d.cableID];
 
+                wireVis.sortingOrder = d.cableID;
+
                 wireVis.SetColor(GetColorEnum(d.physicalColor));
             }
 
@@ -92,7 +94,7 @@ public class LightsOut_TechnicianUI : NetworkBehaviour
     {
         if (stationManager != null)
         {
-            stationManager.ConnectCableRPC(cable.cableID, -1);
+            stationManager.UnplugCableRPC(cable.cableID);
         }
     }
 

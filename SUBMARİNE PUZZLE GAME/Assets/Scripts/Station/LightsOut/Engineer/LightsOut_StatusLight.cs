@@ -7,48 +7,58 @@ public class LightsOut_StatusLight : MonoBehaviour
 
     [Header("Visuals")]
     public MeshRenderer meshRenderer;
-    public Image uiImage;
+    public float lightIntensity = 5.0f;
+    private Material runtimeMaterial;
 
-    [Header("Material / Colors")]
-    public Material matRed;
-    public Material matYellow;
-    public Material matGreen;
-    public Material matOff;
 
-    private Color colorRed = Color.red;
-    private Color colorYellow = Color.yellow;
-    private Color colorGreen = Color.green;
-    private Color colorOff = new Color(0.2f, 0, 0);
+    private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
+    private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
+
+    private int lastColorIndex = 0;
+
+    private void Awake()
+    {
+        if (meshRenderer != null)
+        {
+            runtimeMaterial = meshRenderer.materials[0];
+        }
+    }
 
     public void SetState(StatusLightState state)
     {
         switch (state)
         {
             case StatusLightState.Red:
-                ApplyVisual(matRed, colorRed);
+                ApplyVisual(1);
                 break;
             case StatusLightState.Yellow:
-                ApplyVisual(matYellow, colorYellow);
+                ApplyVisual(4);
                 break;
             case StatusLightState.Green:
-                ApplyVisual(matGreen, colorGreen);
+                ApplyVisual(2);
                 break;
             default:
-                ApplyVisual(matOff, colorOff);
+                ApplyVisual(0);
                 break;
         }
     }
 
-    private void ApplyVisual(Material mat, Color col)
+    private void ApplyVisual(int index)
     {
-        if (meshRenderer != null)
+        if (runtimeMaterial != null)
         {
-            meshRenderer.material = mat;
+            runtimeMaterial.SetFloat(LightSelectionProp, index); // 1 = Renk seçimi
+            if (lastColorIndex == 0 && index != 0)
+            {
+                runtimeMaterial.SetFloat(IntensityProp, lightIntensity); // Işık yoğunluğu
+            }
+            else if (lastColorIndex != 0 && index == 0)
+            {
+                runtimeMaterial.SetFloat(IntensityProp, 0.0f); // Işığı kapat
+            }
+            lastColorIndex = index;
         }
 
-        if (uiImage != null)
-        {
-            uiImage.color = col;
-        }
+
     }
 }
