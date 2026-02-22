@@ -5,15 +5,17 @@ using PurrNet.StateMachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameEndState : StateNode
+public class GameEndState : StateNode<ushort>
 {
 
 
-    public override void Enter(bool asServer)
+    public override void Enter(ushort isWin, bool asServer)
     {
-        base.Enter(asServer);
+        base.Enter(isWin, asServer);
         if (!asServer) return;
-        ShowGameEndView();
+        Debug.Log($"Showing Game End View. Win: {isWin}");
+
+        ShowGameEndView(isWin);
         machine.StartCoroutine(StartAgain());
     }
 
@@ -25,8 +27,13 @@ public class GameEndState : StateNode
         networkManager.sceneModule.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
     [ObserversRpc]
-    private void ShowGameEndView()
+    private void ShowGameEndView(ushort isWin)
     {
+        var view = InstanceHandler.GetInstance<GameEndView>();
+        if (view != null)
+        {
+            view.SetResultText(isWin);
+        }
         InstanceHandler.GetInstance<GameViewManager>().ShowView<GameEndView>(hideOthers: false);
 
     }

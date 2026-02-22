@@ -7,6 +7,7 @@ public class LightsOut_Switch : NetworkBehaviour
 {
     [Header("Settings")]
     public LightsOut_StationManager stationManager;
+    public Interactable moduleInteractable;
     public int buttonID;
     public WireColor myLabelColor;
     public float RotateAngle = 30f;
@@ -27,7 +28,7 @@ public class LightsOut_Switch : NetworkBehaviour
         ResetButton();
     }
 
-    public void OnClicked()
+    private void OnClicked()
     {
         if (switchObject != null)
         {
@@ -41,7 +42,7 @@ public class LightsOut_Switch : NetworkBehaviour
         }
     }
 
-    public void ResetButton()
+    private void ResetButton()
     {
         if (switchObject != null)
         {
@@ -52,10 +53,10 @@ public class LightsOut_Switch : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        if (!isPressed)
-        {
-            OnClicked();
-        }
+        if (isPressed || (moduleInteractable != null && !moduleInteractable.IsInteracting())) return;
+
+        OnClicked();
+
     }
 
 }

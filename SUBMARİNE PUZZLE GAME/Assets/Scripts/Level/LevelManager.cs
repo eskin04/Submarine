@@ -131,6 +131,7 @@ public class LevelManager : NetworkBehaviour
             return station;
         }
         var availableTiers = pool.Keys.Where(k => pool[k].Count > 0).ToList();
+
         if (availableTiers.Count > 0)
         {
             StationTier fallbackTier = availableTiers[Random.Range(0, availableTiers.Count)];

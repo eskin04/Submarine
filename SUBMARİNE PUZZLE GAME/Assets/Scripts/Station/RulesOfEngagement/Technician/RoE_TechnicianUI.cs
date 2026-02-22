@@ -189,7 +189,7 @@ public class RoE_TechnicianUI : MonoBehaviour
     public void OnThreatSelected(string codeName)
     {
         if (currentSelectedCode == codeName) return;
-        if (Time.time < nextSelectionTime)
+        if (Time.time < nextSelectionTime && !string.IsNullOrEmpty(currentSelectedCode))
         {
             float remaining = nextSelectionTime - Time.time;
 

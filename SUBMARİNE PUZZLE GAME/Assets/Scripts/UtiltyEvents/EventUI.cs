@@ -13,14 +13,13 @@ public class EventUI : MonoBehaviour
     [SerializeField] private float displayDuration = 3.0f;
 
     [Header("Colors")]
-    [SerializeField] private Color failureColor = Color.red;   // Kötü durum rengi
-    [SerializeField] private Color repairColor = Color.green;  // İyi durum rengi
+    [SerializeField] private Color failureColor = Color.red;
+    [SerializeField] private Color repairColor = Color.green;
 
     private Sequence currentSequence;
 
     private void OnEnable()
     {
-        // Yeni event ismine abone ol
         GlobalEvents.OnShowSystemMessage += PlayTypewriterEffect;
     }
 
@@ -32,25 +31,22 @@ public class EventUI : MonoBehaviour
 
 
 
-    // İmza değişti: (string stationName, bool isFailure)
     public void PlayTypewriterEffect(string stationName, bool isFailure)
     {
         currentSequence?.Kill();
 
-        // 1. Metni ve Rengi Belirle
         string prefix = isFailure ? "SYSTEM FAILURE" : "SYSTEM RESTORED";
         string fullMessage = $"{prefix}: {stationName.ToUpper()}";
 
         if (infoText)
         {
             infoText.text = "";
-            infoText.color = isFailure ? failureColor : repairColor; // Rengi değiştir
+            infoText.color = isFailure ? failureColor : repairColor;
         }
 
         InstanceHandler.GetInstance<GameViewManager>().ShowView<InfoView>(hideOthers: false);
 
 
-        // 2. Animasyon (Aynı kalıyor)
         float typingDuration = fullMessage.Length * speedPerCharacter;
         currentSequence = DOTween.Sequence();
 

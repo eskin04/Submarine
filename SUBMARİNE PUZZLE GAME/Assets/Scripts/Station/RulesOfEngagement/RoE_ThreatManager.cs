@@ -63,7 +63,7 @@ public class RoE_ThreatManager : NetworkBehaviour
         activeThreats.Clear();
 
         List<BoardEntry> availableIdentities = new List<BoardEntry>(incomingBoardSetup);
-        Debug.Log(currentLevel + "current level");
+        Debug.Log("current level: " + currentLevel);
         int maxThreatCount = (currentLevel <= 4) ? currentLevel + 1 : 4;
         int threatCount = Random.Range(maxThreatCount - 1, maxThreatCount + 1);
 

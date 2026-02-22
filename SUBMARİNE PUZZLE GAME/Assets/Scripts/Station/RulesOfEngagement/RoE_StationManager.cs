@@ -192,7 +192,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
         }
-        stationController.AvoidMistake();
+        stationController.ReportRepairMistake(0.5f);
         RpcSendFeedback("Avoided!", Color.cyan);
         DestroyThreat(threat);
     }

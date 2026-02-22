@@ -136,37 +136,38 @@ public class StationController : NetworkBehaviour
         {
             GlobalEvents.OnReduceStress?.Invoke(repairStressReward);
             stationState.value = StationState.Reparied;
-            if (utilityEventData == null)
-            {
-                GlobalEvents.OnShowSystemMessage?.Invoke(gameObject.name, false);
 
-            }
-            else
-            {
-                string stationName = utilityEventData.targetStatName.ToString();
-                GlobalEvents.OnShowSystemMessage?.Invoke(stationName, false);
-
-            }
-
+            RpcShowSystemMessage();
 
         }
     }
 
-    [ServerRpc(requireOwnership: false)]
-    public void ReportRepairMistake()
+    [ObserversRpc(runLocally: true)]
+    public void RpcShowSystemMessage()
     {
-        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty);
-        GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty);
+        if (utilityEventData == null)
+        {
+            GlobalEvents.OnShowSystemMessage?.Invoke(gameObject.name, false);
+
+        }
+        else
+        {
+            string stationName = utilityEventData.targetStatName.ToString();
+            GlobalEvents.OnShowSystemMessage?.Invoke(stationName, false);
+
+        }
+    }
+
+
+    [ServerRpc(requireOwnership: false)]
+    public void ReportRepairMistake(float penaltyMultiplier = 1.0f)
+    {
+        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty * penaltyMultiplier);
+        GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty * penaltyMultiplier);
 
     }
 
-    [ServerRpc(requireOwnership: false)]
-    public void AvoidMistake()
-    {
-        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty / 2);
-        GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty / 2);
 
-    }
 
     [ServerRpc(requireOwnership: false)]
     public void ReportTimeOutFailure()

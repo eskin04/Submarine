@@ -5,7 +5,7 @@ using System.Linq;
 
 public class FloodManager : NetworkBehaviour
 {
-    public static System.Action<bool> OnGameEnd;
+    public static System.Action<int> OnGameEnd;
 
     [Header("Settings")]
     [SerializeField] private float maxWater = 100f;
@@ -76,6 +76,7 @@ public class FloodManager : NetworkBehaviour
         gameTimeCounter = 0f;
         currentMainWaveIndex = 0;
         nextProbabilityCheckTime = 1f;
+        Debug.Log("Flood Başladı! Main istasyon sayısı: " + pendingMainStations.Count);
 
     }
 
@@ -129,7 +130,6 @@ public class FloodManager : NetworkBehaviour
             nextProbabilityCheckTime = gameTimeCounter + 1f;
         }
 
-        // SADECE MAIN SENARYOSUNU İŞLE
         ProcessBreakdownScenario(mainBreakdownProfile, pendingMainStations, ref currentMainWaveIndex, shouldRollDice);
     }
 
@@ -184,7 +184,7 @@ public class FloodManager : NetworkBehaviour
         if (currentWater.value >= maxWater)
         {
             isGameOver = true;
-            OnGameEnd?.Invoke(isGameOver);
+            OnGameEnd?.Invoke(0);
             return;
         }
 
@@ -199,14 +199,12 @@ public class FloodManager : NetworkBehaviour
 
         float totalFillRate = 0f;
 
-        // Main Hesabı
         if (brokenMainCount > 0)
         {
             totalFillRate += mainBaseFillRate;
             if (brokenMainCount > 1) totalFillRate += (brokenMainCount - 1) * mainExtraFillRate;
         }
 
-        // Utility Hesabı (StressManager bozsa bile burada sayılır)
         if (brokenUtilityCount > 0)
         {
             totalFillRate += brokenUtilityCount * utilityFillRate;
@@ -217,8 +215,15 @@ public class FloodManager : NetworkBehaviour
             currentWater.value += totalFillRate * Time.deltaTime;
         }
 
-        if (!criticalEventTriggered && currentWater.value >= 60f)
-            TriggerCriticalEvent();
+        // if (!criticalEventTriggered && currentWater.value >= 60f)
+        //     TriggerCriticalEvent();
+
+        if (brokenMainCount <= 0 && pendingMainStations.Count <= 0)
+        {
+            Debug.Log("Tüm ana istasyonlar onarıldı! Oyunu kazandınız.");
+            isGameOver = true;
+            OnGameEnd?.Invoke(1);
+        }
     }
 
 
@@ -259,7 +264,6 @@ public class FloodManager : NetworkBehaviour
         }
     }
 
-    // GlobalEvents tarafından çağrılır
     public void AddPenalty(float penaltyAmount)
     {
         if (!isServer) return;
@@ -267,7 +271,7 @@ public class FloodManager : NetworkBehaviour
         if (currentWater.value >= maxWater)
         {
             isGameOver = true;
-            OnGameEnd?.Invoke(isGameOver);
+            OnGameEnd?.Invoke(0);
         }
     }
 }

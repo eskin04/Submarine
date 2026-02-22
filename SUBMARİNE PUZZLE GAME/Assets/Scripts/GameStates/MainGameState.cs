@@ -15,10 +15,9 @@ public class MainGameState : StateNode
         FloodManager.OnGameEnd += HandleGameEnd;
     }
 
-    private void HandleGameEnd(bool isGameEnd)
+    private void HandleGameEnd(int isGameWin)
     {
-        if (isGameEnd)
-            machine.Next();
+        machine.Next((ushort)isGameWin);
     }
 
     public void StartGame()
