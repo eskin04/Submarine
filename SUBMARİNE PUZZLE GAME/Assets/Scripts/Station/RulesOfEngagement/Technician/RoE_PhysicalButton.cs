@@ -51,7 +51,7 @@ public class RoE_PhysicalButton : MonoBehaviour
 
         seq.Append(movingPart.DOLocalMove(targetLocalPos, pressDuration).SetEase(Ease.OutQuad));
 
-        seq.Append(movingPart.DOLocalMove(originalLocalPos, pressDuration).SetEase(Ease.OutQuad)); // Hafif yaylanma efekti
+        seq.Append(movingPart.DOLocalMove(originalLocalPos, pressDuration).SetEase(Ease.OutQuad));
 
         seq.OnComplete(() => isPressing = false);
     }

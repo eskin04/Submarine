@@ -939,6 +939,8 @@ MonoBehaviour:
   minAngle: 90
   maxAngle: -90
   rotationAxis: {x: 0, y: 0, z: -1}
+  frontWarningLight: {fileID: 6932136609993549922}
+  backWarningLight: {fileID: 4241333342703842099}
 --- !u!1 &1216674185181783073
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,6 +953,7 @@ GameObject:
   - component: {fileID: 4127914990533718836}
   - component: {fileID: 2806883746897746549}
   - component: {fileID: 32852430806116405}
+  - component: {fileID: 6932136609993549922}
   m_Layer: 0
   m_Name: FrontLight
   m_TagString: Untagged
@@ -1045,6 +1048,24 @@ MonoBehaviour:
   colorID: 0
   meshRenderer: {fileID: 929857604679372107}
   lightIntensity: 5
+--- !u!114 &6932136609993549922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216674185181783073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc42f0bc2efb3524fb24aaf316d572fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Thermal_WarningLight
+  meshRenderer: {fileID: 929857604679372107}
+  maxIntensity: 5
+  shaderColorIndex: 1
+  winColorIndex: 2
+  flashSpeed: 0.7
+  errorFadeOutTime: 0.5
 --- !u!1 &1284333697475669263
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,7 +1862,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2696510504385876245}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &3654918580082858076
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2003,7 +2024,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2863175935086404335}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &6589512367686108485
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2814,7 +2835,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4297866446058477895}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &1899220064166157814
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3393,6 +3414,7 @@ GameObject:
   - component: {fileID: 732522471043182194}
   - component: {fileID: 2610481021364185344}
   - component: {fileID: 3041625362632367020}
+  - component: {fileID: 4241333342703842099}
   m_Layer: 0
   m_Name: BackLight
   m_TagString: Untagged
@@ -3487,6 +3509,24 @@ MonoBehaviour:
   colorID: 0
   meshRenderer: {fileID: 4836620420630253353}
   lightIntensity: 5
+--- !u!114 &4241333342703842099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5674523575209621374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc42f0bc2efb3524fb24aaf316d572fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Thermal_WarningLight
+  meshRenderer: {fileID: 4836620420630253353}
+  maxIntensity: 5
+  shaderColorIndex: 1
+  winColorIndex: 2
+  flashSpeed: 0.7
+  errorFadeOutTime: 0.5
 --- !u!1 &5918431534289478131
 GameObject:
   m_ObjectHideFlags: 0
@@ -4241,7 +4281,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7492351996201880547}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &4649151711204529940
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4789,7 +4829,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8366339032156134855}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &7303597449090312178
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5023,7 +5063,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8623023817402641595}
-  m_Mesh: {fileID: -6686669030262739812, guid: 199111adde372ee40b2344b5a87f543c, type: 3}
+  m_Mesh: {fileID: -6686669030262739812, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!23 &5005204476994626061
 MeshRenderer:
   m_ObjectHideFlags: 0

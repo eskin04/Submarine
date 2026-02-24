@@ -580,6 +580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Radar
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -608,6 +609,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7253578683372520156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -888,6 +892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: HandBook
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -904,6 +909,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7904470766042608875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1422,7 +1430,6 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 1bdb248b86ee2d242a0572447d1dbb8d, type: 3}
   currentBoardSetup: []
   currentDailyRule: {fileID: 0}
-  currentLevel: 3
   hullBreachImpulse: {fileID: 3336511704415306256}
 --- !u!114 &2244890089872307753
 MonoBehaviour:
@@ -1475,8 +1482,9 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   utilityEventData: {fileID: 0}
   stationType: 0
-  stationTier: 0
+  stationTier: 4
   mistakeWaterPenalty: 3
+  timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
@@ -1865,7 +1873,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5677861217665278923}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0.523}
+  m_LocalPosition: {x: 0, y: 0, z: 0.525}
   m_LocalScale: {x: 0.0009, y: 0.0009, z: 0.0009}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -1960,10 +1968,10 @@ MonoBehaviour:
   maxGameDistance: 500
   minAngleSpacing: 20
   selectionCooldown: 5
-  shootButton: {fileID: 8893549217725870617}
-  passButton: {fileID: 6197565073152183721}
-  evadeButton: {fileID: 5135410926635359824}
-  evadeGlassCover: {fileID: 2392827884402682058}
+  shootButton: {fileID: 2734708024882905708}
+  passButton: {fileID: 1152270867074719581}
+  evadeButton: {fileID: 2740920100982864375}
+  evadeGlassCover: {fileID: 7636540103915806585}
   feedbackText: {fileID: 2524506619724945921}
   radarMaterial: {fileID: 2100000, guid: 6aa244d527000d24cb18eb83639f9a54, type: 2}
   shaderProperty: _ScanAngle
@@ -2694,6 +2702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Board
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -2710,6 +2719,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &996451272403928526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2855,6 +2867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Board
+  interactKey: 101
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -2871,6 +2884,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &80192278703942096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3584,6 +3600,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6478654486933550172}
     m_Modifications:
+    - target: {fileID: 1550994857013978650, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
     - target: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -3594,7 +3618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.299
+      value: -0.281
       objectReference: {fileID: 0}
     - target: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3628,15 +3652,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_RulesOfEngagement 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5252237514890669556, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2378838127280634816}
-    - target: {fileID: 7317686718026715716, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2378838127280634816}
-    - target: {fileID: 8415869613250412989, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2378838127280634816}
@@ -3645,46 +3661,46 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+--- !u!114 &1152270867074719581 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
 --- !u!4 &1577129298470617200 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
   m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2392827884402682058 stripped
+--- !u!114 &2734708024882905708 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
+--- !u!114 &2740920100982864375 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1550994857013978650, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
+--- !u!1 &7636540103915806585 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1349533553795381031, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 6518389909158625428, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
   m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5135410926635359824 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8415869613250412989, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
---- !u!114 &6197565073152183721 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7317686718026715716, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
---- !u!114 &8893549217725870617 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5252237514890669556, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton

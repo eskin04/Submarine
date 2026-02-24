@@ -62,6 +62,7 @@ public class Thermal_TechnicianPanel : MonoBehaviour
         }
     }
 
+
     private void TurnOffAllLamps()
     {
         foreach (var lamp in lampDict.Values)

@@ -20,6 +20,10 @@ public class Thermal_EngineerPanel : MonoBehaviour
     public float maxAngle = -90f;
     public Vector3 rotationAxis = Vector3.forward;
 
+    [Header("Warning Lights")]
+    public Thermal_WarningLight frontWarningLight;
+    public Thermal_WarningLight backWarningLight;
+
     private float targetClientPressure = 0f;
 
     public void UpdateDashboardData(int frontHeat, int backHeat, int timer, float pressure)
@@ -29,7 +33,30 @@ public class Thermal_EngineerPanel : MonoBehaviour
         if (timerText != null) timerText.text = $"{timer}s";
 
         targetClientPressure = pressure;
+
+        if (frontWarningLight != null) frontWarningLight.UpdateHeat(frontHeat);
+        if (backWarningLight != null) backWarningLight.UpdateHeat(backHeat);
     }
+
+    public void SetBottleneckState(bool isActive)
+    {
+        if (frontWarningLight != null) frontWarningLight.SetBottleneckActive(isActive);
+        if (backWarningLight != null) backWarningLight.SetBottleneckActive(isActive);
+    }
+
+    public void TriggerBottleneckError()
+    {
+        if (frontWarningLight != null) frontWarningLight.TriggerErrorSequence();
+        if (backWarningLight != null) backWarningLight.TriggerErrorSequence();
+    }
+
+    public void SetStationEndState(bool isWin)
+    {
+        if (frontWarningLight != null) frontWarningLight.SetStationEndState(isWin);
+        if (backWarningLight != null) backWarningLight.SetStationEndState(isWin);
+    }
+
+
 
     public void UpdateSliderVisual(float newPos)
     {

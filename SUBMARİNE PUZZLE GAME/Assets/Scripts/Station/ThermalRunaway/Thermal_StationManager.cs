@@ -349,21 +349,24 @@ public class Thermal_StationManager : NetworkBehaviour
 
         if (frontTechnicianPanel != null) frontTechnicianPanel.HandleBottleneckTrigger(sequence, location);
         if (backTechnicianPanel != null) backTechnicianPanel.HandleBottleneckTrigger(sequence, location);
+
+        if (engineerPanel != null) engineerPanel.SetBottleneckState(true);
     }
 
     [ObserversRpc]
     private void RpcOnBottleneckFailed()
     {
-        // engineerPanel.FlashRedWarning();
+        if (engineerPanel != null) engineerPanel.TriggerBottleneckError();
     }
 
     [ObserversRpc]
     private void RpcOnBottleneckSolved()
     {
         isBottleneckActive = false;
-        // Tüm lambaları söndür
         if (frontTechnicianPanel != null) frontTechnicianPanel.StopSequence();
         if (backTechnicianPanel != null) backTechnicianPanel.StopSequence();
+
+        if (engineerPanel != null) engineerPanel.SetBottleneckState(false);
     }
 
 
@@ -386,10 +389,6 @@ public class Thermal_StationManager : NetworkBehaviour
         }
     }
 
-
-
-
-
     private void WinStation()
     {
         stationController.SetReparied();
@@ -399,6 +398,7 @@ public class Thermal_StationManager : NetworkBehaviour
         backHeat = 10f;
         Debug.Log("<color=lime>!!! İSTASYON ÇÖZÜLDÜ !!!</color>");
         RpcSyncDashboard(10, 10, 0, 0);
+        RpcOnStationEnded(true);
     }
 
     private void LoseStation()
@@ -407,6 +407,19 @@ public class Thermal_StationManager : NetworkBehaviour
         RPCSetBrokenStation(false);
         RPCSetEngineerInteracted(false);
         Debug.Log("<color=red>!!! İSTASYON PATLADI !!!</color>");
+        RpcOnStationEnded(false);
+    }
+
+    [ObserversRpc]
+    private void RpcOnStationEnded(bool isWin)
+    {
+        if (engineerPanel != null)
+        {
+            engineerPanel.SetStationEndState(isWin);
+        }
+
+        backTechnicianPanel.StopSequence();
+        frontTechnicianPanel.StopSequence();
     }
 
     [ContextMenu("TEST: BreakStation")]
