@@ -336,6 +336,7 @@ public class Thermal_StationManager : NetworkBehaviour
         {
             currentSequenceIndex = 0;
             Debug.Log("<color=red>[MÜHENDİS]</color> YANLIŞ TUŞ! Şifre sıfırlandı.");
+            stationController.ReportRepairMistake();
             RpcOnBottleneckFailed();
         }
     }

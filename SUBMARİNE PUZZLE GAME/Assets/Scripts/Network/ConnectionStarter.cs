@@ -5,6 +5,9 @@ using UnityEngine;
 using PurrLobby;
 using PurrNet.Steam;
 using Steamworks;
+using Mono.Cecil.Cil;
+using PurrNet.Transports;
+using System;
 
 #if UTP_LOBBYRELAY
 using PurrNet.UTP;
@@ -13,15 +16,29 @@ using Unity.Services.Relay.Models;
 
 public class ConnectionStarter : MonoBehaviour
 {
+    public static ConnectionStarter Instance { get; private set; }
     private NetworkManager _networkManager;
     private LobbyDataHolder _lobbyDataHolder;
-    [SerializeField] private RadioVoiceManager _voiceManager;
+    private RadioVoiceManager _voiceManager;
+    public NetworkManager NetManager => _networkManager;
+    [PurrScene, SerializeField] private string lobbyScene;
+    private bool _isDisconnecting = false;
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         if (!TryGetComponent(out _networkManager))
         {
             PurrLogger.LogError($"Failed to get {nameof(NetworkManager)} component.", this);
         }
+        _voiceManager = FindFirstObjectByType<RadioVoiceManager>();
 
         _lobbyDataHolder = FindFirstObjectByType<LobbyDataHolder>();
         if (!_lobbyDataHolder)
@@ -30,11 +47,70 @@ public class ConnectionStarter : MonoBehaviour
 
     }
 
+    private void OnEnable()
+    {
+        if (_networkManager != null)
+        {
+            _networkManager.onClientConnectionState += HandleConnectionStateChange;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_networkManager != null)
+        {
+            _networkManager.onClientConnectionState -= HandleConnectionStateChange;
+        }
+    }
+
+    private void HandleConnectionStateChange(ConnectionState state)
+    {
+        if (_isDisconnecting || _networkManager.isServer) return;
+
+        if (state == ConnectionState.Disconnected)
+        {
+            _isDisconnecting = true;
+            DisconnectAndReturnToMainMenu();
+        }
+    }
+
+
+
+
+    private async void DisconnectAndReturnToMainMenu()
+    {
+        if (Unity.Services.Vivox.VivoxService.Instance != null && Unity.Services.Vivox.VivoxService.Instance.IsLoggedIn)
+        {
+            foreach (var channel in Unity.Services.Vivox.VivoxService.Instance.ActiveChannels)
+            {
+                await Unity.Services.Vivox.VivoxService.Instance.LeaveChannelAsync(channel.Key);
+            }
+            await Unity.Services.Vivox.VivoxService.Instance.LogoutAsync();
+        }
+
+        if (_lobbyDataHolder != null)
+        {
+            // _lobbyDataHolder.LeaveLobby() gibi bir metodun varsa burada çağır
+
+        }
+
+        if (_networkManager.isClient)
+        {
+            _networkManager.StopClient();
+        }
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(lobbyScene);
+
+        // 5. Kendini Yok Et (Zırhı parçala)
+        Destroy(gameObject);
+    }
+
     private void Start()
     {
-        if (!_networkManager)
+        if (_networkManager == null || _networkManager.isServer || _networkManager.isClient)
         {
             PurrLogger.LogError($"Failed to start connection. {nameof(NetworkManager)} is null!", this);
+
             return;
         }
 
@@ -74,6 +150,8 @@ public class ConnectionStarter : MonoBehaviour
 
         }
 
+
+
 #if UTP_LOBBYRELAY
         else if(_networkManager.transport is UTPTransport) {
             if(_lobbyDataHolder.CurrentLobby.IsOwner) {
@@ -89,6 +167,8 @@ public class ConnectionStarter : MonoBehaviour
             _networkManager.StartServer();
         StartCoroutine(StartClient());
     }
+
+
 
     private IEnumerator StartClient()
     {
