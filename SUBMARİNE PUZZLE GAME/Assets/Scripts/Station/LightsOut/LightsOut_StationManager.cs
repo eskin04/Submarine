@@ -102,6 +102,7 @@ public class LightsOut_StationManager : NetworkBehaviour
         WireColor[] fakeColors = { WireColor.Yellow, WireColor.Green, WireColor.Blue, WireColor.Red };
         bool isValidDerangement = false;
 
+
         int maxAttempts = 50;
         int currentAttempt = 0;
 
