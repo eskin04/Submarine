@@ -19,13 +19,29 @@ public class LightsOut_Switch : NetworkBehaviour
     private bool isPressed = false;
 
 
-    public void Setup(WireColor color)
+    public void Setup(WireColor color, WireColor fakeVisualColor)
     {
         myLabelColor = color;
         isPressed = false;
-        if (labelText) labelText.text = color.ToString();
+        if (labelText)
+        {
+            labelText.text = color.ToString();
+            labelText.color = GetUnityColor(fakeVisualColor);
+        }
 
         ResetButton();
+    }
+
+    private Color GetUnityColor(WireColor colorEnum)
+    {
+        switch (colorEnum)
+        {
+            case WireColor.Yellow: return Color.yellow;
+            case WireColor.Green: return Color.green;
+            case WireColor.Blue: return Color.blue;
+            case WireColor.Red: return Color.red;
+            default: return Color.white;
+        }
     }
 
     private void OnClicked()

@@ -33,4 +33,5 @@ public class SwitchData
     public int switchIndex;
     public WireColor labelColor;
     public bool isOn;
+    public WireColor fakeColor;
 }

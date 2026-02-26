@@ -92,9 +92,62 @@ public class LightsOut_StationManager : NetworkBehaviour
         isRoundActive = true;
         RpcSyncPuzzle(allCables);
         CalculateAndSyncEngineerLights();
-        RpcSyncSwitches(allSwitches);
+        SetSwitchTextColor(allSwitches);
         RpcSetGlobalLights(false);
 
+    }
+
+    private void SetSwitchTextColor(List<SwitchData> switchDataList)
+    {
+        WireColor[] fakeColors = { WireColor.Yellow, WireColor.Green, WireColor.Blue, WireColor.Red };
+        bool isValidDerangement = false;
+
+        int maxAttempts = 50;
+        int currentAttempt = 0;
+
+        while (!isValidDerangement && currentAttempt < maxAttempts)
+        {
+            currentAttempt++;
+
+            for (int i = 0; i < fakeColors.Length; i++)
+            {
+                WireColor temp = fakeColors[i];
+                int randomIndex = Random.Range(i, fakeColors.Length);
+                fakeColors[i] = fakeColors[randomIndex];
+                fakeColors[randomIndex] = temp;
+            }
+
+            isValidDerangement = true;
+
+            for (int i = 0; i < switchDataList.Count; i++)
+            {
+                if (fakeColors[i] == switchDataList[i].labelColor)
+                {
+                    isValidDerangement = false;
+                    break;
+                }
+            }
+        }
+
+        if (!isValidDerangement)
+        {
+            Debug.LogWarning("LightsOut: Renk karıştırma döngüsü sigortaya takıldı, manuel kaydırma uygulanıyor.");
+
+            for (int i = 0; i < switchDataList.Count; i++)
+            {
+                int nextIndex = (i + 1) % switchDataList.Count;
+                fakeColors[i] = switchDataList[nextIndex].labelColor;
+            }
+        }
+
+        for (int i = 0; i < switchDataList.Count; i++)
+        {
+            SwitchData data = switchDataList[i];
+            data.fakeColor = fakeColors[i];
+            switchDataList[i] = data;
+        }
+
+        RpcSyncSwitches(switchDataList);
     }
 
     [ObserversRpc]
@@ -312,7 +365,7 @@ public class LightsOut_StationManager : NetworkBehaviour
             {
                 if (btn.buttonID == data.switchIndex)
                 {
-                    btn.Setup(data.labelColor);
+                    btn.Setup(data.labelColor, data.fakeColor);
                 }
             }
         }
