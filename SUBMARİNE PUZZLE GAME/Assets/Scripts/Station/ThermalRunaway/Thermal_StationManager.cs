@@ -19,9 +19,10 @@ public class Thermal_StationManager : NetworkBehaviour
     [Header("Heat")]
     public float frontHeat = 25f;
     public float backHeat = 25f;
-
     public float baseHeatIncreaseRate = 3f;
-    private readonly float[] possibleHeatRates = { 1f, 1.5f, 2.0f, 2.5f };
+    public float activeValveHeatMultiplier = 0.8f;
+    public float inactiveValveHeatMultiplier = 1.2f;
+    public float[] possibleHeatRates = { 1f, 1.5f, 2.0f, 2.5f };
 
     [Header("Engineer Data")]
     public ThermalValveType activeCoolingValve = ThermalValveType.Common;
@@ -42,6 +43,8 @@ public class Thermal_StationManager : NetworkBehaviour
     public float needleRiseSpeed = 5f;
     public float baseNeedleDropSpeed = 2f;
 
+    public List<RhythmData> possibleRhythms = new List<RhythmData>();
+
     [Header("Bottleneck System")]
     public bool isBottleneckActive = false;
     public float bottleneckCooldownTimer = 0f;
@@ -50,6 +53,8 @@ public class Thermal_StationManager : NetworkBehaviour
 
     [Header("Network")]
     public float networkTickRate = 0.05f;
+
+    public bool isTesting = false;
 
     private float networkSyncTimer = 0f;
     private float lastPumpTime = 0f;
@@ -84,10 +89,31 @@ public class Thermal_StationManager : NetworkBehaviour
 
     private void SelectRandomRhythm()
     {
-        int rhythmRoll = Random.Range(0, 100);
-        if (rhythmRoll < 40) { currentEmin = 0.2f; currentEmax = 1.2f; currentPumpMultiplier = 1.0f; }
-        else if (rhythmRoll < 70) { currentEmin = 0.4f; currentEmax = 1.4f; currentPumpMultiplier = 1.5f; }
-        else { currentEmin = 0.8f; currentEmax = 1.8f; currentPumpMultiplier = 2.0f; }
+        if (possibleRhythms == null || possibleRhythms.Count == 0) return;
+
+
+        float totalWeight = 0f;
+        foreach (var rhythm in possibleRhythms)
+        {
+            totalWeight += rhythm.weight;
+        }
+
+        float randomValue = Random.Range(0f, totalWeight);
+        float currentSum = 0f;
+
+        foreach (var rhythm in possibleRhythms)
+        {
+            currentSum += rhythm.weight;
+            if (randomValue <= currentSum)
+            {
+                currentEmin = rhythm.eMin;
+                currentEmax = rhythm.eMax;
+                currentPumpMultiplier = rhythm.pumpMultiplier;
+
+                Debug.Log($"<color=cyan>[RİTİM]</color> Seçilen Ritim: {rhythm.rhythmName}");
+                break;
+            }
+        }
 
         lastPumpTime = Time.time;
         lastInterval = currentEmax;
@@ -127,8 +153,16 @@ public class Thermal_StationManager : NetworkBehaviour
         float frontMultiplier = 1f;
         float backMultiplier = 1f;
 
-        if (activeCoolingValve == ThermalValveType.Front) { frontMultiplier = 0.8f; backMultiplier = 1.2f; }
-        else if (activeCoolingValve == ThermalValveType.Back) { frontMultiplier = 1.2f; backMultiplier = 0.8f; }
+        if (activeCoolingValve == ThermalValveType.Front)
+        {
+            frontMultiplier = activeValveHeatMultiplier;
+            backMultiplier = inactiveValveHeatMultiplier;
+        }
+        else if (activeCoolingValve == ThermalValveType.Back)
+        {
+            frontMultiplier = inactiveValveHeatMultiplier;
+            backMultiplier = activeValveHeatMultiplier;
+        }
 
         frontHeat += baseHeatIncreaseRate * frontMultiplier * Time.deltaTime;
         backHeat += baseHeatIncreaseRate * backMultiplier * Time.deltaTime;
@@ -236,6 +270,30 @@ public class Thermal_StationManager : NetworkBehaviour
 
             if (CheckForBottleneck(currentPressure)) return;
 
+
+
+            if (isTesting)
+            {
+                float baseCooling = GetCoolingAmountFromPressure(currentPressure);
+                float actualCooling = baseCooling * currentPumpMultiplier;
+
+                if (actualCooling > 0)
+                {
+                    if (pumpedValve == ThermalValveType.Front)
+                    {
+                        frontHeat = Mathf.Max(10f, frontHeat - actualCooling);
+                        Debug.Log("Front Cooling: " + actualCooling);
+                    }
+                    else
+                    {
+                        backHeat = Mathf.Max(10f, backHeat - actualCooling);
+                        Debug.Log("Back Cooling: " + actualCooling);
+
+                    }
+                }
+                return;
+            }
+
             float halfCone = sliderConeWidth / 2f;
             float minBound = engineerSliderPosition - halfCone;
             float maxBound = engineerSliderPosition + halfCone;
@@ -250,10 +308,14 @@ public class Thermal_StationManager : NetworkBehaviour
                     if (pumpedValve == ThermalValveType.Front)
                     {
                         frontHeat = Mathf.Max(10f, frontHeat - actualCooling);
+                        Debug.Log("Front Cooling: " + actualCooling);
+
                     }
                     else
                     {
                         backHeat = Mathf.Max(10f, backHeat - actualCooling);
+                        Debug.Log("Back Cooling: " + actualCooling);
+
                     }
                 }
             }
@@ -403,7 +465,7 @@ public class Thermal_StationManager : NetworkBehaviour
 
     private void LoseStation()
     {
-        stationController.ReportRepairMistake();
+        stationController.SetDestroyed();
         RPCSetBrokenStation(false);
         RPCSetEngineerInteracted(false);
         Debug.Log("<color=red>!!! İSTASYON PATLADI !!!</color>");

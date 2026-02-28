@@ -21,12 +21,12 @@ public class FloodManager : NetworkBehaviour
     [Header("Network Data")]
     [SerializeField] private SyncVar<float> currentWater = new SyncVar<float>(0f);
 
-    private bool criticalEventTriggered = false;
+    // private bool criticalEventTriggered = false;
 
     private Queue<StationController> pendingMainStations = new Queue<StationController>();
 
     private List<StationController> brokenStations = new List<StationController>();
-    private StationController destroyedStation;
+    // private StationController destroyedStation;
 
     private bool isStart;
     private bool isGameOver;
@@ -92,7 +92,6 @@ public class FloodManager : NetworkBehaviour
                 break;
 
             case StationState.Destroyed:
-                destroyedStation = station;
                 if (brokenStations.Contains(station))
                     brokenStations.Remove(station);
                 break;
@@ -188,14 +187,13 @@ public class FloodManager : NetworkBehaviour
             return;
         }
 
-        // Listede hem Main hem Utility olabilir (HandleStationState sayesinde)
         int brokenMainCount = brokenStations.Count(s => s.stationType == StationType.Main);
         int brokenUtilityCount = brokenStations.Count(s => s.stationType == StationType.Utility);
 
-        if (destroyedStation != null)
-        {
-            if (destroyedStation.stationType == StationType.Main) brokenMainCount++;
-        }
+        // if (destroyedStation != null)
+        // {
+        //     if (destroyedStation.stationType == StationType.Main) brokenMainCount++;
+        // }
 
         float totalFillRate = 0f;
 
@@ -253,7 +251,7 @@ public class FloodManager : NetworkBehaviour
 
     private void TriggerCriticalEvent()
     {
-        criticalEventTriggered = true;
+        // criticalEventTriggered = true;
 
         var brokenMainStations = brokenStations.Where(s => s.stationType == StationType.Main).ToList();
 

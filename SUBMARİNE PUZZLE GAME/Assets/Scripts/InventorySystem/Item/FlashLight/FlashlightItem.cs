@@ -7,6 +7,7 @@ public class FlashlightItem : NetworkBehaviour, IInventoryItem
     [SerializeField] private Light lightSource;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip toggleSound;
+    [SerializeField] private KeyCode operateKey = KeyCode.Mouse0;
 
     [Header("Settings")]
     [SerializeField] private float maxBattery = 100f;
@@ -139,7 +140,7 @@ public class FlashlightItem : NetworkBehaviour, IInventoryItem
             }
         }
 
-        if (isEquipped && isOwner && Input.GetKeyDown(KeyCode.F))
+        if (isEquipped && isOwner && Input.GetKeyDown(operateKey))
         {
             if (localRuntimeBattery > 0)
             {

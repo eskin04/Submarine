@@ -6,7 +6,6 @@ using PurrLobby;
 using PurrNet.Steam;
 using Steamworks;
 using PurrNet.Transports;
-using System;
 
 #if UTP_LOBBYRELAY
 using PurrNet.UTP;
@@ -87,20 +86,22 @@ public class ConnectionStarter : MonoBehaviour
             await Unity.Services.Vivox.VivoxService.Instance.LogoutAsync();
         }
 
-        if (_lobbyDataHolder != null)
+
+
+        if (_networkManager.isServer)
         {
-            // _lobbyDataHolder.LeaveLobby() gibi bir metodun varsa burada çağır
-
+            _networkManager.StopServer();
         }
-
         if (_networkManager.isClient)
         {
             _networkManager.StopClient();
         }
 
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         UnityEngine.SceneManagement.SceneManager.LoadScene(lobbyScene);
 
-        // 5. Kendini Yok Et (Zırhı parçala)
         Destroy(gameObject);
     }
 

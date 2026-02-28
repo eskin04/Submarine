@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IInteractable
 {
     Transform transform { get; }
     string DisplayName { get; }
-    KeyCode InteractKey { get; }
+    List<KeyCode> InteractKeys { get; }
     bool CanInteract();
     bool IsInteracting();
     void StopInteract();

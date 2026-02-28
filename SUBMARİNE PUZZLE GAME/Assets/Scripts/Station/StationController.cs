@@ -112,11 +112,8 @@ public class StationController : NetworkBehaviour
         StartStation();
     }
 
-    public void SetDestroyed()
-    {
-        stationState.value = StationState.Destroyed;
 
-    }
+
 
     public void StopInteraction()
     {
@@ -126,6 +123,17 @@ public class StationController : NetworkBehaviour
                 interactable.GetComponent<ModuleInteraction>().StopInteract();
         }
         SetInteractable(false);
+
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void SetDestroyed()
+    {
+        if (stationState.value != StationState.Broken) return;
+
+        stationState.value = StationState.Destroyed;
+        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty);
+        GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty);
 
     }
 

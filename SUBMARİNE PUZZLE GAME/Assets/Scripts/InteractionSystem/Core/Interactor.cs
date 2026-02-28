@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 
@@ -9,18 +10,32 @@ public class Interactor : MonoBehaviour
     public static Action<IInteractable> OnInteractableChanged;
     public static Action<IInteractable> OnInteract;
     private IInteractable currentInteractable;
-    private KeyCode interactKey = KeyCode.E;
+    private List<KeyCode> interactKeys = new List<KeyCode>();
 
 
     void Update()
     {
 
         CheckForInteractable();
-        if (Input.GetKeyDown(interactKey) && currentInteractable != null && currentInteractable.CanInteract())
+
+        if (IsInteractKeyDown() && currentInteractable != null && currentInteractable.CanInteract())
         {
             currentInteractable.Interact();
             OnInteract?.Invoke(currentInteractable);
         }
+    }
+
+    private bool IsInteractKeyDown()
+    {
+        foreach (KeyCode key in interactKeys)
+        {
+            if (Input.GetKeyDown(key))
+            {
+                return true;
+
+            }
+        }
+        return false;
     }
 
 
@@ -47,7 +62,7 @@ public class Interactor : MonoBehaviour
                     currentInteractable = interactable;
                     currentInteractable?.OnFocus();
                     InstanceHandler.GetInstance<GameViewManager>().ShowView<InteractionView>(hideOthers: false);
-                    interactKey = currentInteractable.InteractKey;
+                    interactKeys = currentInteractable.InteractKeys;
                     OnInteractableChanged?.Invoke(currentInteractable);
                 }
                 return;

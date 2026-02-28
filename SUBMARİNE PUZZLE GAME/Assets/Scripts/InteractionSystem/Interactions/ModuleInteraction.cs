@@ -50,7 +50,7 @@ public class ModuleInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Escape))
+        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1))
         {
             StopInteract();
         }

@@ -23,7 +23,7 @@ public class InteractionView : View
             return;
         }
         string interactableName = ınteractable.DisplayName;
-        string keyHintText = $"[{ınteractable.InteractKey}]";
+        string keyHintText = $"[{ınteractable.InteractKeys[0]}]";
         interactionText.text = $"{keyHintText} {interactableName}";
     }
 

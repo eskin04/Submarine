@@ -13,6 +13,7 @@ public class MainGameState : StateNode
     [PurrScene, SerializeField] private string lobbyScene;
 
     private bool _isRestarting = false;
+    private bool _isSettingsMenuOpen = false;
 
     public override void Enter(bool asServer)
     {
@@ -29,9 +30,12 @@ public class MainGameState : StateNode
     {
         base.StateUpdate(asServer);
         if (!asServer) return;
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            OpenSettingsView();
+            if (!_isSettingsMenuOpen)
+                OpenSettingsView();
+            else
+                CloseSettingsView();
         }
     }
 
@@ -47,12 +51,14 @@ public class MainGameState : StateNode
 
     private void OpenSettingsView()
     {
+        _isSettingsMenuOpen = true;
         InstanceHandler.GetInstance<GameViewManager>().ShowView<SettingsView>(hideOthers: false);
 
     }
 
     private void CloseSettingsView()
     {
+        _isSettingsMenuOpen = false;
         InstanceHandler.GetInstance<GameViewManager>().HideView<SettingsView>();
 
     }

@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8531837750776932926
 BoxCollider:
@@ -202,6 +203,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8839963186212063592
 BoxCollider:
@@ -237,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Up
-  interactKey: 101
+  interactKeys: 65000000
   isInteractable: 0
   onInteract:
     m_PersistentCalls:
@@ -254,6 +256,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6218981986496260226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,6 +424,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &4350909718280686065
 BoxCollider:
@@ -532,6 +538,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &1789773206399868050
 BoxCollider:
@@ -567,7 +574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Down
-  interactKey: 101
+  interactKeys: 65000000
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -584,6 +591,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5627364461467148852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -669,7 +679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Drop Item
-  interactKey: 103
+  interactKeys: 67000000
   isInteractable: 0
   onInteract:
     m_PersistentCalls:
@@ -686,6 +696,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7110604693197099199
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,6 +788,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7707021891009498401
 BoxCollider:
@@ -886,6 +900,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5960470265839637773
 BoxCollider:
@@ -996,4 +1011,5 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

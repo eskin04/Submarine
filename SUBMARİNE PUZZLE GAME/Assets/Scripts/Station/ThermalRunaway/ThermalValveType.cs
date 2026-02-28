@@ -14,3 +14,15 @@ public struct NeedleZoneData
     public float coolingAmount;
     public float bottleneckChance;
 }
+
+[System.Serializable]
+public struct RhythmData
+{
+    public string rhythmName;
+
+    public float weight;
+
+    public float eMin;
+    public float eMax;
+    public float pumpMultiplier;
+}

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -5,7 +6,7 @@ using UnityEngine.InputSystem;
 public class Interactable : MonoBehaviour, IInteractable
 {
     [SerializeField] private string displayName = "Interact";
-    [SerializeField] private KeyCode interactKey = KeyCode.E;
+    [SerializeField] private List<KeyCode> interactKeys = new List<KeyCode>() { KeyCode.E };
     [SerializeField] private bool isInteractable = true;
     [SerializeField] private UnityEvent onInteract;
     [SerializeField] private UnityEvent onStopInteract;
@@ -29,7 +30,7 @@ public class Interactable : MonoBehaviour, IInteractable
     }
     public string DisplayName => displayName;
 
-    public KeyCode InteractKey => interactKey;
+    public List<KeyCode> InteractKeys => interactKeys;
 
     public bool CanInteract() => isInteractable;
     public void SetInteractable(bool value) => isInteractable = value;
