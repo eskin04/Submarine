@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using PurrNet;
 using System.Linq;
+using System.Collections;
 
 public class LightsOut_StationManager : NetworkBehaviour
 {
@@ -298,6 +299,19 @@ public class LightsOut_StationManager : NetworkBehaviour
     public void RegisterSwitchPressRPC(WireColor pressedColor)
     {
         playerInputSequence.Add(pressedColor);
+        if (playerInputSequence.Count >= 4)
+        {
+            RpcOpenLeverDoor();
+        }
+    }
+
+    [ObserversRpc]
+    public void RpcOpenLeverDoor()
+    {
+        if (lever != null)
+        {
+            lever.ToggleDoor(true);
+        }
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -310,14 +324,12 @@ public class LightsOut_StationManager : NetworkBehaviour
     {
         if (!isServer) return;
 
-
         if (playerInputSequence.Count != 4)
         {
             ResetPuzzlePenalty();
             RpcResetLever();
             return;
         }
-
 
         isCorrectSequence = playerInputSequence.SequenceEqual(correctSolutionSequence);
 
@@ -333,8 +345,11 @@ public class LightsOut_StationManager : NetworkBehaviour
         {
             ResetPuzzlePenalty();
             RpcResetLever();
+
         }
     }
+
+
 
     [ObserversRpc]
     private void RpcResetLever()
@@ -342,6 +357,7 @@ public class LightsOut_StationManager : NetworkBehaviour
         if (lever != null)
         {
             lever.ResetLever();
+            // lever.ToggleDoor(false);
         }
     }
 

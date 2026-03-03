@@ -11,6 +11,7 @@ public class LightsOut_Switch : NetworkBehaviour
     public int buttonID;
     public WireColor myLabelColor;
     public float RotateAngle = 30f;
+    public float originalRot = 160;
 
     [Header("References")]
     public TMP_Text labelText;
@@ -28,6 +29,7 @@ public class LightsOut_Switch : NetworkBehaviour
             labelText.text = color.ToString();
             labelText.color = GetUnityColor(fakeVisualColor);
         }
+
 
         ResetButton();
     }
@@ -48,7 +50,7 @@ public class LightsOut_Switch : NetworkBehaviour
     {
         if (switchObject != null)
         {
-            switchObject.transform.DOLocalRotate(new Vector3(RotateAngle, 0, 0), 0.2f);
+            switchObject.transform.DOLocalRotate(new Vector3(0, RotateAngle, 0), 0.2f);
             isPressed = true;
         }
 
@@ -62,7 +64,7 @@ public class LightsOut_Switch : NetworkBehaviour
     {
         if (switchObject != null)
         {
-            switchObject.transform.DOLocalRotate(Vector3.zero, 0.2f);
+            switchObject.transform.DOLocalRotate(new Vector3(0, originalRot, 0), 0.2f);
             isPressed = false;
         }
     }
