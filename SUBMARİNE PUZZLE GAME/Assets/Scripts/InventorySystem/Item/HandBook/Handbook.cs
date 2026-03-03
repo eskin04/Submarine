@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Handbook : NetworkBehaviour, IInventoryItem
 {
     [SerializeField] private KeyCode operateKey = KeyCode.Mouse0;
-    [SerializeField] private Transform book, spine, front;
+    [SerializeField] private Transform book, sideCover, topCover;
     [SerializeField] private GameObject bookUI;
     private bool amIOwner;
     private bool isEquipped = false;
@@ -50,17 +50,17 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     {
         if (isOperate)
         {
-            spine.DOLocalRotate(Vector3.zero, .5f);
-            front.DOLocalRotate(Vector3.zero, .5f);
-            book.DOLocalMove(new Vector3(-.5f, .5f, -.5f), .5f);
+            topCover.DOLocalRotate(Vector3.zero, .5f);
+            sideCover.DOLocalRotate(new Vector3(-180, 0, 0), .5f);
+            book.DOLocalMove(new Vector3(-.7f, .4f, -.6f), .5f);
             bookUI.SetActive(true);
 
 
         }
         else
         {
-            spine.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
-            front.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
+            topCover.DOLocalRotate(new Vector3(90, 0, 0), .5f);
+            sideCover.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
             book.DOLocalMove(Vector3.zero, .5f);
             bookUI.SetActive(false);
 
