@@ -171,6 +171,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Station_LightsOut
       objectReference: {fileID: 0}
+    - target: {fileID: 7104647771062575072, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104647771062575072, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7249384666500469266, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.977
@@ -3048,6 +3056,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -1.71
       objectReference: {fileID: 0}
+    - target: {fileID: 1404831071751494266, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.462
+      objectReference: {fileID: 0}
     - target: {fileID: 2231646187330795454, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.34
@@ -3495,7 +3507,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: Start Game
-  interactKey: 101
+  interactKeys: 65000000
   isInteractable: 1
   onInteract:
     m_PersistentCalls:

@@ -9,7 +9,7 @@ public class RoE_BoardManager : NetworkBehaviour
     public RoE_StationManager stationManager;
 
     [Header("Visual Settings")]
-    public Transform boardGridParent;
+    [SerializeField] private Transform[] pinLocations;
     public GameObject boardItemPrefab;
 
 
@@ -85,10 +85,6 @@ public class RoE_BoardManager : NetworkBehaviour
     [ObserversRpc]
     private void RpcSpawnBoardVisuals(List<NetworkBoardData> packet)
     {
-        foreach (Transform child in boardGridParent)
-        {
-            Destroy(child.gameObject);
-        }
 
         foreach (var data in packet)
         {
@@ -100,7 +96,7 @@ public class RoE_BoardManager : NetworkBehaviour
                 realSymbols.Add(stationManager.availableSymbols[sIndex]);
             }
 
-            GameObject newItem = Instantiate(boardItemPrefab, boardGridParent);
+            GameObject newItem = Instantiate(boardItemPrefab, pinLocations[packet.IndexOf(data)]);
             newItem.GetComponent<RoE_BoardItem>().Setup(realObj, realSymbols);
         }
 
