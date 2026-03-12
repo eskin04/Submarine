@@ -9,6 +9,10 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     public static event System.Action OnStationFailed;
     public static event System.Action OnSoftReset;
     public static event System.Action<RegionID> OnRegionSolved;
+    public static event System.Action OnOverrideSolved;
+    public static event System.Action<int> OnOverrideStepCompleted;
+    public static event System.Action OnOverrideFailed;
+    public static event System.Action OnPuzzleDataSynced;
 
     [Header("References")]
     public SecurityLockdown_TechnicianUI techUI;
@@ -17,7 +21,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     [Header("Station State (SyncVars)")]
     [SerializeField] private SyncVar<LockDownStationState> currentState = new SyncVar<LockDownStationState>(LockDownStationState.Idle);
     [SerializeField] private SyncVar<int> currentSequenceIndex = new SyncVar<int>(0);
-    [SerializeField] private SyncVar<int> currentOverrideStep = new SyncVar<int>(0);
+    public SyncVar<int> currentOverrideStep = new SyncVar<int>(0);
 
     [Header("Generated Puzzle Data (Server Only)")]
     public List<LegendData> currentLegend = new List<LegendData>();
@@ -172,22 +176,29 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         if (currentState.value != LockDownStationState.Active) return;
 
         int expected = overrideSteps[currentOverrideStep.value].expectedTotal;
-
         Debug.Log($"[OVERRIDE INPUT] Checking Total: {enteredTotal}");
 
         if (enteredTotal == expected)
         {
+            RpcOverrideStepCompleted(currentOverrideStep.value);
+
             currentOverrideStep.value++;
             Debug.Log($"<color=cyan>[OVERRIDE SUCCESS]</color> Correct! Moving to Override Step {currentOverrideStep.value}/3");
+            if (currentOverrideStep.value >= 3)
+            {
+                RpcOverrideSolved();
+            }
             CheckWinCondition();
         }
         else
         {
             Debug.LogWarning($"<color=orange>[OVERRIDE FAILED]</color> Wrong Total! Expected: [{expected}]. OVERRIDE RESET TRIGGERED!");
+
             GenerateOverridePuzzle();
             currentOverrideStep.value = 0;
             RpcSyncOverrideDataOnly(overrideSteps.ToArray());
-            RpcTriggerError();
+
+            RpcTriggerOverrideFailed();
         }
     }
 
@@ -268,12 +279,28 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     [ObserversRpc]
     private void RpcSyncPuzzleData(LegendData[] legend, SequenceData[] seq, OverrideStepData[] overrides)
     {
+        if (!isServer)
+        {
+            currentLegend = legend.ToList();
+            currentSequence = seq.ToList();
+            overrideSteps = overrides.ToList();
+        }
+
         if (techUI != null) techUI.UpdatePuzzleData(seq);
         if (engUI != null) engUI.UpdateLegendData(legend);
+
+        OnPuzzleDataSynced?.Invoke();
     }
 
     [ObserversRpc]
-    private void RpcSyncOverrideDataOnly(OverrideStepData[] overrides) { }
+    private void RpcSyncOverrideDataOnly(OverrideStepData[] overrides)
+    {
+        if (!isServer)
+        {
+            overrideSteps = overrides.ToList();
+        }
+        OnPuzzleDataSynced?.Invoke();
+    }
 
     [ObserversRpc]
     private void RpcStateChanged(LockDownStationState newState)
@@ -316,6 +343,24 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     private void RpcSetRegionSolved(RegionID region)
     {
         OnRegionSolved?.Invoke(region);
+    }
+
+    [ObserversRpc]
+    private void RpcOverrideStepCompleted(int stepIndex)
+    {
+        OnOverrideStepCompleted?.Invoke(stepIndex);
+    }
+
+    [ObserversRpc]
+    private void RpcTriggerOverrideFailed()
+    {
+        OnOverrideFailed?.Invoke();
+    }
+
+    [ObserversRpc]
+    private void RpcOverrideSolved()
+    {
+        OnOverrideSolved?.Invoke();
     }
 
     #endregion
