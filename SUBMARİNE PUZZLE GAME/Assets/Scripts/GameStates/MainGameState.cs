@@ -63,12 +63,13 @@ public class MainGameState : StateNode
 
     }
 
-    private void RestartGame()
+    private async void RestartGame()
     {
         if (_isRestarting) return;
         _isRestarting = true;
+
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        ConnectionStarter.Instance.NetManager.sceneModule.LoadSceneAsync(currentSceneIndex);
+        await ConnectionStarter.Instance.NetManager.sceneModule.LoadSceneAsync(currentSceneIndex);
     }
 
     private async void QuitGame()
@@ -95,6 +96,10 @@ public class MainGameState : StateNode
         if (ConnectionStarter.Instance != null)
         {
             Destroy(ConnectionStarter.Instance.gameObject);
+        }
+        if (RadioVoiceManager.Instance != null)
+        {
+            Destroy(RadioVoiceManager.Instance.gameObject);
         }
         await SceneManager.LoadSceneAsync(lobbyScene);
     }

@@ -72,15 +72,15 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4498247240662474358}
-  m_Enabled: 1
-  serializedVersion: 11
+  m_Enabled: 0
+  serializedVersion: 12
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 9
   m_SpotAngle: 60
   m_InnerSpotAngle: 50
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 0
     m_Resolution: -1
@@ -212,6 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   displayName: FlashLight
+  interactKeys: 65000000
   isInteractable: 1
   onInteract:
     m_PersistentCalls:
@@ -228,6 +229,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  onStopInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &4445800499935330572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,6 +357,7 @@ MonoBehaviour:
   lightSource: {fileID: 2351003374605040016}
   audioSource: {fileID: 5360063519800187276}
   toggleSound: {fileID: 8300000, guid: ce06218d819a9db4caeaceba5ca636fc, type: 3}
+  operateKey: 102
   maxBattery: 100
   drainRate: 2
   storedBattery:

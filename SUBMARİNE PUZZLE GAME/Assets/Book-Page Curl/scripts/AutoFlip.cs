@@ -1,146 +1,107 @@
 ﻿using UnityEngine;
-using System.Collections;
+using DG.Tweening;
+
 [RequireComponent(typeof(Book))]
 public class AutoFlip : MonoBehaviour
 {
     public Handbook handbook;
     public FlipMode Mode;
-    public float PageFlipTime = 1;
-    public float TimeBetweenPages = 1;
-    public float DelayBeforeStarting = 0;
+    public float PageFlipTime = 0.5f;
     public Book ControledBook;
-    public int AnimationFramesCount = 40;
-    bool isFlipping = false;
-    // Use this for initialization
-    void Start()
-    {
-        if (!ControledBook)
-            ControledBook = GetComponent<Book>();
 
-        ControledBook.OnFlip.AddListener(new UnityEngine.Events.UnityAction(PageFlipped));
+    bool isFlipping = false;
+
+    private void OnEnable()
+    {
+        ControledBook.OnFlip.AddListener(PageFlipped);
+        isFlipping = false;
     }
+
+    void OnDisable()
+    {
+        ControledBook.OnFlip.RemoveListener(PageFlipped);
+    }
+
     void PageFlipped()
     {
         isFlipping = false;
-    }
-    public void StartFlipping()
-    {
-        StartCoroutine(FlipToEnd());
     }
 
     void Update()
     {
         if (isFlipping) return;
-        if (handbook != null && !handbook.IsOperate) return;
 
-        // Mouse tekerleği girdisini al (Yukarı/Aşağı)
+        // Kendi sisteminle entegrasyon
+        if (handbook != null && !handbook.IsOperate && !handbook.IsOperating) return;
+
         float scrollDelta = Input.mouseScrollDelta.y;
 
         if (scrollDelta > 0)
         {
-            // İleri (Sağdan Sola)
             FlipRightPage();
         }
         else if (scrollDelta < 0)
         {
-            // Geri (Soldan Sağa)
             FlipLeftPage();
         }
     }
+
     public void FlipRightPage()
     {
         if (isFlipping) return;
         if (ControledBook.currentPage >= ControledBook.TotalPageCount) return;
         isFlipping = true;
-        float frameTime = PageFlipTime / AnimationFramesCount;
+
         float xc = (ControledBook.EndBottomRight.x + ControledBook.EndBottomLeft.x) / 2;
         float xl = ((ControledBook.EndBottomRight.x - ControledBook.EndBottomLeft.x) / 2) * 0.9f;
-        //float h =  ControledBook.Height * 0.5f;
         float h = Mathf.Abs(ControledBook.EndBottomRight.y) * 0.9f;
-        float dx = (xl) * 2 / AnimationFramesCount;
-        StartCoroutine(FlipRTL(xc, xl, h, frameTime, dx));
+
+        float startX = xc + xl;
+        float endX = xc - xl;
+
+        ControledBook.DragRightPageToPoint(new Vector3(startX, GetParabolaY(startX, xc, xl, h), 0));
+
+        DOVirtual.Float(startX, endX, PageFlipTime, (x) =>
+        {
+            float y = GetParabolaY(x, xc, xl, h);
+            ControledBook.UpdateBookRTLToPoint(new Vector3(x, y, 0));
+        })
+        .SetEase(Ease.InOutSine)
+        .OnComplete(() =>
+        {
+            ControledBook.ReleasePage();
+        });
     }
+
     public void FlipLeftPage()
     {
         if (isFlipping) return;
         if (ControledBook.currentPage <= 0) return;
         isFlipping = true;
-        float frameTime = PageFlipTime / AnimationFramesCount;
-        float xc = (ControledBook.EndBottomRight.x + ControledBook.EndBottomLeft.x) / 2;
-        float xl = ((ControledBook.EndBottomRight.x - ControledBook.EndBottomLeft.x) / 2) * 0.9f;
-        //float h =  ControledBook.Height * 0.5f;
-        float h = Mathf.Abs(ControledBook.EndBottomRight.y) * 0.9f;
-        float dx = (xl) * 2 / AnimationFramesCount;
-        StartCoroutine(FlipLTR(xc, xl, h, frameTime, dx));
-    }
-    IEnumerator FlipToEnd()
-    {
-        yield return new WaitForSeconds(DelayBeforeStarting);
-        float frameTime = PageFlipTime / AnimationFramesCount;
-        float xc = (ControledBook.EndBottomRight.x + ControledBook.EndBottomLeft.x) / 2;
-        float xl = ((ControledBook.EndBottomRight.x - ControledBook.EndBottomLeft.x) / 2) * 0.9f;
-        //float h =  ControledBook.Height * 0.5f;
-        float h = Mathf.Abs(ControledBook.EndBottomRight.y) * 0.9f;
-        //y=-(h/(xl)^2)*(x-xc)^2          
-        //               y         
-        //               |          
-        //               |          
-        //               |          
-        //_______________|_________________x         
-        //              o|o             |
-        //           o   |   o          |
-        //         o     |     o        | h
-        //        o      |      o       |
-        //       o------xc-------o      -
-        //               |<--xl-->
-        //               |
-        //               |
-        float dx = (xl) * 2 / AnimationFramesCount;
-        switch (Mode)
-        {
-            case FlipMode.RightToLeft:
-                while (ControledBook.currentPage < ControledBook.TotalPageCount)
-                {
-                    StartCoroutine(FlipRTL(xc, xl, h, frameTime, dx));
-                    yield return new WaitForSeconds(TimeBetweenPages);
-                }
-                break;
-            case FlipMode.LeftToRight:
-                while (ControledBook.currentPage > 0)
-                {
-                    StartCoroutine(FlipLTR(xc, xl, h, frameTime, dx));
-                    yield return new WaitForSeconds(TimeBetweenPages);
-                }
-                break;
-        }
-    }
-    IEnumerator FlipRTL(float xc, float xl, float h, float frameTime, float dx)
-    {
-        float x = xc + xl;
-        float y = (-h / (xl * xl)) * (x - xc) * (x - xc);
 
-        ControledBook.DragRightPageToPoint(new Vector3(x, y, 0));
-        for (int i = 0; i < AnimationFramesCount; i++)
+        float xc = (ControledBook.EndBottomRight.x + ControledBook.EndBottomLeft.x) / 2;
+        float xl = ((ControledBook.EndBottomRight.x - ControledBook.EndBottomLeft.x) / 2) * 0.9f;
+        float h = Mathf.Abs(ControledBook.EndBottomRight.y) * 0.9f;
+
+        float startX = xc - xl;
+        float endX = xc + xl;
+
+        ControledBook.DragLeftPageToPoint(new Vector3(startX, GetParabolaY(startX, xc, xl, h), 0));
+
+        DOVirtual.Float(startX, endX, PageFlipTime, (x) =>
         {
-            y = (-h / (xl * xl)) * (x - xc) * (x - xc);
-            ControledBook.UpdateBookRTLToPoint(new Vector3(x, y, 0));
-            yield return new WaitForSeconds(frameTime);
-            x -= dx;
-        }
-        ControledBook.ReleasePage();
-    }
-    IEnumerator FlipLTR(float xc, float xl, float h, float frameTime, float dx)
-    {
-        float x = xc - xl;
-        float y = (-h / (xl * xl)) * (x - xc) * (x - xc);
-        ControledBook.DragLeftPageToPoint(new Vector3(x, y, 0));
-        for (int i = 0; i < AnimationFramesCount; i++)
-        {
-            y = (-h / (xl * xl)) * (x - xc) * (x - xc);
+            float y = GetParabolaY(x, xc, xl, h);
             ControledBook.UpdateBookLTRToPoint(new Vector3(x, y, 0));
-            yield return new WaitForSeconds(frameTime);
-            x += dx;
-        }
-        ControledBook.ReleasePage();
+        })
+        .SetEase(Ease.InOutSine)
+        .OnComplete(() =>
+        {
+            ControledBook.ReleasePage();
+        });
+    }
+
+    private float GetParabolaY(float x, float xc, float xl, float h)
+    {
+        return (-h / (xl * xl)) * (x - xc) * (x - xc);
     }
 }

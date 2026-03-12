@@ -186,8 +186,14 @@ public class InventoryManager : NetworkBehaviour
 
             var itemLogic = itemObj.GetComponent<IInventoryItem>();
             itemLogic?.OnEquip();
-
-            OnEquipChange?.Invoke(true);
+            if (itemObj.GetComponent<Handbook>() == null)
+            {
+                OnEquipChange?.Invoke(true);
+            }
+            else
+            {
+                OnEquipChange?.Invoke(false);
+            }
         }
         else
         {
@@ -310,6 +316,9 @@ public class InventoryManager : NetworkBehaviour
         if (currentSlotIndex != -1 && !containers[currentSlotIndex].IsEmpty)
         {
             GameObject itemToDrop = containers[currentSlotIndex].PhysicalObject;
+            Handbook handbookScript = itemToDrop.GetComponent<Handbook>();
+            if (handbookScript != null) return;
+
 
             Vector3 finalPos;
             Quaternion finalRot = itemToDrop.transform.rotation;
@@ -347,7 +356,7 @@ public class InventoryManager : NetworkBehaviour
         if (!container.IsEmpty)
         {
             float rndX = UnityEngine.Random.Range(-range, range);
-            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(rndX, 0.3f, -.3f));
+            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(0, rndX, .005f));
 
             DropServerRpc(container.PhysicalObject, liftTransform.gameObject, worldPos, Quaternion.identity);
         }
@@ -456,6 +465,9 @@ public class InventoryManager : NetworkBehaviour
 
         Canvas[] canvases = container.PhysicalObject.GetComponentsInChildren<Canvas>();
         foreach (var canvas in canvases) canvas.enabled = isVisible;
+
+        var itemLogic = container.PhysicalObject.GetComponent<IInventoryItem>();
+        itemLogic?.CanOperate(isVisible);
     }
 
     private void HandleFlashlightLight(bool isInteracting)

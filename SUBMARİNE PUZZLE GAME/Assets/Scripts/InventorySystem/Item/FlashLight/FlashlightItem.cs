@@ -174,4 +174,9 @@ public class FlashlightItem : NetworkBehaviour, IInventoryItem
         float val = isOwner ? localRuntimeBattery : storedBattery;
         return Mathf.Clamp01(val / maxBattery);
     }
+
+    public void CanOperate(bool canOperate)
+    {
+        // Fener için özel bir durum yok, ancak diğer itemlarda bu method üzerinden operasyon kilidi açılıp kapatılabilir.
+    }
 }

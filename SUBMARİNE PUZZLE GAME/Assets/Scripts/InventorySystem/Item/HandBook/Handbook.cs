@@ -7,11 +7,15 @@ public class Handbook : NetworkBehaviour, IInventoryItem
 {
     [SerializeField] private KeyCode operateKey = KeyCode.Mouse0;
     [SerializeField] private Transform book, sideCover, topCover;
-    [SerializeField] private GameObject bookUI;
-    private bool amIOwner;
+    [SerializeField] private CanvasGroup bookGroup;
+    [SerializeField] private Vector3 bookOpenPosition;
+    [SerializeField] private AutoFlip autoFlip;
     private bool isEquipped = false;
     private bool isOperate = false;
     public bool IsOperate => isOperate;
+    private bool isOperating = false;
+    public bool IsOperating => isOperating;
+    private bool canOperate = true;
     public void OnDrop()
     {
         isEquipped = false;
@@ -28,20 +32,19 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     public void OnUnequip()
     {
         isEquipped = false;
-
-
         isOperate = false;
         ToggleBookAnim();
 
     }
 
-    void Update()
+    void LateUpdate()
     {
-        if (!isEquipped) return;
+        if (!isEquipped || !canOperate) return;
 
-        if (isOwner && Input.GetKeyDown(operateKey))
+        if (isOwner && Input.GetKeyDown(operateKey) && !isOperating)
         {
             isOperate = !isOperate;
+            isOperating = true;
             ToggleBookAnim();
         }
     }
@@ -52,8 +55,10 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         {
             topCover.DOLocalRotate(Vector3.zero, .5f);
             sideCover.DOLocalRotate(new Vector3(-180, 0, 0), .5f);
-            book.DOLocalMove(new Vector3(-.7f, .4f, -.6f), .5f);
-            bookUI.SetActive(true);
+            book.DOLocalMove(bookOpenPosition, .5f).OnComplete(() => isOperating = false);
+            bookGroup.alpha = 1f;
+            bookGroup.interactable = true;
+            bookGroup.blocksRaycasts = true;
 
 
         }
@@ -61,11 +66,16 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         {
             topCover.DOLocalRotate(new Vector3(90, 0, 0), .5f);
             sideCover.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
-            book.DOLocalMove(Vector3.zero, .5f);
-            bookUI.SetActive(false);
+            book.DOLocalMove(Vector3.zero, .5f).OnComplete(() => isOperating = false);
+            bookGroup.alpha = 0f;
+            bookGroup.interactable = false;
+            bookGroup.blocksRaycasts = false;
 
         }
     }
 
-
+    public void CanOperate(bool canOperate)
+    {
+        this.canOperate = canOperate;
+    }
 }

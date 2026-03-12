@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 public class RadioVoiceManager : MonoBehaviour
 {
+    public static RadioVoiceManager Instance { get; private set; }
     [Header("Telsiz Ayarları")]
     public KeyCode pushToTalkKey = KeyCode.Q;
 
@@ -15,6 +16,17 @@ public class RadioVoiceManager : MonoBehaviour
     public AudioClip disconnectClip;
 
     private bool isLoggedIn = false;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
 
 
@@ -91,6 +103,7 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.UnmuteInputDevice();
+
     }
 
     void StopTransmission()
