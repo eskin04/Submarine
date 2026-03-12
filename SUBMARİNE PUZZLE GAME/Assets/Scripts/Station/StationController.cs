@@ -27,13 +27,15 @@ public class StationController : NetworkBehaviour
 
     void Awake()
     {
-        stationState.onChanged += OnStateChanged;
         interactables = GetComponentsInChildren<Interactable>();
     }
+
+
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
+        stationState.onChanged += OnStateChanged;
 
         if (isServer)
         {
@@ -46,6 +48,11 @@ public class StationController : NetworkBehaviour
                 GlobalEvents.OnRegisterMainStation?.Invoke(this);
             }
         }
+    }
+
+    protected override void OnDestroy()
+    {
+        stationState.onChanged -= OnStateChanged;
     }
 
 

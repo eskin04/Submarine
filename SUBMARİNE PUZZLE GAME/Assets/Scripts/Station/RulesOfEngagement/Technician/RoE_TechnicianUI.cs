@@ -33,6 +33,14 @@ public class RoE_TechnicianUI : MonoBehaviour
     public float beamWidth = 20f;
     public float visualOffset = 0f;
 
+    [Header("Status Light")]
+    public MeshRenderer statusLightRenderer;
+    public float lightIntensity = 5.0f;
+    private Material runtimeMaterial;
+
+    private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
+    private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
+
     private float currentSweepAngle = 0f;
     private Material activeMaterial;
     private string currentSelectedCode = "";
@@ -52,6 +60,10 @@ public class RoE_TechnicianUI : MonoBehaviour
     {
 
         activeMaterial = radarMaterial;
+        if (statusLightRenderer != null)
+        {
+            runtimeMaterial = statusLightRenderer.materials[0];
+        }
 
     }
     private void Update()
@@ -63,6 +75,50 @@ public class RoE_TechnicianUI : MonoBehaviour
         UpdateSelectionPanel();
         ProcessSonarSweep();
 
+    }
+
+    public void UpdateStationStatus(StationState newState)
+    {
+        switch (newState)
+        {
+            case StationState.Operational:
+                TurnOffLight();
+                break;
+            case StationState.Broken:
+                TurnOnRedLight();
+                break;
+            case StationState.Reparied:
+                TurnOnGreenLight();
+                break;
+        }
+    }
+
+
+    private void TurnOnRedLight()
+    {
+        if (runtimeMaterial != null)
+        {
+            runtimeMaterial.SetInt(LightSelectionProp, 1);
+            runtimeMaterial.SetFloat(IntensityProp, lightIntensity);
+        }
+    }
+
+    private void TurnOnGreenLight()
+    {
+        if (runtimeMaterial != null)
+        {
+            runtimeMaterial.SetInt(LightSelectionProp, 2);
+            runtimeMaterial.SetFloat(IntensityProp, lightIntensity);
+        }
+    }
+
+    private void TurnOffLight()
+    {
+        if (runtimeMaterial != null)
+        {
+            runtimeMaterial.SetInt(LightSelectionProp, 2);
+            runtimeMaterial.SetFloat(IntensityProp, 0f);
+        }
     }
 
 
@@ -286,7 +342,7 @@ public class RoE_TechnicianUI : MonoBehaviour
             if (!string.IsNullOrEmpty(currentSelectedCode))
             {
                 var threat = threatManager.GetThreat(currentSelectedCode);
-                if (threat != null && !threat.isDestroyed && threat.currentDistance <= 100f)
+                if (threat != null && !threat.isDestroyed && threat.currentDistance <= stationManager.avoidDistanceThreshold)
                 {
                     canEvade = true;
                 }
@@ -310,12 +366,12 @@ public class RoE_TechnicianUI : MonoBehaviour
 
         if (isCoverOpen)
         {
-            evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 0.5f)
+            evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 1f)
                 .SetEase(Ease.OutBack);
         }
         else
         {
-            evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 0.5f)
+            evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 1f)
                 .SetEase(Ease.OutBounce);
         }
     }

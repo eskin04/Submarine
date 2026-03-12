@@ -348,7 +348,7 @@ Transform:
   m_GameObject: {fileID: 2266538350046272487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.55, y: 0.81, z: -0.91}
+  m_LocalPosition: {x: 6.64, y: -0.35, z: -1.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -503,15 +503,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2598603968866630492}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.25, y: 0.75, z: -7.26}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 13.309, y: 0.75, z: -3.062}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1577129298470617200}
   - {fileID: 3454268972211770781}
   m_Father: {fileID: 1133334543657465007}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!33 &1214474480603273863
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -780,7 +780,7 @@ Transform:
   m_GameObject: {fileID: 3183895230984456736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.11, y: 0.92, z: -0.41}
+  m_LocalPosition: {x: 5.14, y: 3.84, z: -1.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1336,6 +1336,7 @@ MonoBehaviour:
   currentBoardSetup: []
   currentDailyRule: {fileID: 0}
   hullBreachImpulse: {fileID: 3336511704415306256}
+  avoidDistanceThreshold: 100
 --- !u!114 &2244890089872307753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1748,14 +1749,16 @@ MonoBehaviour:
   selectionCooldown: 5
   shootButton: {fileID: 2734708024882905708}
   passButton: {fileID: 1152270867074719581}
-  evadeButton: {fileID: 2740920100982864375}
-  evadeGlassCover: {fileID: 7636540103915806585}
+  evadeButton: {fileID: 8502853767273785762}
+  evadeGlassCover: {fileID: 3500988531951421095}
   feedbackText: {fileID: 2524506619724945921}
   radarMaterial: {fileID: 2100000, guid: 6aa244d527000d24cb18eb83639f9a54, type: 2}
   shaderProperty: _ScanAngle
   sweepSpeed: -30
   beamWidth: 75
   visualOffset: -90
+  statusLightRenderer: {fileID: 1333349123523908694}
+  lightIntensity: 3
 --- !u!1 &6075662852396915295
 GameObject:
   m_ObjectHideFlags: 0
@@ -1930,6 +1933,7 @@ MonoBehaviour:
   cooldownText: {fileID: 7113586092647125464}
   threatManager: {fileID: 2244890089872307753}
   technicianUI: {fileID: 2378838127280634816}
+  stationManager: {fileID: 2308599039184538599}
 --- !u!1 &6335533332815256764
 GameObject:
   m_ObjectHideFlags: 0
@@ -2406,7 +2410,7 @@ Transform:
   m_GameObject: {fileID: 7472943714329988297}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.79, y: 1.511, z: -7.26}
+  m_LocalPosition: {x: -2.34, y: 1.511, z: -7.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2552,7 +2556,7 @@ Transform:
   m_GameObject: {fileID: 7999039040846412481}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.39, y: 1.511, z: -7.26}
+  m_LocalPosition: {x: 8.39, y: 1.462, z: -7.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3349,10 +3353,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6478654486933550172}
     m_Modifications:
-    - target: {fileID: 1550994857013978650, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2378838127280634816}
     - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3405,6 +3405,10 @@ PrefabInstance:
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2378838127280634816}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2378838127280634816}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3421,6 +3425,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
+--- !u!23 &1333349123523908694 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2381990937521916859, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1577129298470617200 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2768763140961918877, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
@@ -3437,9 +3446,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
---- !u!114 &2740920100982864375 stripped
+--- !u!1 &3500988531951421095 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 223362835963926858, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_PrefabInstance: {fileID: 3715339767874396141}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8502853767273785762 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1550994857013978650, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
   m_PrefabInstance: {fileID: 3715339767874396141}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -3448,11 +3462,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
---- !u!1 &7636540103915806585 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6518389909158625428, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
-  m_PrefabInstance: {fileID: 3715339767874396141}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5667001001024213705
 PrefabInstance:
   m_ObjectHideFlags: 0

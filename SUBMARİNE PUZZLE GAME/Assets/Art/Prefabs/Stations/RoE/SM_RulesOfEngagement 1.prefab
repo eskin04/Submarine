@@ -1428,47 +1428,24 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8993444710432276262}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2915810889656160261}
     - targetCorrespondingSourceObject: {fileID: 1299510413217003831, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
       insertIndex: -1
       addedObject: {fileID: 414595025964681097}
     - targetCorrespondingSourceObject: {fileID: 1299510413217003831, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1620217932938698113}
+    - targetCorrespondingSourceObject: {fileID: 6370128607802411474, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5695020750419123779}
+    - targetCorrespondingSourceObject: {fileID: 6370128607802411474, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5012433431141496399}
   m_SourcePrefab: {fileID: 100100000, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
 --- !u!4 &2768763140961918877 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
   m_PrefabInstance: {fileID: 2442681720647432310}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3253656961824752935 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
-  m_PrefabInstance: {fileID: 2442681720647432310}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &2915810889656160261
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3253656961824752935}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.014979523, y: 0.01472496, z: 0.02106818}
-  m_Center: {x: -0.0074897613, y: 0, z: 0.01053409}
 --- !u!1 &3742191951311520065 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1299510413217003831, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
@@ -1537,3 +1514,61 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6084549657683035128, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
   m_PrefabInstance: {fileID: 2442681720647432310}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8755305687763546532 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6370128607802411474, guid: c49ee87f4b946614d80be502cd6c5c09, type: 3}
+  m_PrefabInstance: {fileID: 2442681720647432310}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &5695020750419123779
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8755305687763546532}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.001353074, y: 0.0013530737, z: 0.00025436646}
+  m_Center: {x: 5.820767e-11, y: 0.0000000016298145, z: 3.710739e-10}
+--- !u!114 &5012433431141496399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8755305687763546532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f6386f12d5c24cac9446c67e62e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoE_PhysicalButton
+  movingPart: {fileID: 8473117771107646350}
+  pressDirection: {x: 0, y: 0, z: -1}
+  pressDistance: 0.0002
+  pressDuration: 0.1
+  OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
+        m_MethodName: OnClick_SubmitAction
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  isInteractable: 0

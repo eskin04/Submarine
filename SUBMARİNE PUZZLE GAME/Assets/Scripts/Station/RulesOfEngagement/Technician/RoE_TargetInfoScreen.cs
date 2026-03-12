@@ -12,6 +12,7 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     [Header("Managers")]
     public RoE_ThreatManager threatManager;
     public RoE_TechnicianUI technicianUI;
+    public RoE_StationManager stationManager;
 
     private string lastKnownCode = "";
 
@@ -78,7 +79,7 @@ public class RoE_TargetInfoScreen : MonoBehaviour
         {
             distanceText.text = $"{cachedThreat.currentDistance:F0}m";
 
-            if (cachedThreat.currentDistance <= 100f)
+            if (cachedThreat.currentDistance <= stationManager.avoidDistanceThreshold)
                 distanceText.color = Color.red;
             else
                 distanceText.color = Color.green;

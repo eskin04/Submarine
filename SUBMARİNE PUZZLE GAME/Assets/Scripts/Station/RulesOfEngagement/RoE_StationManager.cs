@@ -29,6 +29,7 @@ public class RoE_StationManager : NetworkBehaviour
     [Header("Settings")]
 
     public CinemachineImpulseSource hullBreachImpulse;
+    public float avoidDistanceThreshold = 100f;
 
     private bool isSimulationRunning = false;
     private bool isRoundActive = false;
@@ -36,6 +37,20 @@ public class RoE_StationManager : NetworkBehaviour
 
 
 
+    void OnEnable()
+    {
+        stationController.StateChanged += OnStationStateChanged;
+    }
+
+    void OnDisable()
+    {
+        stationController.StateChanged -= OnStationStateChanged;
+    }
+
+    private void OnStationStateChanged(StationState newState, StationController controller)
+    {
+        RPCStationStateChange(newState);
+    }
 
 
     public void StartNewRound()
@@ -102,6 +117,8 @@ public class RoE_StationManager : NetworkBehaviour
 
         threatManager.SyncThreatsFromNetwork(threatData, allPossibleObjects);
     }
+
+
 
 
 
@@ -187,7 +204,7 @@ public class RoE_StationManager : NetworkBehaviour
 
     private void HandleEvade(ActiveThreat threat)
     {
-        if (threat.currentDistance > 100f)
+        if (threat.currentDistance > avoidDistanceThreshold)
         {
             RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
@@ -269,6 +286,15 @@ public class RoE_StationManager : NetworkBehaviour
         if (engineerDisplay != null)
         {
             engineerDisplay.StartDisplaySequence(indices, codeName);
+        }
+    }
+
+    [ObserversRpc]
+    private void RPCStationStateChange(StationState newState)
+    {
+        if (technicianUI != null)
+        {
+            technicianUI.UpdateStationStatus(newState);
         }
     }
 
