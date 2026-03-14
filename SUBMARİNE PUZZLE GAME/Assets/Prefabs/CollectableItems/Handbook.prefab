@@ -362,6 +362,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907326322, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907350108, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1496158043907373834, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -373,6 +381,14 @@ PrefabInstance:
     - target: {fileID: 1496158043907373834, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
       propertyPath: m_Color.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907373834, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907380532, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1496158043907392368, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
       propertyPath: background
@@ -406,6 +422,10 @@ PrefabInstance:
       propertyPath: 'bookPages.Array.data[6]'
       value: 
       objectReference: {fileID: 21300000, guid: ec79d88c253742c49a2bbd4872bbac88, type: 3}
+    - target: {fileID: 1496158043907395068, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1496158043907402908, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -423,6 +443,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1496158043907402908, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907409468, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496158043907412850, guid: 5307c44acf709a74d8dac40bc498d3e2, type: 3}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 0}
@@ -543,7 +571,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4512210365267517578}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0

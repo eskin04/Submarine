@@ -103,7 +103,6 @@ public class InventoryManager : NetworkBehaviour
             isHeldItemHidden = true;
         }
 
-        HandleFlashlightLight(true);
     }
 
     private void Update()
@@ -114,7 +113,6 @@ public class InventoryManager : NetworkBehaviour
 
         if (currentInteractable != null && !currentInteractable.IsInteracting())
         {
-            HandleFlashlightLight(false);
 
             if (isHeldItemHidden)
             {
@@ -470,16 +468,5 @@ public class InventoryManager : NetworkBehaviour
         itemLogic?.CanOperate(isVisible);
     }
 
-    private void HandleFlashlightLight(bool isInteracting)
-    {
-        if (currentSlotIndex == -1 || containers[currentSlotIndex].IsEmpty) return;
 
-        var flashlight = containers[currentSlotIndex].PhysicalObject.GetComponent<FlashlightItem>();
-
-        if (flashlight != null)
-        {
-            Transform targetCam = isInteracting ? playerInventory.InteractCameraTrans : null;
-            flashlight.SetInteractionMode(isInteracting, targetCam);
-        }
-    }
 }

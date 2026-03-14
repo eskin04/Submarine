@@ -28,6 +28,8 @@ public class StationController : NetworkBehaviour
     void Awake()
     {
         interactables = GetComponentsInChildren<Interactable>();
+        stationState.onChanged += OnStateChanged;
+
     }
 
 
@@ -35,7 +37,6 @@ public class StationController : NetworkBehaviour
     protected override void OnSpawned()
     {
         base.OnSpawned();
-        stationState.onChanged += OnStateChanged;
 
         if (isServer)
         {
