@@ -2,93 +2,75 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-using System.Collections;
 
 public class SecurityLockdown_EngineerUI : MonoBehaviour
 {
-    [Header("References")]
     public SecurityLockdown_StationManager stationManager;
 
     [Header("UI Elements")]
     public Image backgroundImage;
-    public GameObject lockedPanel;
     public GameObject legendPanel;
-
-    [Header("Button Panel Elements")]
-    public GameObject showLegendBtnPanel;
-    public TMP_Text showLegendPanelText;
-    public Button showLegendButton;
-    public CanvasGroup showLegendCanvasGroup;
+    public GameObject lockedPanel;
     public TMP_Text legendText;
+    public GameObject resetPanel;
 
     private LegendData[] currentLegend;
+    private bool isReady = false;
 
     public void UpdateLegendData(LegendData[] legend)
     {
         currentLegend = legend;
+        isReady = false;
         SetStateLocked();
     }
 
-    public void EnableShowLegendButton()
-    {
-        lockedPanel.SetActive(false);
-        legendPanel.SetActive(false);
-
-        showLegendBtnPanel.SetActive(true);
-
-        showLegendButton.interactable = true;
-        showLegendCanvasGroup.alpha = 1f;
-        showLegendPanelText.text = "View Region Legend";
-        showLegendPanelText.color = Color.white;
-        backgroundImage.DOColor(new Color(0.8f, 0.5f, 0.1f), 0.5f);
-    }
-
-    public void OnShowLegendPressed()
-    {
-        stationManager.RequestEngineerLegendRPC();
-    }
-
-    public void ShowLegend(float duration)
-    {
-        StartCoroutine(DisplayLegendRoutine(duration));
-    }
-
-    private IEnumerator DisplayLegendRoutine(float duration)
+    private void ShowLegendScreen()
     {
         backgroundImage.DOColor(new Color(0.1f, 0.4f, 0.8f), 0.5f);
-
         lockedPanel.SetActive(false);
-        showLegendBtnPanel.SetActive(false);
         legendPanel.SetActive(true);
+        resetPanel.SetActive(false);
 
         legendText.text = "--- REGION MAP ---\n";
         foreach (var data in currentLegend)
         {
             legendText.text += $"<color={GetHexCode(data.color)}>{data.assignedRegion}</color>\n";
         }
+    }
 
-        yield return new WaitForSeconds(duration);
+    public void OnShowLegendPressed()
+    {
+        ShowLegendScreen();
+    }
 
+
+
+    public void OnReadyButtonPressed()
+    {
+        if (isReady) return;
+        isReady = true;
+        stationManager.SetEngReadyRPC();
+        ShowResetScreen();
+    }
+
+    public void OnHardResetPressed()
+    {
+        stationManager.RequestHardResetRPC();
+    }
+
+    private void ShowResetScreen()
+    {
         backgroundImage.DOColor(new Color(0.8f, 0.5f, 0.1f), 0.5f);
-        showLegendPanelText.text = "Warning: Re-viewing the legend will cause reset the progress";
-        showLegendPanelText.color = Color.red;
         legendPanel.SetActive(false);
-        showLegendBtnPanel.SetActive(true);
-
-        if (stationManager.engViewCount.value >= 2)
-        {
-            showLegendButton.interactable = false;
-            showLegendCanvasGroup.alpha = 0.4f;
-        }
+        resetPanel.SetActive(true);
     }
 
     public void SetStateLocked()
     {
-        StopAllCoroutines();
         backgroundImage.DOColor(new Color(0.8f, 0.1f, 0.1f), 0.3f);
         lockedPanel.SetActive(true);
-        showLegendBtnPanel.SetActive(false);
         legendPanel.SetActive(false);
+        resetPanel.SetActive(false);
     }
 
     private string GetHexCode(LockdownColor color)

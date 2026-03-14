@@ -7,11 +7,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 {
     public static event System.Action<LockDownStationState> OnStateChanged;
     public static event System.Action OnStationFailed;
-    public static event System.Action OnSoftReset;
     public static event System.Action<RegionID> OnRegionSolved;
-    public static event System.Action OnOverrideSolved;
-    public static event System.Action<int> OnOverrideStepCompleted;
-    public static event System.Action OnOverrideFailed;
     public static event System.Action OnPuzzleDataSynced;
 
     [Header("References")]
@@ -20,43 +16,47 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 
     [Header("Station State (SyncVars)")]
     [SerializeField] private SyncVar<LockDownStationState> currentState = new SyncVar<LockDownStationState>(LockDownStationState.Idle);
-    [SerializeField] private SyncVar<int> currentSequenceIndex = new SyncVar<int>(0);
-    public SyncVar<int> currentOverrideStep = new SyncVar<int>(0);
+    [SerializeField] public SyncVar<int> currentSequenceIndex = new SyncVar<int>(0);
+    [SerializeField] public SyncVar<int> currentVariationDigits = new SyncVar<int>(5);
+
+    [SerializeField] public SyncVar<bool> isTechReady = new SyncVar<bool>(false);
+    [SerializeField] public SyncVar<bool> isEngReady = new SyncVar<bool>(false);
+
+    public bool AreNumpadsActive => currentState.value == LockDownStationState.Active &&
+                                    isTechReady.value &&
+                                    isEngReady.value;
 
     [Header("Generated Puzzle Data (Server Only)")]
     public List<LegendData> currentLegend = new List<LegendData>();
     public List<SequenceData> currentSequence = new List<SequenceData>();
-    public List<OverrideStepData> overrideSteps = new List<OverrideStepData>();
 
     [Header("Region Pools")]
     public List<RegionID> technicianSideRegions;
     public List<RegionID> engineerSideRegions;
 
+    [Header("Code Variations")]
     public List<CodeVariation> codeVariations;
 
-    public SyncVar<int> currentVariationDigits = new SyncVar<int>(5);
-    public SyncVar<int> techViewCount = new SyncVar<int>(0);
-    public SyncVar<int> engViewCount = new SyncVar<int>(0);
-
     [Header("Settings")]
-    private int sequenceLength = 0;
+    public int sequenceLength = 4;
 
-    [ContextMenu("1. START STATION (TEST)")]
+    [ContextMenu("1. START MAIN LOCKDOWN (TEST)")]
     public void StartStation()
     {
         if (!isServer) return;
 
         GenerateMainPuzzle();
-        GenerateOverridePuzzle();
 
         currentState.value = LockDownStationState.Active;
-        RpcStateChanged(currentState.value);
         currentSequenceIndex.value = 0;
-        currentOverrideStep.value = 0;
 
-        Debug.Log("<color=green>[STATION] Station Started! Check arrays for answers.</color>");
+        isTechReady.value = false;
+        isEngReady.value = false;
 
-        RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray(), overrideSteps.ToArray());
+        Debug.Log("<color=green>[STATION] Main Lockdown Started!</color>");
+
+        RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray());
+        RpcStateChanged(currentState.value);
     }
 
     #region GENERATION LOGIC (SERVER)
@@ -66,6 +66,8 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         currentLegend.Clear();
         currentSequence.Clear();
 
+        if (codeVariations == null || codeVariations.Count == 0) return;
+
         CodeVariation selectedVar = codeVariations[Random.Range(0, codeVariations.Count)];
         sequenceLength = selectedVar.totalSteps;
         currentVariationDigits.value = selectedVar.digitsPerStep;
@@ -74,6 +76,22 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 
         List<RegionID> availableTech = new List<RegionID>(technicianSideRegions);
         List<RegionID> availableEng = new List<RegionID>(engineerSideRegions);
+
+        if (availableTech.Count < selectedVar.techRegionCount)
+        {
+            Debug.LogError($"[STATION ERROR] Havuzda yeterli Teknisyen bölgesi yok! İstenen: {selectedVar.techRegionCount}, Bulunan: {availableTech.Count}");
+            return;
+        }
+        if (availableEng.Count < selectedVar.engRegionCount)
+        {
+            Debug.LogError($"[STATION ERROR] Havuzda yeterli Mühendis bölgesi yok! İstenen: {selectedVar.engRegionCount}, Bulunan: {availableEng.Count}");
+            return;
+        }
+        if (selectedVar.techRegionCount + selectedVar.engRegionCount != sequenceLength)
+        {
+            Debug.LogError($"[STATION ERROR] Varyasyon matematiği hatalı! Toplamlar eşleşmiyor.");
+            return;
+        }
 
         ShuffleList(availableTech);
         ShuffleList(availableEng);
@@ -94,9 +112,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         for (int i = 0; i < sequenceLength; i++)
         {
             LockdownColor assignedColor = availableColors[i];
-
             currentLegend.Add(new LegendData { color = assignedColor, assignedRegion = activeSequenceRegions[i] });
-
             currentSequence.Add(new SequenceData { color = assignedColor, targetNumber = uniqueNumbers[i] });
         }
 
@@ -122,26 +138,6 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         }
     }
 
-    private void GenerateOverridePuzzle()
-    {
-        overrideSteps.Clear();
-        List<int> overrideNumbers = GenerateUniqueNumbers(6, 10, 99);
-
-        int cumulativeTotal = 0;
-        int numIndex = 0;
-
-        Debug.Log("--- OVERRIDE PUZZLE GENERATED ---");
-        for (int i = 0; i < 3; i++)
-        {
-            int tNum = overrideNumbers[numIndex++];
-            int eNum = overrideNumbers[numIndex++];
-            cumulativeTotal += (tNum + eNum);
-
-            overrideSteps.Add(new OverrideStepData { techNumber = tNum, engNumber = eNum, expectedTotal = cumulativeTotal });
-            Debug.Log($"Override Step {i}: Tech({tNum}) + Eng({eNum}) | Expected Total: [{cumulativeTotal}]");
-        }
-    }
-
     #endregion
 
     #region VALIDATION & GAMEPLAY
@@ -159,8 +155,8 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         if (region == expectedRegion && enteredNumber == expectedData.targetNumber)
         {
             currentSequenceIndex.value++;
-            RpcSetRegionSolved(region);
             Debug.Log($"<color=cyan>[NUMPAD SUCCESS]</color> Correct! Moving to Numpad Step {currentSequenceIndex.value}/{sequenceLength}");
+            RpcRegionSolved(region);
             CheckWinCondition();
         }
         else
@@ -170,79 +166,15 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         }
     }
 
-    [ServerRpc(requireOwnership: false)]
-    public void SubmitOverrideEntryRPC(int enteredTotal)
+
+
+    private void CheckWinCondition()
     {
-        if (currentState.value != LockDownStationState.Active) return;
-
-        int expected = overrideSteps[currentOverrideStep.value].expectedTotal;
-        Debug.Log($"[OVERRIDE INPUT] Checking Total: {enteredTotal}");
-
-        if (enteredTotal == expected)
+        if (currentSequenceIndex.value >= sequenceLength)
         {
-            RpcOverrideStepCompleted(currentOverrideStep.value);
-
-            currentOverrideStep.value++;
-            Debug.Log($"<color=cyan>[OVERRIDE SUCCESS]</color> Correct! Moving to Override Step {currentOverrideStep.value}/3");
-            if (currentOverrideStep.value >= 3)
-            {
-                RpcOverrideSolved();
-            }
-            CheckWinCondition();
-        }
-        else
-        {
-            Debug.LogWarning($"<color=orange>[OVERRIDE FAILED]</color> Wrong Total! Expected: [{expected}]. OVERRIDE RESET TRIGGERED!");
-
-            GenerateOverridePuzzle();
-            currentOverrideStep.value = 0;
-            RpcSyncOverrideDataOnly(overrideSteps.ToArray());
-
-            RpcTriggerOverrideFailed();
-        }
-    }
-
-    [ServerRpc(requireOwnership: false)]
-    public void RequestTechnicianCodeRPC()
-    {
-        if (currentState.value != LockDownStationState.Active) return;
-
-        techViewCount.value++;
-
-        if (techViewCount.value == 1)
-        {
-            RpcShowTechnicianCode(5f);
-            RpcEnableEngineerButton();
-        }
-        else if (techViewCount.value == 2)
-        {
-            currentSequenceIndex.value = 0;
-            RpcShowTechnicianCode(5f);
-            RpcTriggerSoftReset();
-        }
-        else if (techViewCount.value >= 3)
-        {
-            TriggerHardReset();
-        }
-    }
-
-    [ServerRpc(requireOwnership: false)]
-    public void RequestEngineerLegendRPC()
-    {
-        if (currentState.value != LockDownStationState.Active) return;
-        if (engViewCount.value >= 2) return;
-
-        engViewCount.value++;
-
-        if (engViewCount.value == 1)
-        {
-            RpcShowEngineerLegend(5f);
-        }
-        else if (engViewCount.value == 2)
-        {
-            currentSequenceIndex.value = 0;
-            RpcShowEngineerLegend(7f);
-            RpcTriggerSoftReset();
+            currentState.value = LockDownStationState.Solved;
+            Debug.Log("<color=green>*** MAIN STATION FULLY SOLVED! ***</color>");
+            RpcStateChanged(currentState.value);
         }
     }
 
@@ -250,55 +182,50 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     {
         GenerateMainPuzzle();
         currentSequenceIndex.value = 0;
-        techViewCount.value = 0;
-        engViewCount.value = 0;
 
-        RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray(), overrideSteps.ToArray());
+        isTechReady.value = false;
+        isEngReady.value = false;
+
+        RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray());
         RpcTriggerError();
     }
 
-    private void CheckWinCondition()
+    [ServerRpc(requireOwnership: false)]
+    public void SetTechReadyRPC()
     {
-        if (currentSequenceIndex.value >= sequenceLength && currentOverrideStep.value >= 3)
-        {
-            currentState.value = LockDownStationState.Solved;
-            Debug.Log("<color=green>*** STATION FULLY SOLVED! DOORS UNLOCKED! ***</color>");
-            RpcStateChanged(currentState.value);
-        }
+        if (currentState.value == LockDownStationState.Active)
+            isTechReady.value = true;
     }
 
+    [ServerRpc(requireOwnership: false)]
+    public void SetEngReadyRPC()
+    {
+        if (currentState.value == LockDownStationState.Active)
+            isEngReady.value = true;
+    }
 
-
-
-
+    [ServerRpc(requireOwnership: false)]
+    public void RequestHardResetRPC()
+    {
+        if (currentState.value == LockDownStationState.Active)
+            TriggerHardReset();
+    }
 
     #endregion
-
     #region RPCS (CLIENT SYNC)
 
     [ObserversRpc]
-    private void RpcSyncPuzzleData(LegendData[] legend, SequenceData[] seq, OverrideStepData[] overrides)
+    private void RpcSyncPuzzleData(LegendData[] legend, SequenceData[] seq)
     {
         if (!isServer)
         {
             currentLegend = legend.ToList();
             currentSequence = seq.ToList();
-            overrideSteps = overrides.ToList();
         }
 
         if (techUI != null) techUI.UpdatePuzzleData(seq);
         if (engUI != null) engUI.UpdateLegendData(legend);
 
-        OnPuzzleDataSynced?.Invoke();
-    }
-
-    [ObserversRpc]
-    private void RpcSyncOverrideDataOnly(OverrideStepData[] overrides)
-    {
-        if (!isServer)
-        {
-            overrideSteps = overrides.ToList();
-        }
         OnPuzzleDataSynced?.Invoke();
     }
 
@@ -317,51 +244,12 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     }
 
     [ObserversRpc]
-    private void RpcTriggerSoftReset()
+    private void RpcRegionSolved(RegionID solvedRegion)
     {
-        OnSoftReset?.Invoke();
+        OnRegionSolved?.Invoke(solvedRegion);
     }
 
-    [ObserversRpc]
-    private void RpcEnableEngineerButton()
-    {
-        if (engUI != null) engUI.EnableShowLegendButton();
-    }
 
-    [ObserversRpc]
-    private void RpcShowTechnicianCode(float duration)
-    {
-        if (techUI != null) techUI.ShowCode(duration);
-    }
-
-    [ObserversRpc]
-    private void RpcShowEngineerLegend(float duration)
-    {
-        if (engUI != null) engUI.ShowLegend(duration);
-    }
-    [ObserversRpc]
-    private void RpcSetRegionSolved(RegionID region)
-    {
-        OnRegionSolved?.Invoke(region);
-    }
-
-    [ObserversRpc]
-    private void RpcOverrideStepCompleted(int stepIndex)
-    {
-        OnOverrideStepCompleted?.Invoke(stepIndex);
-    }
-
-    [ObserversRpc]
-    private void RpcTriggerOverrideFailed()
-    {
-        OnOverrideFailed?.Invoke();
-    }
-
-    [ObserversRpc]
-    private void RpcOverrideSolved()
-    {
-        OnOverrideSolved?.Invoke();
-    }
 
     #endregion
 
@@ -385,7 +273,6 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         return numbers.ToList();
     }
 
-
     [ContextMenu("2. TEST: Submit Correct Numpad (Current Step)")]
     private void DebugSubmitCorrectNumpad()
     {
@@ -397,19 +284,11 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         }
     }
 
-    [ContextMenu("3. TEST: Submit Correct Override (Current Step)")]
-    private void DebugSubmitCorrectOverride()
-    {
-        if (currentOverrideStep.value < 3)
-        {
-            SubmitOverrideEntryRPC(overrideSteps[currentOverrideStep.value].expectedTotal);
-        }
-    }
-
-    [ContextMenu("4. TEST: Submit WRONG Numpad (Hard Reset)")]
+    [ContextMenu("3. TEST: Submit WRONG Numpad (Hard Reset)")]
     private void DebugSubmitWrongNumpad()
     {
-        SubmitNumpadEntryRPC(RegionID.T8, 11111);
+        SubmitNumpadEntryRPC(RegionID.M8, 11111);
     }
+
     #endregion
 }

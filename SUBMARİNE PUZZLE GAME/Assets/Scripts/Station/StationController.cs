@@ -73,7 +73,8 @@ public class StationController : NetworkBehaviour
     {
         foreach (var interactable in interactables)
         {
-            interactable.SetInteractable(value);
+            if (interactable.CanDisableInteraction())
+                interactable.SetInteractable(value);
         }
     }
 

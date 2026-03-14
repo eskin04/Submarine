@@ -36,7 +36,6 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
     private void OnEnable()
     {
         SecurityLockdown_StationManager.OnStationFailed += ResetLightToRed;
-        SecurityLockdown_StationManager.OnSoftReset += ResetLightToRed;
         SecurityLockdown_StationManager.OnStateChanged += HandleStateChanged;
         SecurityLockdown_StationManager.OnRegionSolved += HandleRegionSolved;
     }
@@ -44,13 +43,13 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
     private void OnDisable()
     {
         SecurityLockdown_StationManager.OnStationFailed -= ResetLightToRed;
-        SecurityLockdown_StationManager.OnSoftReset -= ResetLightToRed;
         SecurityLockdown_StationManager.OnStateChanged -= HandleStateChanged;
         SecurityLockdown_StationManager.OnRegionSolved -= HandleRegionSolved;
     }
 
     public void OnNumberPressed(int number)
     {
+        if (stationManager == null || !stationManager.AreNumpadsActive) return;
         int limit = stationManager.currentVariationDigits.value;
         if (currentInput.Length < limit)
         {
@@ -69,6 +68,7 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
 
     public void OnSubmitPressed()
     {
+        if (stationManager == null || !stationManager.AreNumpadsActive) return;
         if (string.IsNullOrEmpty(currentInput)) return;
 
         int enteredValue = int.Parse(currentInput);
@@ -82,7 +82,7 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         if (displayScreen != null)
         {
             int limit = stationManager.currentVariationDigits.value;
-            displayScreen.text = currentInput.PadLeft(limit, '-');
+            displayScreen.text = currentInput.PadLeft(limit, '_');
         }
     }
 
@@ -93,6 +93,10 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         if (state == LockDownStationState.Active)
         {
             ResetLightToRed();
+        }
+        if (state == LockDownStationState.Solved)
+        {
+            TurnOffLight();
         }
     }
 

@@ -37,9 +37,10 @@ public class GameStatistics : MonoBehaviour
 public enum StatType
 {
     None,
-    LockDown,
+    SecurityLockDown,
     BlackOut,
-    Magnetic,
+    EngineerLockDown,
+
 
 
 }

@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class SecurityLockdown_OverrideNumpadButton : MonoBehaviour
+public class EngineerLockDown_NumpadButton : MonoBehaviour
 {
     [Header("References")]
-    public SecurityLockdown_OverrideNumpad overrideNumpad;
+    public EngineerLockDown_Numpad overrideNumpad;
 
     [Header("Settings")]
     public bool isNumberKey = true;

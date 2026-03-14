@@ -20,13 +20,7 @@ public enum LockDownStationState
     Solved
 }
 
-public enum UIState
-{
-    Locked_Red,
-    Displaying_Blue,
-    Waiting_Yellow,
-    Inactive
-}
+
 
 public enum RegionID
 {
@@ -48,13 +42,7 @@ public struct SequenceData
     public int targetNumber;
 }
 
-[System.Serializable]
-public struct OverrideStepData
-{
-    public int techNumber;
-    public int engNumber;
-    public int expectedTotal;
-}
+
 
 [System.Serializable]
 public struct CodeVariation

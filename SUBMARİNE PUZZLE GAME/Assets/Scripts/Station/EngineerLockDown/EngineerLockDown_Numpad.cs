@@ -3,11 +3,11 @@ using TMPro;
 using PurrNet;
 using DG.Tweening;
 
-public class SecurityLockdown_OverrideNumpad : NetworkBehaviour
+public class EngineerLockDown_Numpad : NetworkBehaviour
 {
     [Header("References")]
     public TMP_Text displayScreen;
-    public SecurityLockdown_StationManager stationManager;
+    public EngineerLockDown_StationManager stationManager;
 
     [Header("3 Step Status Lights")]
     public MeshRenderer[] stepLights;
@@ -31,16 +31,16 @@ public class SecurityLockdown_OverrideNumpad : NetworkBehaviour
 
     private void OnEnable()
     {
-        SecurityLockdown_StationManager.OnStateChanged += HandleStateChanged;
-        SecurityLockdown_StationManager.OnOverrideStepCompleted += LightUpGreen;
-        SecurityLockdown_StationManager.OnOverrideFailed += ResetAllLightsToRed;
+        EngineerLockDown_StationManager.OnOverrideStateChanged += HandleStateChanged;
+        EngineerLockDown_StationManager.OnOverrideStepCompleted += LightUpGreen;
+        EngineerLockDown_StationManager.OnOverrideFailed += ResetAllLightsToRed;
     }
 
     private void OnDisable()
     {
-        SecurityLockdown_StationManager.OnStateChanged -= HandleStateChanged;
-        SecurityLockdown_StationManager.OnOverrideStepCompleted -= LightUpGreen;
-        SecurityLockdown_StationManager.OnOverrideFailed -= ResetAllLightsToRed;
+        EngineerLockDown_StationManager.OnOverrideStateChanged -= HandleStateChanged;
+        EngineerLockDown_StationManager.OnOverrideStepCompleted -= LightUpGreen;
+        EngineerLockDown_StationManager.OnOverrideFailed -= ResetAllLightsToRed;
     }
 
     public void OnNumberPressed(int number)
@@ -72,12 +72,12 @@ public class SecurityLockdown_OverrideNumpad : NetworkBehaviour
 
     private void UpdateDisplay()
     {
-        if (displayScreen != null) displayScreen.text = currentInput.PadLeft(maxDigits, '-');
+        if (displayScreen != null) displayScreen.text = currentInput.PadLeft(maxDigits, '_');
     }
 
-    private void HandleStateChanged(LockDownStationState state)
+    private void HandleStateChanged(EngineerLockDownStationState state)
     {
-        if (state == LockDownStationState.Active) ResetAllLightsToRed();
+        if (state == EngineerLockDownStationState.Active) ResetAllLightsToRed();
     }
 
     private void ResetAllLightsToRed()

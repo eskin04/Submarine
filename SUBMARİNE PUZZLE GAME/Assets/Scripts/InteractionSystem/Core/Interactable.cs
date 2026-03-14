@@ -8,8 +8,10 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private string displayName = "Interact";
     [SerializeField] private List<KeyCode> interactKeys = new List<KeyCode>() { KeyCode.E };
     [SerializeField] private bool isInteractable = true;
+    [SerializeField] private bool canDisableInteraction = true;
     [SerializeField] private UnityEvent onInteract;
     [SerializeField] private UnityEvent onStopInteract;
+
     private bool isInteracting = false;
 
     private Outline outline;
@@ -31,6 +33,7 @@ public class Interactable : MonoBehaviour, IInteractable
     public string DisplayName => displayName;
 
     public List<KeyCode> InteractKeys => interactKeys;
+    public bool CanDisableInteraction() => canDisableInteraction;
 
     public bool CanInteract() => isInteractable;
     public void SetInteractable(bool value) => isInteractable = value;
