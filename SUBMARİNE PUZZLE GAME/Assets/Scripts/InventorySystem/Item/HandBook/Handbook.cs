@@ -17,10 +17,18 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     public bool IsOperating => isOperating;
     private bool canOperate = true;
     private Vector3 initialRotation;
+    private Transform inspectPosition;
+    private Transform originalParent;
 
     void Awake()
     {
         initialRotation = book.localEulerAngles;
+        originalParent = book.parent;
+    }
+
+    public void SetInspectPosition(Transform inspectPosition)
+    {
+        this.inspectPosition = inspectPosition;
     }
     public void OnDrop()
     {
@@ -59,6 +67,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     {
         if (isOperate)
         {
+            book.SetParent(inspectPosition);
             topCover.DOLocalRotate(Vector3.zero, .5f);
             sideCover.DOLocalRotate(new Vector3(-180, 0, 0), .5f);
             book.DOLocalMove(bookOpenPosition, .5f).OnComplete(() => isOperating = false);
@@ -71,6 +80,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         }
         else
         {
+            book.SetParent(originalParent);
             topCover.DOLocalRotate(new Vector3(90, 0, 0), .5f);
             sideCover.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
             book.DOLocalMove(Vector3.zero, .5f).OnComplete(() => isOperating = false);

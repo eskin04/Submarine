@@ -184,6 +184,7 @@ public class InventoryManager : NetworkBehaviour
 
             var itemLogic = itemObj.GetComponent<IInventoryItem>();
             itemLogic?.OnEquip();
+
             if (itemObj.GetComponent<Handbook>() == null)
             {
                 OnEquipChange?.Invoke(true);
@@ -191,6 +192,7 @@ public class InventoryManager : NetworkBehaviour
             else
             {
                 OnEquipChange?.Invoke(false);
+                itemObj.GetComponent<Handbook>().SetInspectPosition(playerInventory.InspectPosition);
             }
         }
         else
