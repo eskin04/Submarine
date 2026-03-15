@@ -12,6 +12,7 @@ namespace StarterAssets
 	public class FirstPersonController : NetworkBehaviour
 	{
 		[Header("Player")]
+		public static FirstPersonController Local { get; private set; }
 		public float MoveSpeed = 4.0f;
 		public float SprintSpeed = 6.0f;
 		public float RotationSpeed = 1.0f;
@@ -24,6 +25,9 @@ namespace StarterAssets
 		[Space(10)]
 		public float JumpTimeout = 0.1f;
 		public float FallTimeout = 0.15f;
+
+		[Space(10)]
+		private Vector3 _initialSpawnPosition;
 
 		[Header("Player Grounded")]
 		public bool Grounded = true;
@@ -75,7 +79,6 @@ namespace StarterAssets
 
 		private void Awake()
 		{
-			// get a reference to our main camera
 			if (_mainCamera == null)
 			{
 				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
@@ -87,6 +90,19 @@ namespace StarterAssets
 			base.OnSpawned();
 			enabled = isOwner;
 			_cinemachineVirtualCamera.gameObject.SetActive(isOwner);
+			_initialSpawnPosition = transform.position;
+			if (isOwner)
+			{
+				Local = this;
+			}
+		}
+
+		protected override void OnDestroy()
+		{
+			if (Local == this)
+			{
+				Local = null;
+			}
 		}
 
 
@@ -116,6 +132,17 @@ namespace StarterAssets
 		private void LateUpdate()
 		{
 			CameraRotation();
+		}
+
+		public void UnstuckPlayer()
+		{
+			if (!isOwner) return;
+
+			Debug.Log("Oyuncu kurtarılıyor, başlangıç noktasına ışınlanıyor...");
+
+			_controller.enabled = false;
+			transform.position = _initialSpawnPosition;
+			_controller.enabled = true;
 		}
 
 		private void GroundedCheck()

@@ -99,8 +99,13 @@ public class ConnectionStarter : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        if (RadioVoiceManager.Instance != null)
+        {
+            Destroy(RadioVoiceManager.Instance.gameObject);
+        }
 
         UnityEngine.SceneManagement.SceneManager.LoadScene(lobbyScene);
+
 
         Destroy(gameObject);
     }

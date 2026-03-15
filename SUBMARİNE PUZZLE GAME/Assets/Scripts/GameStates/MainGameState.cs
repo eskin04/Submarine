@@ -18,18 +18,30 @@ public class MainGameState : StateNode
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        if (!asServer || isTestMode) return;
+        if (isTestMode) return;
+        SettingsView.resumeGame += CloseSettingsView;
+        SettingsView.quitGame += QuitGame;
+        if (!asServer) return;
         startGame?.Invoke();
         FloodManager.OnGameEnd += HandleGameEnd;
-        SettingsView.resumeGame += CloseSettingsView;
         SettingsView.restartGame += RestartGame;
-        SettingsView.quitGame += QuitGame;
     }
 
-    public override void StateUpdate(bool asServer)
+    // public override void StateUpdate(bool asServer)
+    // {
+    //     base.StateUpdate(asServer);
+    //     if (!asServer) return;
+    //     if (Input.GetKeyDown(KeyCode.Escape))
+    //     {
+    //         if (!_isSettingsMenuOpen)
+    //             OpenSettingsView();
+    //         else
+    //             CloseSettingsView();
+    //     }
+    // }
+
+    void Update()
     {
-        base.StateUpdate(asServer);
-        if (!asServer) return;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!_isSettingsMenuOpen)
@@ -65,6 +77,7 @@ public class MainGameState : StateNode
 
     private async void RestartGame()
     {
+        if (!networkManager.isServer) return;
         if (_isRestarting) return;
         _isRestarting = true;
 
@@ -74,6 +87,9 @@ public class MainGameState : StateNode
 
     private async void QuitGame()
     {
+
+
+
         if (VivoxService.Instance != null && VivoxService.Instance.IsLoggedIn)
         {
             foreach (var channel in VivoxService.Instance.ActiveChannels)
@@ -88,6 +104,7 @@ public class MainGameState : StateNode
         {
             networkManager.StopServer();
         }
+
         if (networkManager.isClient)
         {
             networkManager.StopClient();
@@ -109,10 +126,13 @@ public class MainGameState : StateNode
     public override void Exit(bool asServer)
     {
         base.Exit(asServer);
+        SettingsView.resumeGame -= CloseSettingsView;
+        SettingsView.quitGame -= QuitGame;
+
         if (!asServer) return;
         FloodManager.OnGameEnd -= HandleGameEnd;
-        SettingsView.resumeGame -= CloseSettingsView;
         SettingsView.restartGame -= RestartGame;
-        SettingsView.quitGame -= QuitGame;
     }
+
+
 }

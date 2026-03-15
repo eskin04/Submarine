@@ -2,7 +2,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-
+using PurrNet;
+using StarterAssets;
 public class SettingsView : View
 {
     public static Action resumeGame;
@@ -11,13 +12,21 @@ public class SettingsView : View
     [SerializeField] Button resumeButton;
     [SerializeField] Button restartButton;
     [SerializeField] Button quitButton;
+    [SerializeField] Button stuckButton;
 
-
+    void Start()
+    {
+        if (!NetworkManager.main.isServer)
+        {
+            restartButton.gameObject.SetActive(false);
+        }
+    }
     void OnEnable()
     {
         resumeButton.onClick.AddListener(OnResume);
         restartButton.onClick.AddListener(OnRestart);
         quitButton.onClick.AddListener(OnQuit);
+        stuckButton.onClick.AddListener(OnStuck);
 
     }
 
@@ -26,6 +35,7 @@ public class SettingsView : View
         resumeButton.onClick.RemoveAllListeners();
         restartButton.onClick.RemoveAllListeners();
         quitButton.onClick.RemoveAllListeners();
+        stuckButton.onClick.RemoveAllListeners();
     }
 
     private void OnResume()
@@ -41,6 +51,20 @@ public class SettingsView : View
     private void OnQuit()
     {
         quitGame?.Invoke();
+    }
+
+    private void OnStuck()
+    {
+        if (FirstPersonController.Local != null)
+        {
+            FirstPersonController.Local.UnstuckPlayer();
+
+            resumeGame?.Invoke();
+        }
+        else
+        {
+            Debug.LogWarning("Yerel oyuncu bulunamadı, ışınlanma iptal edildi.");
+        }
     }
 
 
