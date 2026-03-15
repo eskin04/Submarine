@@ -9,13 +9,19 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     [SerializeField] private Transform book, sideCover, topCover;
     [SerializeField] private CanvasGroup bookGroup;
     [SerializeField] private Vector3 bookOpenPosition;
-    [SerializeField] private AutoFlip autoFlip;
+    [SerializeField] private Vector3 bookOpenRotation;
     private bool isEquipped = false;
     private bool isOperate = false;
     public bool IsOperate => isOperate;
     private bool isOperating = false;
     public bool IsOperating => isOperating;
     private bool canOperate = true;
+    private Vector3 initialRotation;
+
+    void Awake()
+    {
+        initialRotation = book.localEulerAngles;
+    }
     public void OnDrop()
     {
         isEquipped = false;
@@ -56,6 +62,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             topCover.DOLocalRotate(Vector3.zero, .5f);
             sideCover.DOLocalRotate(new Vector3(-180, 0, 0), .5f);
             book.DOLocalMove(bookOpenPosition, .5f).OnComplete(() => isOperating = false);
+            book.DOLocalRotate(bookOpenRotation, .5f);
             bookGroup.alpha = 1f;
             bookGroup.interactable = true;
             bookGroup.blocksRaycasts = true;
@@ -67,6 +74,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             topCover.DOLocalRotate(new Vector3(90, 0, 0), .5f);
             sideCover.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
             book.DOLocalMove(Vector3.zero, .5f).OnComplete(() => isOperating = false);
+            book.DOLocalRotate(initialRotation, .5f);
             bookGroup.alpha = 0f;
             bookGroup.interactable = false;
             bookGroup.blocksRaycasts = false;
