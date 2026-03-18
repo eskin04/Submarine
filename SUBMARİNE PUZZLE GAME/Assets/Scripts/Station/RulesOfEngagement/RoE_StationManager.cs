@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using PurrNet;
 using Cinemachine;
+using System.Linq;
 
 public class RoE_StationManager : NetworkBehaviour
 {
@@ -13,6 +14,7 @@ public class RoE_StationManager : NetworkBehaviour
     [Header("References")]
     public RoE_EngineerDisplay engineerDisplay;
     public RoE_TechnicianUI technicianUI;
+    public RoE_HandbookLoader handbookLoader;
 
     [Header("Database References")]
     public List<RoE_ObjectData> allPossibleObjects;
@@ -33,7 +35,14 @@ public class RoE_StationManager : NetworkBehaviour
 
     private bool isSimulationRunning = false;
     private bool isRoundActive = false;
+    private RoE_ObjectData previousDestroyedObject = null;
+    private int currentRoundActionCount = 0;
+    private RoE_ObjectData previousPassedObject = null;
+    private List<RoE_ObjectData> lastTwoActedObjects = new List<RoE_ObjectData>();
 
+    public ObjectCategory activeCategoryX;
+    public ObjectCategory activeCategoryY;
+    public string activeRuleDescription;
 
 
 
@@ -58,23 +67,106 @@ public class RoE_StationManager : NetworkBehaviour
         if (!isServer) return;
 
 
-        currentDailyRule = allRules[Random.Range(0, allRules.Count)];
+        SetNewRandomRule();
 
+        List<RoE_ObjectData> roundObjects = GenerateRoundObjects();
 
         if (boardManager != null)
         {
-            currentBoardSetup = boardManager.GenerateNewBoardData(allPossibleObjects, availableSymbols);
+            currentBoardSetup = boardManager.GenerateNewBoardData(roundObjects, availableSymbols);
         }
+        List<int> objectIndices = new List<int>();
+        foreach (var obj in roundObjects)
+        {
+            objectIndices.Add(allPossibleObjects.IndexOf(obj));
+        }
+
+        RpcHandbookSetup(objectIndices);
 
 
         threatManager.SpawnNewThreats(currentBoardSetup);
 
         SetDataPackage();
+
+        isRoundActive = true;
+        currentRoundActionCount = 0;
+        previousDestroyedObject = null;
+        previousPassedObject = null;
+        lastTwoActedObjects.Clear();
+    }
+
+    public List<RoE_ObjectData> GenerateRoundObjects()
+    {
+        List<RoE_ObjectData> selectedObjects = new List<RoE_ObjectData>();
+
+        List<RoE_ObjectData> singleCat = allPossibleObjects.Where(o => o.categories.Count == 1).ToList();
+        List<RoE_ObjectData> tripleCat = allPossibleObjects.Where(o => o.categories.Count == 3).ToList();
+
+        if (singleCat.Count < 2 || tripleCat.Count < 2)
+        {
+            Debug.LogWarning("[RoE_StationManager] Havuzda yeterli Tekli veya Üçlü kategori objesi yok! Lütfen 30 objeyi kontrol edin.");
+        }
+
+        singleCat = singleCat.OrderBy(x => Random.value).ToList();
+        tripleCat = tripleCat.OrderBy(x => Random.value).ToList();
+
+        selectedObjects.AddRange(singleCat.Take(2));
+        selectedObjects.AddRange(tripleCat.Take(2));
+
+        List<RoE_ObjectData> remainingPool = allPossibleObjects.Except(selectedObjects).OrderBy(x => Random.value).ToList();
+
+        int objectsNeeded = 16 - selectedObjects.Count;
+        selectedObjects.AddRange(remainingPool.Take(objectsNeeded));
+
+        return selectedObjects.OrderBy(x => Random.value).ToList();
+    }
+
+    public void SetNewRandomRule()
+    {
+        if (!isServer) return;
+
+        RoE_RuleData newRule = allRules[Random.Range(0, allRules.Count)];
+        currentDailyRule = newRule;
+
+        var allCats = System.Enum.GetValues(typeof(ObjectCategory)).Cast<ObjectCategory>().ToList();
+        allCats = allCats.OrderBy(x => Random.value).ToList();
+
+        activeCategoryX = allCats[0];
+        activeCategoryY = allCats[1];
+
+        activeRuleDescription = currentDailyRule.ruleDescription
+            .Replace("{X}", activeCategoryX.ToString())
+            .Replace("{Y}", activeCategoryY.ToString());
+
+        RpcUpdateRuleDisplay(allRules.IndexOf(newRule), activeRuleDescription);
+    }
+
+    [ObserversRpc]
+    private void RpcUpdateRuleDisplay(int ruleIndex, string ruleDescription)
+    {
+        currentDailyRule = allRules[ruleIndex];
         if (engineerDisplay != null)
         {
-            engineerDisplay.UpdateRuleDisplay(currentDailyRule.ruleDescription);
+            engineerDisplay.UpdateRuleDisplay(ruleDescription);
         }
-        isRoundActive = true;
+    }
+
+    [ObserversRpc]
+    private void RpcHandbookSetup(List<int> objectIndices)
+    {
+        List<RoE_ObjectData> reconstructedObjects = new List<RoE_ObjectData>();
+
+        foreach (int index in objectIndices)
+        {
+            if (index >= 0 && index < allPossibleObjects.Count)
+            {
+                reconstructedObjects.Add(allPossibleObjects[index]);
+            }
+        }
+        if (handbookLoader != null)
+        {
+            handbookLoader.LoadHandbook(reconstructedObjects);
+        }
     }
 
 
@@ -107,12 +199,6 @@ public class RoE_StationManager : NetworkBehaviour
     private void RpcSyncRoundData(List<NetworkThreatData> threatData, int ruleIndex)
     {
         if (isServer) return;
-
-        currentDailyRule = allRules[ruleIndex];
-        if (engineerDisplay != null)
-        {
-            engineerDisplay.UpdateRuleDisplay(currentDailyRule.ruleDescription);
-        }
 
 
         threatManager.SyncThreatsFromNetwork(threatData, allPossibleObjects);
@@ -156,11 +242,23 @@ public class RoE_StationManager : NetworkBehaviour
         }
     }
 
+    private float GetCurrentWaterLevelPercentage()
+    {
+        InstanceHandler.TryGetInstance<FloodManager>(out FloodManager floodManager);
+        if (floodManager != null)
+        {
+            return floodManager.GetCurrentWaterLevel();
+        }
+        return 50f;
+    }
+
 
     [ServerRpc(requireOwnership: false)]
     public void SubmitActionRPC(int threatIndex, Roe_PlayerAction action)
     {
         ActiveThreat threat = threatManager.GetThreat(threatIndex);
+        currentRoundActionCount++;
+
 
         if (threat == null || threat.isDestroyed)
         {
@@ -173,9 +271,22 @@ public class RoE_StationManager : NetworkBehaviour
             return;
         }
 
-        bool shouldHaveShot = RoE_RuleEvaluator.ShouldShoot(threat.realIdentity.linkedObject, currentDailyRule);
+        bool shouldHaveShot = RoE_RuleEvaluator.ShouldShoot(
+            threat,
+            currentDailyRule,
+            threatManager,
+            previousDestroyedObject,
+            previousPassedObject,
+            lastTwoActedObjects,
+            currentRoundActionCount,
+            GetCurrentWaterLevelPercentage(),
+            activeCategoryX,
+            activeCategoryY
+        );
+
         bool isCorrect = (action == Roe_PlayerAction.Shoot && shouldHaveShot) ||
                          (action == Roe_PlayerAction.Pass && !shouldHaveShot);
+
 
         ResolveResult(threat, action, isCorrect);
     }
@@ -209,6 +320,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
         }
+        SetNewRandomRule();
         stationController.ReportRepairMistake(0.5f);
         RpcSendFeedback("Avoided!", Color.cyan);
         DestroyThreat(threat);
@@ -221,6 +333,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("success!", Color.green);
 
             DestroyThreat(threat);
+
         }
         else
         {
@@ -230,6 +343,27 @@ public class RoE_StationManager : NetworkBehaviour
 
             DestroyThreat(threat);
 
+        }
+        if (action == Roe_PlayerAction.Shoot)
+        {
+            previousDestroyedObject = threat.realIdentity.linkedObject;
+            previousPassedObject = null;
+        }
+        else if (action == Roe_PlayerAction.Pass)
+        {
+            previousPassedObject = threat.realIdentity.linkedObject;
+            previousDestroyedObject = null;
+        }
+        SetNewRandomRule();
+        UpdateHistory(threat.realIdentity.linkedObject);
+    }
+
+    private void UpdateHistory(RoE_ObjectData obj)
+    {
+        lastTwoActedObjects.Add(obj);
+        if (lastTwoActedObjects.Count > 2)
+        {
+            lastTwoActedObjects.RemoveAt(0);
         }
     }
 

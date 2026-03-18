@@ -51,11 +51,17 @@ public class FloodManager : NetworkBehaviour
     protected override void OnDestroy()
     {
         base.OnDestroy();
+        InstanceHandler.UnregisterInstance<FloodManager>();
         LevelManager.OnLevelStarted -= StartFlood;
         GlobalEvents.OnAddFloodPenalty -= AddPenalty;
         GlobalEvents.OnStationStatusChanged -= HandleStationStatusChanged;
         currentWater.onChanged -= OnWaterChanged;
 
+    }
+
+    public float GetCurrentWaterLevel()
+    {
+        return currentWater.value;
     }
 
     private void StartFlood(List<StationController> mainStations)

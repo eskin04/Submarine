@@ -3,22 +3,20 @@ using UnityEngine;
 [System.Serializable]
 public struct DecryptionSymbol
 {
-    public enum Shape { Square, Circle, Diamond, Triangle }
-    public enum Color { Red, Green, Blue }
-
-    public Shape shape;
-    public Color color;
+    [Tooltip("Benzer sembolleri gruplamak için. Bağımsızlar için 0 kullanın.")]
+    public int groupID;
     public Sprite icon;
 
     public override bool Equals(object obj)
     {
         if (!(obj is DecryptionSymbol)) return false;
         var other = (DecryptionSymbol)obj;
-        return shape == other.shape && color == other.color;
+
+        return icon == other.icon;
     }
 
     public override int GetHashCode()
     {
-        return (shape, color).GetHashCode();
+        return icon != null ? icon.GetHashCode() : 0;
     }
 }

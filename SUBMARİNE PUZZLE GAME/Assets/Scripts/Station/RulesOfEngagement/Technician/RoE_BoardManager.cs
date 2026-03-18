@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using PurrNet;
+using System.Linq;
 
 public class RoE_BoardManager : NetworkBehaviour
 {
@@ -16,44 +17,64 @@ public class RoE_BoardManager : NetworkBehaviour
     public List<BoardEntry> GenerateNewBoardData(List<RoE_ObjectData> objects, List<DecryptionSymbol> symbols)
     {
         List<BoardEntry> newSetup = new List<BoardEntry>();
-        HashSet<string> usedCombinations = new HashSet<string>();
 
         foreach (var obj in objects)
         {
-            BoardEntry entry = new BoardEntry();
-            entry.linkedObject = obj;
-            entry.assignedSymbols = new List<DecryptionSymbol>();
-
-            bool uniqueFound = false;
-            int safetyCounter = 0;
-
-            while (!uniqueFound && safetyCounter < 100)
+            newSetup.Add(new BoardEntry
             {
-                List<DecryptionSymbol> tempSymbols = new List<DecryptionSymbol>();
-                string signature = "";
-
-                for (int i = 0; i < 3; i++)
-                {
-                    DecryptionSymbol randomSym = symbols[Random.Range(0, symbols.Count)];
-                    tempSymbols.Add(randomSym);
-                    signature += randomSym.shape.ToString() + randomSym.color.ToString() + "-";
-                }
-
-                if (!usedCombinations.Contains(signature))
-                {
-                    usedCombinations.Add(signature);
-                    entry.assignedSymbols = tempSymbols;
-                    uniqueFound = true;
-                }
-                else safetyCounter++;
-            }
-
-
-            newSetup.Add(entry);
+                linkedObject = obj,
+                assignedSymbols = new List<DecryptionSymbol>()
+            });
         }
 
-        BroadcastBoardData(newSetup);
+        List<int> allGroups = symbols.Select(s => s.groupID).Where(g => g > 0).Distinct().ToList();
 
+        List<int> selectedGroups = allGroups.OrderBy(x => Random.Range(0f, 1f)).Take(4).ToList();
+
+        List<DecryptionSymbol> requiredSymbols = symbols.Where(s => selectedGroups.Contains(s.groupID)).ToList();
+
+        requiredSymbols = requiredSymbols.OrderBy(x => Random.Range(0f, 1f)).ToList();
+
+        foreach (var reqSym in requiredSymbols)
+        {
+            var validObjects = newSetup.Where(entry =>
+                entry.assignedSymbols.Count < 3 &&
+                !entry.assignedSymbols.Any(s => s.groupID == reqSym.groupID)
+            ).OrderBy(x => Random.Range(0f, 1f)).ToList();
+
+            if (validObjects.Count > 0)
+            {
+                validObjects[0].assignedSymbols.Add(reqSym);
+            }
+
+        }
+
+        foreach (var entry in newSetup)
+        {
+            int safetyCounter = 0;
+
+            while (entry.assignedSymbols.Count < 3 && safetyCounter < 200)
+            {
+                safetyCounter++;
+
+                DecryptionSymbol randomSym = symbols[Random.Range(0, symbols.Count)];
+
+                if (entry.assignedSymbols.Contains(randomSym)) continue;
+
+                if (randomSym.groupID > 0 && entry.assignedSymbols.Any(s => s.groupID == randomSym.groupID))
+                {
+                    continue;
+                }
+
+                entry.assignedSymbols.Add(randomSym);
+            }
+        }
+
+        foreach (var entry in newSetup)
+        {
+            entry.assignedSymbols = entry.assignedSymbols.OrderBy(x => Random.Range(0f, 1f)).ToList();
+        }
+        BroadcastBoardData(newSetup);
         return newSetup;
     }
 

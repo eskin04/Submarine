@@ -23,7 +23,7 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 0.2
+  m_AmbientIntensity: 0.1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: aeab33f69c199e54794f516d31450ec4, type: 2}
@@ -3774,6 +3774,10 @@ PrefabInstance:
       value: 13.309
       objectReference: {fileID: 0}
     - target: {fileID: 6478654486933550172, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 6478654486933550172, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_LocalPosition.z
       value: -3.062
       objectReference: {fileID: 0}
@@ -3796,6 +3800,22 @@ PrefabInstance:
     - target: {fileID: 6478654486933550172, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505595081046611997, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505595081046611997, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505595081046611997, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505595081046611997, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7853111980162953357, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_AnchorMax.y

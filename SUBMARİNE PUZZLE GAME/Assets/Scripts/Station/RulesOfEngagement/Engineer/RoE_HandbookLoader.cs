@@ -1,38 +1,33 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class RoE_HandbookLoader : MonoBehaviour
 {
-    public RoE_StationManager stationManager;
 
     [Header("UI Settings")]
     public Transform contentParent;
     public GameObject itemPrefab;
 
-    private void Start()
-    {
-        if (stationManager != null)
-        {
-            LoadHandbook(stationManager.allPossibleObjects);
-        }
-    }
-
-
-    public void LoadHandbook(List<RoE_ObjectData> allObjects)
+    public void LoadHandbook(List<RoE_ObjectData> roundObjects)
     {
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
         }
 
-        foreach (var obj in allObjects)
+        var shuffledObjects = roundObjects.OrderBy(x => Random.value).ToList();
+
+        foreach (var obj in shuffledObjects)
         {
             GameObject newRow = Instantiate(itemPrefab, contentParent);
-
             RoE_HandbookItem itemScript = newRow.GetComponent<RoE_HandbookItem>();
+
             if (itemScript != null)
             {
-                itemScript.Setup(obj);
+                List<ObjectCategory> shuffledCats = obj.categories.OrderBy(x => Random.value).ToList();
+
+                itemScript.Setup(obj.objectName, shuffledCats);
             }
         }
     }

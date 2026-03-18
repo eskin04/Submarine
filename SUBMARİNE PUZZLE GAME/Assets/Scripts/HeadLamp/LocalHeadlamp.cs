@@ -162,8 +162,8 @@ public class LocalHeadlamp : NetworkBehaviour
 
         if (flickerTween != null && flickerTween.IsActive()) return;
 
-        int loops = Random.Range(1, 4) * 2;
-        float duration = Random.Range(0.05f, 0.15f);
+        int loops = Random.Range(2, 4) * 2;
+        float duration = .175f;
 
         flickerTween = headLight.DOIntensity(0f, duration)
             .SetLoops(loops, LoopType.Yoyo)

@@ -11,7 +11,7 @@ public static class ThreatExtensions
 {
     public static string ToDisplayString(this ThreatCodeName code)
     {
-        return "AR-" + code.ToString();
+        return "AD-" + code.ToString();
     }
 }
 

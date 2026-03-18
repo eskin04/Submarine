@@ -7,7 +7,9 @@ public enum ObjectCategory
     Mechanical, // Mekanik
     Glowing,    // Işıldayan
     Explosive,  // Patlayıcı
-    Valuable    // Değerli
+    Valuable,   // Değerli
+    Magnetic,   // Manyetik
+    Anormal,    // Anormal
 }
 
 [CreateAssetMenu(fileName = "New_RoE_Object", menuName = "RoE/Object Data")]

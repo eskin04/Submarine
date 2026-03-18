@@ -8,6 +8,7 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     public TextMeshProUGUI codeNameText;
     public TextMeshProUGUI distanceText;
     public TextMeshProUGUI cooldownText;
+    public TextMeshProUGUI targetSpeedText;
 
     [Header("Managers")]
     public RoE_ThreatManager threatManager;
@@ -98,6 +99,7 @@ public class RoE_TargetInfoScreen : MonoBehaviour
             codeNameText.text = "NO TARGET";
             distanceText.text = "";
             cachedThreat = null;
+            targetSpeedText.text = "";
             if (cooldownCoroutine != null)
             {
                 StopCoroutine(cooldownCoroutine);
@@ -108,8 +110,8 @@ public class RoE_TargetInfoScreen : MonoBehaviour
         else
         {
             codeNameText.text = newCode;
-
             cachedThreat = threatManager.GetThreat(newCode);
+            targetSpeedText.text = $"({cachedThreat.approachSpeed:F1} m/s)";
 
             if (cachedThreat == null)
             {

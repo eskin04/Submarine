@@ -20,6 +20,7 @@ public class RoE_EngineerDisplay : MonoBehaviour
         currentDisplayedCode = codeName;
         targetCodeText.text = codeName;
         targetCodeText.color = Color.yellow;
+
         if (displayCoroutine != null) StopCoroutine(displayCoroutine);
 
         displayCoroutine = StartCoroutine(SymbolLoop(symbolIndices));
@@ -36,7 +37,7 @@ public class RoE_EngineerDisplay : MonoBehaviour
                     var symbolData = stationManager.availableSymbols[index];
 
                     symbolImage.sprite = symbolData.icon;
-                    symbolImage.color = ConvertColor(symbolData.color);
+                    symbolImage.color = Color.white;
                     symbolImage.enabled = true;
                 }
 
@@ -74,18 +75,6 @@ public class RoE_EngineerDisplay : MonoBehaviour
         if (ruleText != null)
         {
             ruleText.text = description;
-
-        }
-    }
-
-    private Color ConvertColor(DecryptionSymbol.Color col)
-    {
-        switch (col)
-        {
-            case DecryptionSymbol.Color.Red: return Color.red;
-            case DecryptionSymbol.Color.Green: return Color.green;
-            case DecryptionSymbol.Color.Blue: return Color.blue;
-            default: return Color.white;
         }
     }
 }

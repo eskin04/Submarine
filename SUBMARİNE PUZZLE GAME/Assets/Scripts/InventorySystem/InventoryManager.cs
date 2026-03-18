@@ -460,12 +460,6 @@ public class InventoryManager : NetworkBehaviour
         var container = containers[currentSlotIndex];
         if (container.IsEmpty || container.PhysicalObject == null) return;
 
-        Renderer[] renderers = container.PhysicalObject.GetComponentsInChildren<Renderer>();
-        foreach (var rend in renderers) rend.enabled = isVisible;
-
-        Canvas[] canvases = container.PhysicalObject.GetComponentsInChildren<Canvas>();
-        foreach (var canvas in canvases) canvas.enabled = isVisible;
-
         var itemLogic = container.PhysicalObject.GetComponent<IInventoryItem>();
         itemLogic?.CanOperate(isVisible);
     }

@@ -3,14 +3,20 @@ using Cinemachine;
 
 public class CameraLayerController : MonoBehaviour
 {
+    [Header("Camera Detection")]
     public LayerMask interactCameraLayer;
+    [Header("Layer Ignore Lists")]
+    public LayerMask ignoreNormalCameraLayer;
 
-    public LayerMask stationUILayer;
+    public LayerMask ignoreInteractCameraLayer;
 
     private Camera _mainCam;
     private int _defaultMask;
     private int _hiddenMask;
+    private int _interactCameraLayerMask;
     private CinemachineBrain _brain;
+
+    private int _currentMask;
 
     void Awake()
     {
@@ -19,9 +25,11 @@ public class CameraLayerController : MonoBehaviour
 
         _defaultMask = _mainCam.cullingMask;
 
-        _hiddenMask = _defaultMask & ~stationUILayer.value;
+        _hiddenMask = _defaultMask & ~ignoreNormalCameraLayer.value;
 
-        _mainCam.cullingMask = _hiddenMask;
+        _interactCameraLayerMask = _defaultMask & ~ignoreInteractCameraLayer.value;
+
+        SetCullingMask(_hiddenMask);
     }
 
     void Update()
@@ -32,11 +40,20 @@ public class CameraLayerController : MonoBehaviour
 
         if ((activeCamLayerMask & interactCameraLayer.value) != 0)
         {
-            _mainCam.cullingMask = _defaultMask;
+            SetCullingMask(_interactCameraLayerMask);
         }
         else
         {
-            _mainCam.cullingMask = _hiddenMask;
+            SetCullingMask(_hiddenMask);
+        }
+    }
+
+    private void SetCullingMask(int newMask)
+    {
+        if (_currentMask != newMask)
+        {
+            _currentMask = newMask;
+            _mainCam.cullingMask = _currentMask;
         }
     }
 }

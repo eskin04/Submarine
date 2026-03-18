@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
-using DG.Tweening; // Animasyon için
+using DG.Tweening;
 
 [RequireComponent(typeof(BoxCollider))]
 public class RoE_PhysicalButton : MonoBehaviour
