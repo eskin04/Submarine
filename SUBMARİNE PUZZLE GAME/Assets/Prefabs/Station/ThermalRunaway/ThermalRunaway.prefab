@@ -623,13 +623,18 @@ MonoBehaviour:
   frontHeat: 25
   backHeat: 25
   baseHeatIncreaseRate: 3
-  activeValveHeatMultiplier: 0.8
-  inactiveValveHeatMultiplier: 1.2
+  activeValveHeatMultiplier: 0.75
+  inactiveValveHeatMultiplier: 1.25
   possibleHeatRates:
-  - 1
-  - 1.5
-  - 2
-  - 2.5
+  - weight: 30
+    heatAmount: 1.75
+    roundTime: 60
+  - weight: 40
+    heatAmount: 2
+    roundTime: 50
+  - weight: 30
+    heatAmount: 2.25
+    roundTime: 45
   activeCoolingValve: 0
   engineerSliderPosition: 50
   sliderConeWidth: 10
@@ -654,37 +659,37 @@ MonoBehaviour:
     minPressure: 30.1
     maxPressure: 40
     coolingAmount: 1
-    bottleneckChance: 4
+    bottleneckChance: 1
   - zoneName: Yellow2
     minPressure: 40.1
     maxPressure: 50
-    coolingAmount: 1.5
-    bottleneckChance: 5
+    coolingAmount: 1.25
+    bottleneckChance: 2
   - zoneName: Yellow3
     minPressure: 50.1
     maxPressure: 60
-    coolingAmount: 2
-    bottleneckChance: 6
+    coolingAmount: 1.5
+    bottleneckChance: 3
   - zoneName: Yellow4
     minPressure: 60.1
     maxPressure: 70
-    coolingAmount: 2.5
-    bottleneckChance: 7
+    coolingAmount: 1.75
+    bottleneckChance: 4
   - zoneName: Red1
     minPressure: 70.1
     maxPressure: 80
-    coolingAmount: 3
-    bottleneckChance: 10
+    coolingAmount: 2
+    bottleneckChance: 6
   - zoneName: Red2
     minPressure: 80.1
     maxPressure: 90
-    coolingAmount: 3.5
-    bottleneckChance: 15
+    coolingAmount: 2.5
+    bottleneckChance: 7
   - zoneName: Red3
     minPressure: 90.1
     maxPressure: 100
-    coolingAmount: 4
-    bottleneckChance: 18
+    coolingAmount: 3
+    bottleneckChance: 8
   currentEmin: 0.4
   currentEmax: 1.4
   currentPumpMultiplier: 1
@@ -694,18 +699,18 @@ MonoBehaviour:
   - rhythmName: Fast Rhythm
     weight: 40
     eMin: 0.2
-    eMax: 1.2
+    eMax: 0.6
     pumpMultiplier: 1
   - rhythmName: Normal Rhythm
     weight: 30
     eMin: 0.4
-    eMax: 1.4
-    pumpMultiplier: 1.5
+    eMax: 0.8
+    pumpMultiplier: 1.25
   - rhythmName: Slow Rhythm
     weight: 30
-    eMin: 0.8
-    eMax: 1.8
-    pumpMultiplier: 2
+    eMin: 0.6
+    eMax: 1
+    pumpMultiplier: 1.75
   isBottleneckActive: 0
   bottleneckCooldownTimer: 0
   networkTickRate: 0.05
@@ -733,7 +738,7 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   utilityEventData: {fileID: 0}
   stationType: 0
-  stationTier: 4
+  stationTier: 0
   mistakeWaterPenalty: 3
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
@@ -788,10 +793,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1184742610067640432}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23, y: 1.026, z: 0.17}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.658, y: 0.402, z: 0.342}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1914494897383926404}
   - {fileID: 4684094168695150058}
@@ -806,7 +811,7 @@ Transform:
   - {fileID: 3069554783699094210}
   - {fileID: 5163210242369921459}
   m_Father: {fileID: 3238586450357378560}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!33 &31446630511944358
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -879,6 +884,7 @@ MonoBehaviour:
   displayName: Thermal
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -1122,7 +1128,7 @@ Transform:
   m_GameObject: {fileID: 1284333697475669263}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.16, y: 1.596, z: 0.41}
+  m_LocalPosition: {x: -15.99, y: -2.91, z: -3.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1259,6 +1265,7 @@ MonoBehaviour:
   displayName: PumpFront
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -2267,7 +2274,7 @@ Transform:
   m_GameObject: {fileID: 3044837704619298320}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.97, y: 0, z: -0.666}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3204,6 +3211,7 @@ MonoBehaviour:
   displayName: PumpBack
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -5334,7 +5342,7 @@ Transform:
   m_GameObject: {fileID: 8951124535733262883}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.25, y: 0, z: 0}
+  m_LocalPosition: {x: 15.04, y: 0, z: -0.552}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5444,11 +5452,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9085353392322765006}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.42, y: 1.41, z: 0.33}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -20.89, y: 1.244, z: 3.706}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6170912052424453819}
   m_Father: {fileID: 2815781785029018890}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}

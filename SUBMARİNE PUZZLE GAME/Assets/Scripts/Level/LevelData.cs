@@ -6,7 +6,6 @@ public class LevelData : ScriptableObject
 {
     public int levelID;
     public int mainStationCount;
-    public int utilityStationCount;
     public List<StationConfig> stationConfigs;
 
 }

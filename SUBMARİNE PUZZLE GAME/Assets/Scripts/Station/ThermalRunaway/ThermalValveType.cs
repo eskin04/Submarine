@@ -26,3 +26,11 @@ public struct RhythmData
     public float eMax;
     public float pumpMultiplier;
 }
+
+[System.Serializable]
+public struct PossibleHeatData
+{
+    public float weight;
+    public float heatAmount;
+    public float roundTime;
+}

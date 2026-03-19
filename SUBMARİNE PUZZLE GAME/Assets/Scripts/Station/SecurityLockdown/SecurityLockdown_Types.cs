@@ -1,5 +1,6 @@
 using UnityEngine;
 using PurrNet;
+using System.Collections.Generic;
 
 public enum LockdownColor
 {
@@ -42,14 +43,18 @@ public struct SequenceData
     public int targetNumber;
 }
 
-
+[System.Serializable]
+public struct DigitConfig
+{
+    public int digits;
+    public int count;
+}
 
 [System.Serializable]
 public struct CodeVariation
 {
     public string variationName;
-    public int totalSteps;
-    public int digitsPerStep;
+    public List<DigitConfig> digitConfigs;
     public int techRegionCount;
     public int engRegionCount;
 }
