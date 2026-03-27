@@ -24,6 +24,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     {
         initialRotation = book.localEulerAngles;
         originalParent = book.parent;
+
     }
 
     public void SetInspectPosition(Transform inspectPosition)
@@ -65,6 +66,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
 
     private void ToggleBookAnim()
     {
+        InventoryManager invManager = GetComponentInParent<InventoryManager>();
         if (isOperate)
         {
             book.SetParent(inspectPosition);
@@ -75,7 +77,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             bookGroup.alpha = 1f;
             bookGroup.interactable = true;
             bookGroup.blocksRaycasts = true;
-
+            if (invManager != null) invManager.IsScrollLocked = true;
 
         }
         else
@@ -88,6 +90,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             bookGroup.alpha = 0f;
             bookGroup.interactable = false;
             bookGroup.blocksRaycasts = false;
+            if (invManager != null) invManager.IsScrollLocked = false;
 
         }
     }

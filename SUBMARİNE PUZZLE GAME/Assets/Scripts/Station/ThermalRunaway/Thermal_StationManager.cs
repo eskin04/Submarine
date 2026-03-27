@@ -22,7 +22,7 @@ public class Thermal_StationManager : NetworkBehaviour
     public float baseHeatIncreaseRate = 3f;
     public float activeValveHeatMultiplier = 0.8f;
     public float inactiveValveHeatMultiplier = 1.2f;
-    public float[] possibleHeatRates = { 1f, 1.5f, 2.0f, 2.5f };
+    public List<PossibleHeatData> possibleHeatRates = new List<PossibleHeatData>();
 
     [Header("Engineer Data")]
     public ThermalValveType activeCoolingValve = ThermalValveType.Common;
@@ -121,7 +121,29 @@ public class Thermal_StationManager : NetworkBehaviour
 
     private void SelectRandomHeatIncreaseRate()
     {
-        baseHeatIncreaseRate = possibleHeatRates[Random.Range(0, possibleHeatRates.Length)];
+        if (possibleHeatRates == null || possibleHeatRates.Count == 0) return;
+
+        float totalWeight = 0f;
+        foreach (var heatData in possibleHeatRates)
+        {
+            totalWeight += heatData.weight;
+        }
+
+        float randomValue = Random.Range(0f, totalWeight);
+        float currentSum = 0f;
+
+        foreach (var heatData in possibleHeatRates)
+        {
+            currentSum += heatData.weight;
+            if (randomValue <= currentSum)
+            {
+                baseHeatIncreaseRate = heatData.heatAmount;
+                roundTimer = heatData.roundTime;
+
+                Debug.Log($"<color=cyan>[ISINMA]</color> Seçilen Isınma Verisi: HeatRate={heatData.heatAmount}, RoundTime={heatData.roundTime}");
+                break;
+            }
+        }
     }
 
     private void Update()
@@ -349,7 +371,7 @@ public class Thermal_StationManager : NetworkBehaviour
 
     private float GetBottleneckChanceFromPressure(float pressure)
     {
-        if (pressure >= 100f) return 65f;
+        if (pressure >= 100f) return 33f;
 
         foreach (var zone in coolingZones)
         {
@@ -365,7 +387,7 @@ public class Thermal_StationManager : NetworkBehaviour
         currentSequenceIndex = 0;
         currentBottleneckSequence.Clear();
         bottleneckLocation = activeCoolingValve;
-        int length = Random.Range(3, 7);
+        int length = Random.Range(3, 5);
         for (int i = 0; i < length; i++)
         {
             currentBottleneckSequence.Add(Random.Range(0, 3));
@@ -389,8 +411,8 @@ public class Thermal_StationManager : NetworkBehaviour
             if (currentSequenceIndex >= currentBottleneckSequence.Count)
             {
                 isBottleneckActive = false;
-                bottleneckCooldownTimer = 5f;
-                Debug.Log("<color=lime>!!! DARBOĞAZ ÇÖZÜLDÜ !!! 5sn Koruma Aktif.</color>");
+                bottleneckCooldownTimer = 10f;
+                Debug.Log("<color=lime>!!! DARBOĞAZ ÇÖZÜLDÜ !!! 10sn Koruma Aktif.</color>");
                 RpcOnBottleneckSolved();
             }
         }

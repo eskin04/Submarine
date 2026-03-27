@@ -597,6 +597,7 @@ MonoBehaviour:
   displayName: T4
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -7079,6 +7080,7 @@ MonoBehaviour:
   displayName: Board
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -8575,6 +8577,7 @@ MonoBehaviour:
   displayName: M2
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -10859,6 +10862,7 @@ MonoBehaviour:
   displayName: M3
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -11693,29 +11697,48 @@ MonoBehaviour:
   technicianSideRegions: 00000000010000000200000003000000
   engineerSideRegions: 08000000090000000a000000
   codeVariations:
-  - variationName: 6-1
-    totalSteps: 6
-    digitsPerStep: 1
+  - variationName: 6
+    digitConfigs:
+    - digits: 2
+      count: 3
+    - digits: 1
+      count: 2
+    - digits: 3
+      count: 1
     techRegionCount: 4
     engRegionCount: 2
-  - variationName: 5-2
-    totalSteps: 5
-    digitsPerStep: 2
+  - variationName: 5
+    digitConfigs:
+    - digits: 2
+      count: 2
+    - digits: 3
+      count: 2
+    - digits: 1
+      count: 1
     techRegionCount: 3
     engRegionCount: 2
-  - variationName: 4-3
-    totalSteps: 4
-    digitsPerStep: 3
+  - variationName: 4
+    digitConfigs:
+    - digits: 2
+      count: 2
+    - digits: 3
+      count: 2
     techRegionCount: 3
     engRegionCount: 1
-  - variationName: 3-4
-    totalSteps: 3
-    digitsPerStep: 4
+  - variationName: 3
+    digitConfigs:
+    - digits: 3
+      count: 2
+    - digits: 4
+      count: 1
     techRegionCount: 2
     engRegionCount: 1
-  - variationName: 2-5
-    totalSteps: 2
-    digitsPerStep: 5
+  - variationName: 2
+    digitConfigs:
+    - digits: 5
+      count: 1
+    - digits: 4
+      count: 1
     techRegionCount: 2
     engRegionCount: 0
   sequenceLength: 4
@@ -15115,6 +15138,7 @@ MonoBehaviour:
   displayName: T1
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -18361,6 +18385,7 @@ MonoBehaviour:
   displayName: M1
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -20340,6 +20365,7 @@ MonoBehaviour:
   displayName: T2
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -30094,6 +30120,7 @@ MonoBehaviour:
   displayName: T3
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -33736,6 +33763,7 @@ MonoBehaviour:
   displayName: Board
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:

@@ -8,6 +8,7 @@ public class InventoryManager : NetworkBehaviour
 {
     public static Action<InventoryManager> OnLocalInventoryReady;
     public static Action<bool> OnEquipChange;
+    public bool IsScrollLocked { get; set; } = false;
 
     [Header("Settings")]
     [SerializeField] private int inventorySize = 4;
@@ -129,6 +130,26 @@ public class InventoryManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3)) EquipSlot(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) EquipSlot(3);
 
+        if (!IsScrollLocked)
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0f)
+            {
+                int nextSlot = currentSlotIndex;
+
+                if (scroll > 0f)
+                {
+                    nextSlot = currentSlotIndex <= 0 ? inventorySize - 1 : currentSlotIndex - 1;
+                }
+                else if (scroll < 0f)
+                {
+                    nextSlot = currentSlotIndex == -1 ? 0 : (currentSlotIndex + 1) % inventorySize;
+                }
+
+                if (nextSlot != currentSlotIndex) EquipSlot(nextSlot);
+            }
+        }
+
 
         if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
     }
@@ -209,6 +230,7 @@ public class InventoryManager : NetworkBehaviour
         var container = containers[currentSlotIndex];
         if (!container.IsEmpty)
         {
+            IsScrollLocked = false;
             GameObject itemObj = container.PhysicalObject;
 
             var itemLogic = itemObj.GetComponent<IInventoryItem>();

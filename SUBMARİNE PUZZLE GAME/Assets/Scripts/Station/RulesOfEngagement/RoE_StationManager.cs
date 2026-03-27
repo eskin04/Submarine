@@ -61,27 +61,51 @@ public class RoE_StationManager : NetworkBehaviour
         RPCStationStateChange(newState);
     }
 
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+        if (isServer)
+        {
+            PrepareStationData();
+        }
+        Invoke(nameof(RequestStationVisualsRpc), 1f);
+
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void RequestStationVisualsRpc()
+    {
+        if (currentBoardSetup != null && currentBoardSetup.Count > 0)
+        {
+            List<int> objectIndices = new List<int>();
+            foreach (var entry in currentBoardSetup)
+            {
+                objectIndices.Add(allPossibleObjects.IndexOf(entry.linkedObject));
+            }
+            RpcHandbookSetup(objectIndices);
+
+            boardManager.BroadcastBoardData(currentBoardSetup);
+
+
+        }
+    }
+
+    public void PrepareStationData()
+    {
+
+        List<RoE_ObjectData> roundObjects = GenerateRoundObjects();
+
+        currentBoardSetup = boardManager.GenerateNewBoardData(roundObjects, availableSymbols);
+
+    }
+
 
     public void StartNewRound()
     {
         if (!isServer) return;
 
-
         SetNewRandomRule();
 
-        List<RoE_ObjectData> roundObjects = GenerateRoundObjects();
-
-        if (boardManager != null)
-        {
-            currentBoardSetup = boardManager.GenerateNewBoardData(roundObjects, availableSymbols);
-        }
-        List<int> objectIndices = new List<int>();
-        foreach (var obj in roundObjects)
-        {
-            objectIndices.Add(allPossibleObjects.IndexOf(obj));
-        }
-
-        RpcHandbookSetup(objectIndices);
 
 
         threatManager.SpawnNewThreats(currentBoardSetup);

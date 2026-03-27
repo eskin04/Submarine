@@ -68,12 +68,12 @@ public class RoE_TechnicianUI : MonoBehaviour
     }
     private void Update()
     {
+        ProcessSonarSweep();
 
         if (stationManager == null || !stationManager.GetSimulateRunning()) return;
 
         UpdateRadarBlips();
         UpdateSelectionPanel();
-        ProcessSonarSweep();
 
     }
 
@@ -132,6 +132,9 @@ public class RoE_TechnicianUI : MonoBehaviour
         {
             activeMaterial.SetFloat(shaderProperty, currentSweepAngle + visualOffset);
         }
+
+        if (stationManager == null || !stationManager.GetSimulateRunning()) return;
+
 
         CheckBlipsInBeam();
     }
