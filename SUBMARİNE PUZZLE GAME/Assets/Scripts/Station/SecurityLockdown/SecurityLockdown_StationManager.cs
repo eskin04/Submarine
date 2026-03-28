@@ -11,6 +11,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     public static event System.Action OnPuzzleDataSynced;
 
     [Header("References")]
+    public StationController stationController;
     public SecurityLockdown_TechnicianUI techUI;
     public SecurityLockdown_EngineerUI engUI;
 
@@ -187,6 +188,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
         {
             currentState.value = LockDownStationState.Solved;
             Debug.Log("<color=green>*** MAIN STATION FULLY SOLVED! ***</color>");
+            if (stationController != null) stationController.SetReparied();
             RpcStateChanged(currentState.value);
         }
     }

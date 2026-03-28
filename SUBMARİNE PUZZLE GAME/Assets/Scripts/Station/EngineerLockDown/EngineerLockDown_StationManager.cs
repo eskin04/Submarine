@@ -12,6 +12,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     public static event System.Action OnOverrideSolved;
     public static event System.Action OnOverrideDataSynced;
     public static event System.Action OnEngineerDoorRequested;
+    public StationController stationController;
 
     [Header("Override State (SyncVars)")]
     [SerializeField] private SyncVar<EngineerLockDownStationState> overrideState = new SyncVar<EngineerLockDownStationState>(EngineerLockDownStationState.Idle);
@@ -72,6 +73,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
             if (currentOverrideStep.value >= 3)
             {
                 overrideState.value = EngineerLockDownStationState.Solved;
+                if (stationController != null) stationController.SetReparied();
                 RpcOverrideStateChanged(overrideState.value);
                 RpcOverrideSolved();
             }

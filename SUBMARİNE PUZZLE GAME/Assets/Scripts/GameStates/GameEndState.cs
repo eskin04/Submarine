@@ -15,17 +15,20 @@ public class GameEndState : StateNode<ushort>
         if (!asServer) return;
         Debug.Log($"Showing Game End View. Win: {isWin}");
 
-        ShowGameEndView(isWin);
-        machine.StartCoroutine(StartAgain());
+        machine.StartCoroutine(StartAgain(isWin));
+
     }
 
-    private IEnumerator StartAgain()
+    private IEnumerator StartAgain(ushort isWin)
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(3f);
+        ShowGameEndView(isWin);
+        yield return new WaitForSeconds(3f);
 
         HideGameEndView();
         networkManager.sceneModule.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
+
     [ObserversRpc]
     private void ShowGameEndView(ushort isWin)
     {
@@ -35,8 +38,8 @@ public class GameEndState : StateNode<ushort>
             view.SetResultText(isWin);
         }
         InstanceHandler.GetInstance<GameViewManager>().ShowView<GameEndView>(hideOthers: false);
-
     }
+
     [ObserversRpc]
     private void HideGameEndView()
     {

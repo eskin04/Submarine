@@ -9,8 +9,8 @@ public class Thermal_PhysicalSlider : MonoBehaviour
     public Interactable moduleInteractable;
 
     [Header("Settings")]
-    public float minLocalX = -1f;
-    public float maxLocalX = 1f;
+    public float minLocalY = -1f;
+    public float maxLocalY = 1f;
     public bool invertDirection = false;
 
     private Vector3 offset;
@@ -25,10 +25,10 @@ public class Thermal_PhysicalSlider : MonoBehaviour
                 ? Mathf.InverseLerp(95f, 5f, manager.engineerSliderPosition)
                 : Mathf.InverseLerp(5f, 95f, manager.engineerSliderPosition);
 
-            float startX = Mathf.Lerp(minLocalX, maxLocalX, t);
+            float startY = Mathf.Lerp(minLocalY, maxLocalY, t);
 
             Vector3 startPos = transform.localPosition;
-            startPos.x = startX;
+            startPos.y = startY;
             transform.localPosition = startPos;
         }
     }
@@ -51,14 +51,14 @@ public class Thermal_PhysicalSlider : MonoBehaviour
 
         Vector3 localPos = transform.parent.InverseTransformPoint(targetPos);
 
-        localPos.y = transform.localPosition.y;
+        localPos.x = transform.localPosition.x;
         localPos.z = transform.localPosition.z;
 
-        localPos.x = Mathf.Clamp(localPos.x, minLocalX, maxLocalX);
+        localPos.y = Mathf.Clamp(localPos.y, minLocalY, maxLocalY);
 
         transform.localPosition = localPos;
 
-        float t = Mathf.InverseLerp(minLocalX, maxLocalX, localPos.x);
+        float t = Mathf.InverseLerp(minLocalY, maxLocalY, localPos.y);
 
         float managerValue = invertDirection
             ? Mathf.Lerp(95f, 5f, t)

@@ -25,6 +25,7 @@ public class LightsOut_StationManager : NetworkBehaviour
     public StationController stationController;
 
     private bool isCorrectSequence = false;
+    private bool areSwitchesInitialized = false;
 
 
     public void StartNewRound()
@@ -40,7 +41,6 @@ public class LightsOut_StationManager : NetworkBehaviour
     private void GeneratePuzzle()
     {
         allCables.Clear();
-        allSwitches.Clear();
         correctSolutionSequence.Clear();
 
         List<WireColor> colors = new List<WireColor>()
@@ -70,18 +70,6 @@ public class LightsOut_StationManager : NetworkBehaviour
             allCables.Add(cable);
         }
 
-        List<WireColor> switchLabels = new List<WireColor>(colors);
-        Shuffle(switchLabels);
-
-        for (int i = 0; i < 4; i++)
-        {
-            SwitchData sw = new SwitchData();
-            sw.switchIndex = i;
-            sw.labelColor = switchLabels[i];
-            sw.isOn = false;
-            allSwitches.Add(sw);
-        }
-
 
         for (int portIndex = 0; portIndex < 4; portIndex++)
         {
@@ -90,10 +78,35 @@ public class LightsOut_StationManager : NetworkBehaviour
             correctSolutionSequence.Add(correctCable.outputLightColor);
         }
 
+        if (!areSwitchesInitialized)
+        {
+            allSwitches.Clear();
+            List<WireColor> switchLabels = new List<WireColor>(colors);
+            Shuffle(switchLabels);
+
+            for (int i = 0; i < 4; i++)
+            {
+                SwitchData sw = new SwitchData();
+                sw.switchIndex = i;
+                sw.labelColor = switchLabels[i];
+                sw.isOn = false;
+                allSwitches.Add(sw);
+            }
+
+            // Bu fonksiyon sahte renkleri atar ve RpcSyncSwitches'i çağırır
+            SetSwitchTextColor(allSwitches);
+            areSwitchesInitialized = true; // Artık atandığını işaretliyoruz
+        }
+        else
+        {
+            // Eğer daha önceden atanmışsa, sadece butonların fiziksel pozisyonlarını 
+            // eski haline getirmek (resetlemek) için mevcut listeyi yolluyoruz.
+            RpcSyncSwitches(allSwitches);
+        }
+
         isRoundActive = true;
         RpcSyncPuzzle(allCables);
         CalculateAndSyncEngineerLights();
-        SetSwitchTextColor(allSwitches);
         RpcSetGlobalLights(false);
 
     }
