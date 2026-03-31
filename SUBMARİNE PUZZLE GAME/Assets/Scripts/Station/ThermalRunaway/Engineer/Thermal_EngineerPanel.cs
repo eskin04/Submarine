@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 public class Thermal_EngineerPanel : MonoBehaviour
 {
@@ -33,6 +34,7 @@ public class Thermal_EngineerPanel : MonoBehaviour
     private float targetClientPressure = 0f;
     private float targetFrontHeat = 0f;
     private float targetBackHeat = 0f;
+    private bool isGameEnded = false;
 
     public void UpdateDashboardData(int frontHeat, int backHeat, int timer, float pressure)
     {
@@ -66,8 +68,30 @@ public class Thermal_EngineerPanel : MonoBehaviour
 
     public void SetStationEndState(bool isWin)
     {
+        isGameEnded = true;
         if (frontWarningLight != null) frontWarningLight.SetStationEndState(isWin);
         if (backWarningLight != null) backWarningLight.SetStationEndState(isWin);
+        if (isWin)
+        {
+            PlayCoolingDownAnimation();
+        }
+    }
+
+    private void PlayCoolingDownAnimation()
+    {
+
+        float targetHeatAngle = Mathf.Lerp(thermoMinAngle, thermoMaxAngle, 10f / 100f);
+        Quaternion targetHeatRot = Quaternion.AngleAxis(targetHeatAngle, thermoRotationAxis);
+
+        if (frontThermometerNeedle != null)
+        {
+            frontThermometerNeedle.DOLocalRotateQuaternion(targetHeatRot, 3f).SetEase(Ease.InOutSine);
+        }
+
+        if (backThermometerNeedle != null)
+        {
+            backThermometerNeedle.DOLocalRotateQuaternion(targetHeatRot, 3f).SetEase(Ease.InOutSine);
+        }
     }
 
 
@@ -83,7 +107,7 @@ public class Thermal_EngineerPanel : MonoBehaviour
 
     private void Update()
     {
-        if (manager == null) return;
+        if (manager == null || isGameEnded) return;
 
         float pressureToLerp = manager.isServer ? manager.currentPressure : targetClientPressure;
         SmoothNeedleMovement(pressureToLerp);

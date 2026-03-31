@@ -39,6 +39,8 @@ public class Thermal_StationManager : NetworkBehaviour
     public float currentEmin = 0.4f;
     public float currentEmax = 1.4f;
     public float currentPumpMultiplier = 1f;
+    public float currentBottleneckMultiplier = 1f;
+
     public float needleRiseSpeed = 5f;
     public float baseNeedleDropSpeed = 2f;
 
@@ -108,6 +110,7 @@ public class Thermal_StationManager : NetworkBehaviour
                 currentEmin = rhythm.eMin;
                 currentEmax = rhythm.eMax;
                 currentPumpMultiplier = rhythm.pumpMultiplier;
+                currentBottleneckMultiplier = rhythm.bottleneckMultiplier;
 
                 Debug.Log($"<color=cyan>[RİTİM]</color> Seçilen Ritim: {rhythm.rhythmName}");
                 break;
@@ -358,6 +361,7 @@ public class Thermal_StationManager : NetworkBehaviour
         if (bottleneckCooldownTimer > 0f) return false;
 
         float chance = GetBottleneckChanceFromPressure(pressureToCheck);
+        chance *= currentBottleneckMultiplier;
         int roll = Random.Range(0, 100);
         Debug.Log($"<color=magenta>[DARBOĞAZ]</color> Şans Kontrolü: {roll} < {chance} ? {(roll < chance ? "DARBOĞAZ TETİKLENDİ!" : "Kurtuldunuz.")}");
         if (roll < chance)
@@ -477,11 +481,12 @@ public class Thermal_StationManager : NetworkBehaviour
         stationController.SetReparied();
         RPCSetBrokenStation(false);
         RPCSetEngineerInteracted(false);
+        RpcOnStationEnded(true);
+
         frontHeat = 10f;
         backHeat = 10f;
         Debug.Log("<color=lime>!!! İSTASYON ÇÖZÜLDÜ !!!</color>");
         RpcSyncDashboard(10, 10, 0, 0);
-        RpcOnStationEnded(true);
     }
 
     private void LoseStation()

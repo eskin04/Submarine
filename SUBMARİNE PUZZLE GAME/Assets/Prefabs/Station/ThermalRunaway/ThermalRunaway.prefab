@@ -441,6 +441,7 @@ MonoBehaviour:
   currentEmin: 0.4
   currentEmax: 1.4
   currentPumpMultiplier: 1
+  currentBottleneckMultiplier: 1
   needleRiseSpeed: 5
   baseNeedleDropSpeed: 2
   possibleRhythms:
@@ -449,16 +450,19 @@ MonoBehaviour:
     eMin: 0.2
     eMax: 0.6
     pumpMultiplier: 1
+    bottleneckMultiplier: 0.8
   - rhythmName: Normal Rhythm
     weight: 30
     eMin: 0.4
     eMax: 0.8
     pumpMultiplier: 1.25
+    bottleneckMultiplier: 1
   - rhythmName: Slow Rhythm
     weight: 30
     eMin: 0.6
     eMax: 1
     pumpMultiplier: 1.75
+    bottleneckMultiplier: 1.1
   isBottleneckActive: 0
   bottleneckCooldownTimer: 0
   networkTickRate: 0.05

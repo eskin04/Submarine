@@ -25,6 +25,7 @@ public struct RhythmData
     public float eMin;
     public float eMax;
     public float pumpMultiplier;
+    public float bottleneckMultiplier;
 }
 
 [System.Serializable]
