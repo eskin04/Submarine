@@ -6,14 +6,20 @@ public class Thermal_EngineerPanel : MonoBehaviour
     [Header("Manager Reference")]
     public Thermal_StationManager manager;
 
-    [Header("Texts")]
-    public TMP_Text frontHeatText;
-    public TMP_Text backHeatText;
     public TMP_Text timerText;
 
     [Header("Meshes")]
     public Transform needleMesh;
     public Transform sliderConeMesh;
+
+    [Header("Thermometers (Heat Visuals)")]
+    public Transform frontThermometerNeedle;
+    public Transform backThermometerNeedle;
+
+    [Header("Thermometer Settings")]
+    public float thermoMinAngle = 0f;
+    public float thermoMaxAngle = 270f;
+    public Vector3 thermoRotationAxis = Vector3.right;
 
     [Header("Gauge Settings")]
     public float minAngle = 90f;
@@ -25,14 +31,22 @@ public class Thermal_EngineerPanel : MonoBehaviour
     public Thermal_WarningLight backWarningLight;
 
     private float targetClientPressure = 0f;
+    private float targetFrontHeat = 0f;
+    private float targetBackHeat = 0f;
 
     public void UpdateDashboardData(int frontHeat, int backHeat, int timer, float pressure)
     {
-        if (frontHeatText != null) frontHeatText.text = $"%{frontHeat}";
-        if (backHeatText != null) backHeatText.text = $"%{backHeat}";
-        if (timerText != null) timerText.text = $"{timer}s";
+
+        if (timerText != null)
+        {
+            int minutes = timer / 60;
+            int seconds = timer % 60;
+            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
 
         targetClientPressure = pressure;
+        targetFrontHeat = frontHeat;
+        targetBackHeat = backHeat;
 
         if (frontWarningLight != null) frontWarningLight.UpdateHeat(frontHeat);
         if (backWarningLight != null) backWarningLight.UpdateHeat(backHeat);
@@ -73,6 +87,11 @@ public class Thermal_EngineerPanel : MonoBehaviour
 
         float pressureToLerp = manager.isServer ? manager.currentPressure : targetClientPressure;
         SmoothNeedleMovement(pressureToLerp);
+
+        float lerpSpeed = manager.isServer ? 30f : 15f;
+
+        SmoothThermometerMovement(frontThermometerNeedle, targetFrontHeat, lerpSpeed);
+        SmoothThermometerMovement(backThermometerNeedle, targetBackHeat, lerpSpeed);
     }
 
     private void SmoothNeedleMovement(float targetPressure)
@@ -85,6 +104,18 @@ public class Thermal_EngineerPanel : MonoBehaviour
 
             float lerpSpeed = manager.isServer ? 30f : 15f;
             needleMesh.localRotation = Quaternion.Lerp(currentRot, targetRot, lerpSpeed * Time.deltaTime);
+        }
+    }
+
+    private void SmoothThermometerMovement(Transform needle, float targetHeat, float speed)
+    {
+        if (needle != null)
+        {
+            float targetAngle = Mathf.Lerp(thermoMinAngle, thermoMaxAngle, targetHeat / 100f);
+
+            Quaternion targetRot = Quaternion.AngleAxis(targetAngle, thermoRotationAxis);
+
+            needle.localRotation = Quaternion.Lerp(needle.localRotation, targetRot, speed * Time.deltaTime);
         }
     }
 }

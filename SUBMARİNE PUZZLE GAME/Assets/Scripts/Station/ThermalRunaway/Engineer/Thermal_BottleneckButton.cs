@@ -7,6 +7,7 @@ public class Thermal_BottleneckButton : MonoBehaviour
     public Thermal_StationManager manager;
 
     public ThermalValveType myLocation;
+    public float pressDistance = 0.0005f;
 
     public int colorIndex;
 
@@ -20,14 +21,15 @@ public class Thermal_BottleneckButton : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (manager == null || !manager.isStationBroken || !manager.isBottleneckActive) return;
-
         if (buttonMesh != null)
         {
             buttonMesh.DOKill();
             buttonMesh.localPosition = initialPos;
-            buttonMesh.DOPunchPosition(Vector3.back * 0.02f, 0.2f, 1, 0.5f);
+            buttonMesh.DOPunchPosition(Vector3.left * pressDistance, 0.2f, 1, 0.5f);
         }
+        if (manager == null || !manager.isStationBroken || !manager.isBottleneckActive) return;
+
+
 
         manager.SubmitBottleneckCodeRPC(colorIndex, myLocation);
     }

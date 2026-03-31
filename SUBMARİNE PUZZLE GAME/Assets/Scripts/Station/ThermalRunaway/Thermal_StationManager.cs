@@ -7,7 +7,6 @@ public class Thermal_StationManager : NetworkBehaviour
     [Header("References")]
     public StationController stationController;
     public Thermal_EngineerPanel engineerPanel;
-    public Thermal_PhysicalSwitch physicalSwitch;
     public Thermal_TechnicianPanel frontTechnicianPanel;
     public Thermal_TechnicianPanel backTechnicianPanel;
 
