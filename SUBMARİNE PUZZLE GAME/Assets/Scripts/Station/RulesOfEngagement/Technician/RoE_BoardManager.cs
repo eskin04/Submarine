@@ -29,7 +29,6 @@ public class RoE_BoardManager : NetworkBehaviour
         List<DecryptionSymbol> requiredSymbols = symbols.Where(s => selectedGroups.Contains(s.groupID)).ToList();
 
         // --- 1. AĞAÇ/KÖK (PREFIX) OLUŞTURMA ---
-        // Her seçili gruptan 1 adet "Ana Sembol" (Prefix) seçiyoruz.
         List<DecryptionSymbol> prefixSymbols = new List<DecryptionSymbol>();
         foreach (int gId in selectedGroups)
         {
@@ -37,8 +36,6 @@ public class RoE_BoardManager : NetworkBehaviour
             prefixSymbols.Add(sym);
         }
 
-        // Bu 4 Ana Sembolü, cisimlere 1. SIRAYA (Index 0) zorunlu olarak paylaştırıyoruz.
-        // Böylece her 4 cisim KESİNLİKLE aynı ilk sembolle başlayacak!
         int chunkSize = Mathf.CeilToInt((float)newSetup.Count / prefixSymbols.Count);
         for (int i = 0; i < newSetup.Count; i++)
         {
@@ -46,10 +43,44 @@ public class RoE_BoardManager : NetworkBehaviour
             newSetup[i].assignedSymbols.Add(prefixSymbols[prefixIndex]);
         }
 
-        // --- 2. ZORUNLU SEMBOLLERİ DAĞIT ---
-        // Ana semboller zaten atandı, geriye kalan zorunlu sembolleri dağıtıyoruz.
-        var remainingRequired = requiredSymbols.Except(prefixSymbols).OrderBy(x => Random.value).ToList();
+        // --- 2. DARALTILMIŞ HAVUZ (FILLER POOL) ---
+        List<DecryptionSymbol> fillerPool = new List<DecryptionSymbol>(requiredSymbols);
+        List<int> unselectedGroups = allGroups.Except(selectedGroups).ToList();
+        foreach (int unselectedId in unselectedGroups)
+        {
+            var randomUnselectedSym = symbols.Where(s => s.groupID == unselectedId).OrderBy(x => Random.value).First();
+            fillerPool.Add(randomUnselectedSym);
+        }
 
+        List<DecryptionSymbol> remainingRequired = requiredSymbols.Except(prefixSymbols).ToList();
+
+        // --- 3. DESEN ŞIRINGALAMA (PATTERN INJECTION) ---
+
+        // 1. Grup (Index 0 ve 1) için ortak 2. sembolü seç ve zorla ekle
+        DecryptionSymbol patternSym1 = fillerPool.OrderBy(x => Random.value)
+            .FirstOrDefault(s => s.groupID == 0 || s.groupID != prefixSymbols[0].groupID);
+
+        if (patternSym1.icon != null)
+        {
+            newSetup[0].assignedSymbols.Add(patternSym1);
+            newSetup[1].assignedSymbols.Add(patternSym1);
+            // Eğer bu zorunlu bir sembolse, "kullanıldı" olarak işaretlemek için listeden düşüyoruz
+            remainingRequired.RemoveAll(s => s.icon == patternSym1.icon);
+        }
+
+        // 2. Grup (Index 4 ve 5) için ortak 2. sembolü seç ve zorla ekle
+        DecryptionSymbol patternSym2 = fillerPool.OrderBy(x => Random.value)
+            .FirstOrDefault(s => s.groupID == 0 || s.groupID != prefixSymbols[1].groupID);
+
+        if (patternSym2.icon != null)
+        {
+            newSetup[4].assignedSymbols.Add(patternSym2);
+            newSetup[5].assignedSymbols.Add(patternSym2);
+            remainingRequired.RemoveAll(s => s.icon == patternSym2.icon);
+        }
+
+        // --- 4. ZORUNLU SEMBOLLERİ DAĞIT ---
+        remainingRequired = remainingRequired.OrderBy(x => Random.value).ToList();
         foreach (var reqSym in remainingRequired)
         {
             var validObjects = newSetup.Where(entry =>
@@ -63,19 +94,7 @@ public class RoE_BoardManager : NetworkBehaviour
             }
         }
 
-        // --- 3. DARALTILMIŞ HAVUZ (FILLER) ---
-        // Eskiden tüm 40 sembolü kullanıyorduk, bu da tekrarları (zorluğu) azaltıyordu.
-        // Artık sadece zorunlu semboller + seçilmeyen gruplardan 1'er tane alıp havuzu daraltıyoruz.
-        List<DecryptionSymbol> fillerPool = new List<DecryptionSymbol>(requiredSymbols);
-
-        List<int> unselectedGroups = allGroups.Except(selectedGroups).ToList();
-        foreach (int unselectedId in unselectedGroups)
-        {
-            var randomUnselectedSym = symbols.Where(s => s.groupID == unselectedId).OrderBy(x => Random.value).First();
-            fillerPool.Add(randomUnselectedSym);
-        }
-
-        // Kalan boşlukları (2. ve 3. slotlar) bu dar havuzdan doldur
+        // --- 5. HAVUZDAN BOŞLUKLARI DOLDUR ---
         foreach (var entry in newSetup)
         {
             int safetyCounter = 0;
@@ -86,7 +105,6 @@ public class RoE_BoardManager : NetworkBehaviour
 
                 if (entry.assignedSymbols.Contains(randomSym)) continue;
 
-                // GLOBAL KURAL: Aynı gruptan 2 sembol olamaz
                 if (randomSym.groupID > 0 && entry.assignedSymbols.Any(s => s.groupID == randomSym.groupID))
                     continue;
 
@@ -94,9 +112,9 @@ public class RoE_BoardManager : NetworkBehaviour
             }
         }
 
-        // --- 4. KARIŞTIRMA VE GİZLEME (SHUFFLE) ---
-        // İlk sembol (Kök) SABİT kalmalı. Sadece 2. ve 3. sembolleri kendi aralarında karıştırıyoruz.
-        // Dağıtım yaparken cisimleri de kendi aralarında karıştırıyoruz ki, aynı ilk sembole sahip olanlar art arda dizilip yapay durmasın.
+        // --- 6. KARIŞTIRMA VE GİZLEME (SHUFFLE) ---
+        // Hem cisimleri yer değiştiriyoruz (birebir aynı sembole sahip olanlar yan yana durmasın diye)
+        // Hem de 2. ve 3. sembolleri kendi içinde yer değiştiriyoruz.
         var shuffledSetup = newSetup.OrderBy(x => Random.value).ToList();
 
         foreach (var entry in shuffledSetup)

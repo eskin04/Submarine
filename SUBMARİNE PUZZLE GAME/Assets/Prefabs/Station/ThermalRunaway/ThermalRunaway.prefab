@@ -391,53 +391,53 @@ MonoBehaviour:
   - zoneName: Green1
     minPressure: 0
     maxPressure: 10
-    coolingAmount: 0.25
+    coolingAmount: 0.75
     bottleneckChance: 0
   - zoneName: Green2
     minPressure: 10.1
     maxPressure: 20
-    coolingAmount: 0.5
+    coolingAmount: 1
     bottleneckChance: 0
   - zoneName: Green3
     minPressure: 20.1
     maxPressure: 30
-    coolingAmount: 0.75
+    coolingAmount: 1.25
     bottleneckChance: 0
   - zoneName: Yellow1
     minPressure: 30.1
     maxPressure: 40
-    coolingAmount: 1
+    coolingAmount: 1.5
     bottleneckChance: 1
   - zoneName: Yellow2
     minPressure: 40.1
     maxPressure: 50
-    coolingAmount: 1.25
+    coolingAmount: 2
     bottleneckChance: 2
   - zoneName: Yellow3
     minPressure: 50.1
     maxPressure: 60
-    coolingAmount: 1.5
+    coolingAmount: 2.25
     bottleneckChance: 3
   - zoneName: Yellow4
     minPressure: 60.1
     maxPressure: 70
-    coolingAmount: 1.75
+    coolingAmount: 2.5
     bottleneckChance: 4
   - zoneName: Red1
     minPressure: 70.1
     maxPressure: 80
-    coolingAmount: 2
-    bottleneckChance: 6
+    coolingAmount: 3
+    bottleneckChance: 7
   - zoneName: Red2
     minPressure: 80.1
     maxPressure: 90
-    coolingAmount: 2.5
-    bottleneckChance: 7
+    coolingAmount: 4
+    bottleneckChance: 8
   - zoneName: Red3
     minPressure: 90.1
     maxPressure: 100
-    coolingAmount: 3
-    bottleneckChance: 8
+    coolingAmount: 5
+    bottleneckChance: 9
   currentEmin: 0.4
   currentEmax: 1.4
   currentPumpMultiplier: 1
@@ -449,7 +449,7 @@ MonoBehaviour:
     weight: 40
     eMin: 0.2
     eMax: 0.6
-    pumpMultiplier: 1
+    pumpMultiplier: 0.9
     bottleneckMultiplier: 0.8
   - rhythmName: Normal Rhythm
     weight: 30
@@ -461,7 +461,7 @@ MonoBehaviour:
     weight: 30
     eMin: 0.6
     eMax: 1
-    pumpMultiplier: 1.75
+    pumpMultiplier: 1.5
     bottleneckMultiplier: 1.1
   isBottleneckActive: 0
   bottleneckCooldownTimer: 0
