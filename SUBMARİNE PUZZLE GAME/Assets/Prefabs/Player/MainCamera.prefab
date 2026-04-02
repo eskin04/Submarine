@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5160382215579191363}
   - component: {fileID: 3508419941885557654}
   - component: {fileID: 3423339459287810223}
+  - component: {fileID: 7916606003455406950}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -203,7 +204,7 @@ MonoBehaviour:
   interactCameraLayer:
     serializedVersion: 2
     m_Bits: 8
-  stationUILayer:
+  ignoreNormalCameraLayer:
     serializedVersion: 2
     m_Bits: 64
   ignoreInteractCameraLayer:
@@ -231,3 +232,23 @@ MonoBehaviour:
     m_FrequencyGain: 10
     m_Duration: 0.3
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &7916606003455406950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9005220659476430823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b177f92f7b4cbc448764f7dfe8210e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CursorManager
+  defaultCursor: {fileID: 2800000, guid: 003f480be6316884ea2ebf91813375cb, type: 3}
+  hoverCursor: {fileID: 2800000, guid: a98dae6a22594e049aa3ea3f6c04c080, type: 3}
+  cursorHotspot: {x: 70, y: 70}
+  cursorHoverHotspot: {x: 190, y: 70}
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  raycastDistance: 10

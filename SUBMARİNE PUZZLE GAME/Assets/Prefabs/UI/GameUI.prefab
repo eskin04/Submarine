@@ -1352,6 +1352,7 @@ GameObject:
   - component: {fileID: 390361018833839519}
   - component: {fileID: 7970614437477210468}
   - component: {fileID: 1760625572859792878}
+  - component: {fileID: 1157579584889186350}
   m_Layer: 5
   m_Name: Resume
   m_TagString: Untagged
@@ -1461,6 +1462,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1157579584889186350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2986979135373271293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &3034288291184623957
 GameObject:
   m_ObjectHideFlags: 0
@@ -3438,6 +3451,7 @@ GameObject:
   - component: {fileID: 8853090140034737884}
   - component: {fileID: 6080913780179416718}
   - component: {fileID: 7525223402961158983}
+  - component: {fileID: 593729613751993344}
   m_Layer: 5
   m_Name: Restart
   m_TagString: Untagged
@@ -3547,6 +3561,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &593729613751993344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6783441180065523740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &7156124065131998749
 GameObject:
   m_ObjectHideFlags: 0
@@ -3559,6 +3585,7 @@ GameObject:
   - component: {fileID: 3663066049778786987}
   - component: {fileID: 2465801511682907150}
   - component: {fileID: 732909612376122492}
+  - component: {fileID: 81258232915139214}
   m_Layer: 5
   m_Name: Quit
   m_TagString: Untagged
@@ -3668,6 +3695,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &81258232915139214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7156124065131998749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &7235823157379951173
 GameObject:
   m_ObjectHideFlags: 0
@@ -4506,6 +4545,7 @@ GameObject:
   - component: {fileID: 126797095481364344}
   - component: {fileID: 7489809462280675965}
   - component: {fileID: 6918449690458163745}
+  - component: {fileID: 3798301409165744289}
   m_Layer: 5
   m_Name: Stuck
   m_TagString: Untagged
@@ -4615,3 +4655,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3798301409165744289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9090930748863414273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover

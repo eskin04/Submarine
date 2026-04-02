@@ -12,6 +12,7 @@ public class ModuleInteraction : MonoBehaviour
     [SerializeField] private bool isUnlockCursor = true;
     [SerializeField] private bool isMoveable = false;
 
+
     private FirstPersonController playerController;
     private Transform playerCameraTransform;
     private Transform playerInteractCameraTransform;
@@ -23,6 +24,10 @@ public class ModuleInteraction : MonoBehaviour
     private Collider colliderObject;
     private IInteractable ınteractable;
 
+    private bool isHoveringMesh = false;
+    private Camera activeCam;
+    private Camera mainCam;
+
     void Awake()
     {
         PlayerInventory.OnAssignController += HandlePlayerController;
@@ -32,6 +37,7 @@ public class ModuleInteraction : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         colliderObject = GetComponent<Collider>();
         ınteractable = GetComponent<IInteractable>();
+        mainCam = Camera.main;
 
     }
     void OnDestroy()
@@ -54,6 +60,10 @@ public class ModuleInteraction : MonoBehaviour
         {
             StopInteract();
         }
+        if (ınteractable.IsInteracting() && isUnlockCursor)
+        {
+            HandleCursorHover();
+        }
     }
 
 
@@ -69,8 +79,11 @@ public class ModuleInteraction : MonoBehaviour
             if (colliderObject != null) colliderObject.enabled = false;
             if (isUnlockCursor)
             {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+
+                CursorManager.OnInteractionStarted?.Invoke();
+                isHoveringMesh = false;
+
+                activeCam = isMoveable ? playerCameraTransform.GetComponent<Camera>() : playerInteractCameraTransform.GetComponent<Camera>();
 
             }
         }
@@ -109,8 +122,10 @@ public class ModuleInteraction : MonoBehaviour
             if (colliderObject != null) colliderObject.enabled = true;
             if (isUnlockCursor)
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+
+
+                CursorManager.OnInteractionEnded?.Invoke();
+                isHoveringMesh = false;
             }
         }
     }
@@ -127,6 +142,29 @@ public class ModuleInteraction : MonoBehaviour
         {
             playerInteractCameraTransform.parent = playerOriginalParent;
             playerInteractCameraTransform.gameObject.SetActive(false);
+        }
+    }
+
+    private void HandleCursorHover()
+    {
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, CursorManager.RaycastDistance, CursorManager.InteractableLayer))
+        {
+            Debug.Log("Raycast hit: " + hit.collider.name);
+            if (!isHoveringMesh)
+            {
+                CursorManager.OnHoverStateChanged?.Invoke(true);
+                isHoveringMesh = true;
+            }
+        }
+        else
+        {
+            if (isHoveringMesh)
+            {
+                CursorManager.OnHoverStateChanged?.Invoke(false);
+                isHoveringMesh = false;
+            }
         }
     }
 

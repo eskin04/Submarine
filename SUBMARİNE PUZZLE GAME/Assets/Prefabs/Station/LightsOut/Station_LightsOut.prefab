@@ -108,6 +108,7 @@ MonoBehaviour:
   displayName: Interact
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -284,7 +285,7 @@ GameObject:
   - component: {fileID: 1613434974128113294}
   - component: {fileID: 2933089721404348580}
   - component: {fileID: 928116547996684145}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Switch (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +490,7 @@ GameObject:
   - component: {fileID: 6632572626762281987}
   - component: {fileID: 8392033395961516933}
   - component: {fileID: 2632275323243075018}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Switch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -973,6 +974,7 @@ MonoBehaviour:
   displayName: Interact
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -1260,7 +1262,7 @@ GameObject:
   - component: {fileID: 3208616370156484654}
   - component: {fileID: 815146572886198049}
   - component: {fileID: 3066776336659010275}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Switch (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1641,6 +1643,7 @@ MonoBehaviour:
   displayName: Pull Lever
   interactKeys: 6500000043010000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -2285,7 +2288,7 @@ GameObject:
   - component: {fileID: 1485596071444145941}
   - component: {fileID: 5837489318316768636}
   - component: {fileID: 3828106537409015651}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Switch (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
