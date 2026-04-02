@@ -38,7 +38,6 @@ public class Thermal_PhysicalSlider : MonoBehaviour
 
         zCoord = Camera.main.WorldToScreenPoint(transform.position).z;
         offset = transform.position - GetMouseAsWorldPoint();
-        Debug.Log("Slider'a tıklandı. Başlangıç offset'i: " + offset);
     }
 
     private void OnMouseDrag()

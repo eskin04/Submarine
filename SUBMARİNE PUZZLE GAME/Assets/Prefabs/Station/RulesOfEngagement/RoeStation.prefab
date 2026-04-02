@@ -503,7 +503,7 @@ Transform:
   m_GameObject: {fileID: 2598603968866630492}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 2.27, y: 1.91, z: -7}
+  m_LocalPosition: {x: 13.309, y: 0.733, z: -3.062}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -780,7 +780,7 @@ Transform:
   m_GameObject: {fileID: 3183895230984456736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.14, y: -0.31, z: -1.4}
+  m_LocalPosition: {x: 5.14, y: 3.84, z: -1.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -874,7 +874,7 @@ MonoBehaviour:
   animEase: 4
   initialPositionOffset: {x: 0, y: 0, z: 0.4}
   initialRotationOffset: {x: 0, y: 180, z: 0}
-  isUnlockCursor: 1
+  isUnlockCursor: 0
   isMoveable: 1
 --- !u!65 &8016073572115307387
 BoxCollider:
@@ -2624,7 +2624,7 @@ MonoBehaviour:
   animEase: 4
   initialPositionOffset: {x: 0, y: 0, z: 1.1}
   initialRotationOffset: {x: 0, y: 180, z: 0}
-  isUnlockCursor: 1
+  isUnlockCursor: 0
   isMoveable: 0
 --- !u!65 &7229217571893244028
 BoxCollider:
@@ -2909,7 +2909,7 @@ MonoBehaviour:
   animEase: 4
   initialPositionOffset: {x: 0, y: 0, z: 1.5}
   initialRotationOffset: {x: 0, y: 180, z: 0}
-  isUnlockCursor: 1
+  isUnlockCursor: 0
   isMoveable: 0
 --- !u!65 &7657674527783534690
 BoxCollider:
