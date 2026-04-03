@@ -2067,6 +2067,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 945101727654118416, guid: 81eb05dffe6714640b7ce842dc714e8e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.754
+      objectReference: {fileID: 0}
     - target: {fileID: 2157376744501545622, guid: 81eb05dffe6714640b7ce842dc714e8e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.25217
@@ -3155,9 +3159,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 790229800}
     m_Modifications:
+    - target: {fileID: 214604521585249623, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.01516
+      objectReference: {fileID: 0}
     - target: {fileID: 4065956741481671545, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
       propertyPath: m_Name
       value: Submarine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5217245980885442484, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.014140003
       objectReference: {fileID: 0}
     - target: {fileID: 5291816466292873961, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
       propertyPath: m_LocalPosition.x
