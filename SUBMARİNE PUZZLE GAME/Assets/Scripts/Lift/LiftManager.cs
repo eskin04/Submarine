@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using PurrNet;
 using System;
+using System.Collections.Generic;
 
 public class LiftManager : NetworkBehaviour
 {
@@ -13,6 +14,7 @@ public class LiftManager : NetworkBehaviour
     [SerializeField] private float xPosRange = 1f;
     [SerializeField] private float liftUpPosition = 1f;
     [SerializeField] private float liftDownPosition = 0f;
+    [SerializeField] private bool isDisable;
     private Interactable currentActiveButton;
     private int currentFloorIndex = 0;
 
@@ -25,6 +27,15 @@ public class LiftManager : NetworkBehaviour
 
     void Start()
     {
+        if (isDisable)
+        {
+            List<Interactable> interactables = new List<Interactable>(GetComponentsInChildren<Interactable>());
+            foreach (var interactable in interactables)
+            {
+                interactable.SetInteractable(false);
+            }
+            return;
+        }
 
         foreach (var button in liftButtons)
         {

@@ -65,6 +65,7 @@ MonoBehaviour:
   xPosRange: 0.005
   liftUpPosition: -0.01352
   liftDownPosition: 0.0248214
+  isDisable: 1
 --- !u!1001 &3503619839371443576
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -203,6 +204,7 @@ MonoBehaviour:
   displayName: Up
   interactKeys: 65000000
   isInteractable: 1
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -283,6 +285,7 @@ MonoBehaviour:
   displayName: Drop Item
   interactKeys: 67000000
   isInteractable: 0
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -412,6 +415,7 @@ MonoBehaviour:
   displayName: Down
   interactKeys: 65000000
   isInteractable: 0
+  canDisableInteraction: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
