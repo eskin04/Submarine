@@ -1215,7 +1215,7 @@ Transform:
   m_GameObject: {fileID: 1326026024160890826}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.151, y: 0, z: -0.036}
+  m_LocalPosition: {x: 1.7490002, y: 0.19999981, z: -0.036000222}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2760,15 +2760,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2875621131484874930}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.49, y: -3.68, z: 1.8}
+  m_LocalRotation: {x: -0, y: -0.0000010728835, z: -0, w: 1}
+  m_LocalPosition: {x: 0.24, y: -3.68, z: 2.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1709045219033189931}
   - {fileID: 678587402235342205}
   m_Father: {fileID: 1133684107167844315}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2977464288217754373
 GameObject:
   m_ObjectHideFlags: 0
@@ -6091,6 +6091,7 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   utilityEventData: {fileID: 11400000, guid: c07a91418877dc24695e9f4964d454d8, type: 2}
+  stationName: 
   stationType: 1
   stationTier: 0
   mistakeWaterPenalty: 3
@@ -8876,7 +8877,7 @@ Transform:
   m_GameObject: {fileID: 6962025553316950447}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.48, y: 0, z: -1.299}
+  m_LocalPosition: {x: -1.5200005, y: 0.19999981, z: -1.299001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

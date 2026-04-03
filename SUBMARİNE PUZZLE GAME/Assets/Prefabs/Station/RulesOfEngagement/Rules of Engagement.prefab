@@ -779,15 +779,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3183895230984456736}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.14, y: 3.84, z: -1.4}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.00000061839825}
+  m_LocalPosition: {x: -4.0916047, y: 3.84, z: -8.360119}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1404831071751494266}
   - {fileID: 7581980272270572178}
   m_Father: {fileID: 348333865255137659}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &3392469244622301873
 GameObject:
   m_ObjectHideFlags: 0
@@ -816,8 +816,8 @@ Transform:
   m_GameObject: {fileID: 3392469244622301873}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.493, y: 1.516, z: -6.809}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 6.693, y: 0.51600003, z: -7.783}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3942680199539760339}
@@ -872,7 +872,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.4}
+  initialPositionOffset: {x: 0, y: 0, z: 0.8}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 0
   isMoveable: 1
@@ -2294,7 +2294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Namesdfs
+  m_text: Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2567,14 +2567,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7472943714329988297}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.34, y: 1.511, z: -7.26}
+  m_LocalRotation: {x: -0, y: -0.70710707, z: -0, w: 0.70710653}
+  m_LocalPosition: {x: 7.275, y: 1.055, z: -0.872}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8846460361528188329}
   m_Father: {fileID: 1133334543657465007}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &7296920528515469611
 MonoBehaviour:
   m_ObjectHideFlags: 0
