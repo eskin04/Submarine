@@ -6011,8 +6011,6 @@ GameObject:
   - component: {fileID: 1133684107167844315}
   - component: {fileID: 495599882891338249}
   - component: {fileID: 7539611610848630272}
-  - component: {fileID: 4928996489849582384}
-  - component: {fileID: 7871410113997357110}
   m_Layer: 0
   m_Name: EngineerLockdown
   m_TagString: Untagged
@@ -6090,9 +6088,9 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  utilityEventData: {fileID: 11400000, guid: c07a91418877dc24695e9f4964d454d8, type: 2}
-  stationName: 
-  stationType: 1
+  utilityEventData: {fileID: 0}
+  stationName: EngineerLockDown
+  stationType: 0
   stationTier: 0
   mistakeWaterPenalty: 3
   timeoutWaterPenalty: 6
@@ -6118,40 +6116,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4928996489849582384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5211292287369652627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dda321e79d4fc654e8122e10dc2853d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SecurityLockdown_OverrideDoor
-  doorPanel: {fileID: 0}
-  openOffset: {x: -1.5, y: 0, z: 0}
-  openDuration: 1
-  stayOpenTime: 5
-  doorEase: 4
---- !u!114 &7871410113997357110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5211292287369652627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dda321e79d4fc654e8122e10dc2853d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SecurityLockdown_OverrideDoor
-  doorPanel: {fileID: 0}
-  openOffset: {x: -1.5, y: 0, z: 0}
-  openDuration: 1
-  stayOpenTime: 5
-  doorEase: 4
 --- !u!1 &5233461719656991553
 GameObject:
   m_ObjectHideFlags: 0
