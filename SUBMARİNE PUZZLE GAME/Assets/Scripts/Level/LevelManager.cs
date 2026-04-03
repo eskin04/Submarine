@@ -28,6 +28,7 @@ public class LevelManager : NetworkBehaviour
         base.OnSpawned();
         MainGameState.startGame += StartLevel;
         OnCurrentLevelData?.Invoke(currentLevelData.levelID);
+        InstanceHandler.GetInstance<PlayerSpawnView>()?.SetLevelText(currentLevelData.levelID);
     }
 
     protected override void OnDestroy()

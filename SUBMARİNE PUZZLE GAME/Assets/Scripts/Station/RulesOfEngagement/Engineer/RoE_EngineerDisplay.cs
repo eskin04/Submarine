@@ -7,48 +7,42 @@ using TMPro;
 public class RoE_EngineerDisplay : MonoBehaviour
 {
     [Header("References")]
-    public Image symbolImage;
+    public Image[] symbolImages;
     public RoE_StationManager stationManager;
     public TextMeshProUGUI ruleText;
     public TextMeshProUGUI targetCodeText;
 
-    private Coroutine displayCoroutine;
     private string currentDisplayedCode = "";
 
     public void StartDisplaySequence(List<int> symbolIndices, string codeName)
     {
         currentDisplayedCode = codeName;
         targetCodeText.text = codeName;
-        targetCodeText.color = Color.yellow;
 
-        if (displayCoroutine != null) StopCoroutine(displayCoroutine);
 
-        displayCoroutine = StartCoroutine(SymbolLoop(symbolIndices));
+        DisplayAllSymbols(symbolIndices);
     }
 
-    private IEnumerator SymbolLoop(List<int> indices)
+    private void DisplayAllSymbols(List<int> indices)
     {
-        while (true)
+        for (int i = 0; i < symbolImages.Length; i++)
         {
-            foreach (int index in indices)
+            symbolImages[i].enabled = false;
+        }
+
+        for (int i = 0; i < indices.Count; i++)
+        {
+            if (i >= symbolImages.Length) break;
+
+            int index = indices[i];
+
+            if (index >= 0 && index < stationManager.availableSymbols.Count)
             {
-                if (index >= 0 && index < stationManager.availableSymbols.Count)
-                {
-                    var symbolData = stationManager.availableSymbols[index];
+                var symbolData = stationManager.availableSymbols[index];
 
-                    symbolImage.sprite = symbolData.icon;
-                    symbolImage.color = Color.white;
-                    symbolImage.enabled = true;
-                }
-
-                yield return new WaitForSeconds(1.5f);
-
-                symbolImage.enabled = false;
-                yield return new WaitForSeconds(0.2f);
+                symbolImages[i].sprite = symbolData.icon;
+                symbolImages[i].enabled = true;
             }
-
-            symbolImage.enabled = false;
-            yield return new WaitForSeconds(2f);
         }
     }
 
@@ -56,9 +50,11 @@ public class RoE_EngineerDisplay : MonoBehaviour
     {
         if (currentDisplayedCode == destroyedCodeName)
         {
-            if (displayCoroutine != null) StopCoroutine(displayCoroutine);
 
-            symbolImage.enabled = false;
+            for (int i = 0; i < symbolImages.Length; i++)
+            {
+                symbolImages[i].enabled = false;
+            }
 
             if (targetCodeText != null)
             {

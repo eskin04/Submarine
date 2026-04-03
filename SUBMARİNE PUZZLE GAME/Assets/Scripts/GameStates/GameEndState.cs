@@ -26,9 +26,20 @@ public class GameEndState : StateNode<ushort>
         yield return new WaitForSeconds(3f);
 
         HideGameEndView();
-        int totalScenes = SceneManager.sceneCountInBuildSettings;
-        int nextSceneIndex = (SceneManager.GetActiveScene().buildIndex + 1) % totalScenes;
-        networkManager.sceneModule.LoadSceneAsync(nextSceneIndex);
+        if (isWin == 1)
+        {
+            int totalScenes = SceneManager.sceneCountInBuildSettings;
+            int nextSceneIndex = (SceneManager.GetActiveScene().buildIndex + 1) % totalScenes;
+            if (nextSceneIndex == 0)
+            {
+                nextSceneIndex = 1;
+            }
+            networkManager.sceneModule.LoadSceneAsync(nextSceneIndex);
+        }
+        else
+        {
+            networkManager.sceneModule.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     [ObserversRpc]
