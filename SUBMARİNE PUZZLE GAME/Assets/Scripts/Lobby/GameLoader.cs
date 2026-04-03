@@ -36,10 +36,9 @@ public class GameLoader : MonoBehaviour
 
         if (dataToLoad != null)
         {
-            if (lobbyManager.CurrentLobby.IsOwner)
-            {
-                lobbyManager.SetLobbyStarted();
-            }
+
+            lobbyManager.SetLobbyStarted();
+
             Debug.Log($"[GameLoader] Herkes hazır! Görev {dataToLoad.levelID} yükleniyor...");
 
             SceneManager.LoadSceneAsync(dataToLoad.CurrentScene);
