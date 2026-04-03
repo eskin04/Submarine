@@ -15,13 +15,13 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.86906195, y: 1, z: 0.9256338, w: 0}
+    m_Value: {x: 0.9863286, y: 1, z: 0.98958784, w: -0.16116041}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 0.83660424, y: 0.8947192, z: 1, w: 0}
+    m_Value: {x: 0.5423476, y: 0.6358193, z: 1, w: -0.016116034}
   highlights:
     m_OverrideState: 0
-    m_Value: {x: 1, y: 1, z: 1, w: 0}
+    m_Value: {x: 1, y: 0.73469955, z: 0.7481984, w: 0.2578566}
   shadowsStart:
     m_OverrideState: 0
     m_Value: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0.3
   highlightsStart:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.55
   highlightsEnd:
     m_OverrideState: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.338
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,10 +84,10 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {r: 0.49019608, g: 0.52149177, b: 0.58431375, a: 1}
+    m_Value: {r: 0.4541652, g: 0.45707694, b: 0.509434, a: 1}
   highlights:
     m_OverrideState: 1
-    m_Value: {r: 0.5849056, g: 0.387362, b: 0.387362, a: 1}
+    m_Value: {r: 0.3584906, g: 0.17079033, b: 0.17079033, a: 1}
   balance:
     m_OverrideState: 1
     m_Value: 0
@@ -149,24 +149,24 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.6
+    m_Value: 0.5
   intensity:
     m_OverrideState: 1
-    m_Value: 0.6
+    m_Value: 0.5
   scatter:
-    m_OverrideState: 0
-    m_Value: 0.7
+    m_OverrideState: 1
+    m_Value: 0.911
   clamp:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 65472
   tint:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.8721474, g: 0.9056604, b: 0.55108577, a: 1}
   highQualityFiltering:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1
   filter:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   downscale:
     m_OverrideState: 0
@@ -196,10 +196,10 @@ MonoBehaviour:
   active: 1
   type:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 9
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.54
   response:
     m_OverrideState: 1
     m_Value: 0.8
