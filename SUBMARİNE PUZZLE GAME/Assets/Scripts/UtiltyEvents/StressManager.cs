@@ -199,14 +199,10 @@ public class StressManager : NetworkBehaviour
         diceTimer = 0f;
 
 
-        TriggerUIEffectRPC(currentEventName.value);
+
     }
 
-    [ObserversRpc]
-    private void TriggerUIEffectRPC(string eventName)
-    {
-        GlobalEvents.OnShowSystemMessage?.Invoke(eventName, true);
-    }
+
 }
 
 [System.Serializable]

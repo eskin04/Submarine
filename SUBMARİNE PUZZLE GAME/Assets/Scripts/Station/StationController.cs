@@ -8,6 +8,7 @@ public class StationController : NetworkBehaviour
     public Action<StationState, StationController> StateChanged;
 
     [SerializeField] private UtilityEventData utilityEventData;
+    [SerializeField] private String stationName;
 
     public StationType stationType;
     public StationTier stationTier;
@@ -119,6 +120,8 @@ public class StationController : NetworkBehaviour
     {
         stationState.value = StationState.Broken;
         StartStation();
+        RpcShowSystemMessage(true);
+
     }
 
 
@@ -144,6 +147,7 @@ public class StationController : NetworkBehaviour
         GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty);
         GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty);
 
+
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -154,23 +158,23 @@ public class StationController : NetworkBehaviour
             GlobalEvents.OnReduceStress?.Invoke(repairStressReward);
             stationState.value = StationState.Reparied;
 
-            RpcShowSystemMessage();
+            RpcShowSystemMessage(false);
 
         }
     }
 
     [ObserversRpc(runLocally: true)]
-    public void RpcShowSystemMessage()
+    public void RpcShowSystemMessage(bool isFailure)
     {
         if (utilityEventData == null)
         {
-            GlobalEvents.OnShowSystemMessage?.Invoke(gameObject.name, false);
+            GlobalEvents.OnShowSystemMessage?.Invoke(stationName, isFailure);
 
         }
         else
         {
-            string stationName = utilityEventData.targetStatName.ToString();
-            GlobalEvents.OnShowSystemMessage?.Invoke(stationName, false);
+            string utiltystationName = utilityEventData.targetStatName.ToString();
+            GlobalEvents.OnShowSystemMessage?.Invoke(utiltystationName, isFailure);
 
         }
     }

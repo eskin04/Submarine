@@ -27,7 +27,10 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
     private void ShowDataScreen()
     {
 
-        backgroundImage.DOColor(new Color(0.25f, 0.25f, 0.25f), 0.5f);
+        if (ColorUtility.TryParseHtmlString("#18191a", out Color newColor))
+        {
+            backgroundImage.DOColor(newColor, 0.5f);
+        }
         lockedWarningPanel.SetActive(false);
         displayDataPanel.SetActive(true);
 
@@ -79,12 +82,12 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
     {
         switch (color)
         {
-            case LockdownColor.Purple: return "#800080";
-            case LockdownColor.Red: return "#FF0000";
-            case LockdownColor.Blue: return "#0000FF";
-            case LockdownColor.Green: return "#008000";
-            case LockdownColor.Yellow: return "#FFFF00";
-            case LockdownColor.White: return "#FFFFFF";
+            case LockdownColor.Purple: return "#8411D6";
+            case LockdownColor.Red: return "#d93232";
+            case LockdownColor.Blue: return "#0A5FC7";
+            case LockdownColor.Green: return "#20C40A";
+            case LockdownColor.Yellow: return "#F0A62B";
+            case LockdownColor.White: return "#E6E6E6";
             default: return "#FFFFFF";
         }
     }
