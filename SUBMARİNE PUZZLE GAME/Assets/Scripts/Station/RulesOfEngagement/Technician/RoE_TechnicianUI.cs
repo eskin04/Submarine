@@ -36,6 +36,7 @@ public class RoE_TechnicianUI : MonoBehaviour
     [Header("Status Light")]
     public MeshRenderer statusLightRenderer;
     public float lightIntensity = 5.0f;
+    public Light brokenLight;
     private Material runtimeMaterial;
 
     private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
@@ -101,6 +102,10 @@ public class RoE_TechnicianUI : MonoBehaviour
             runtimeMaterial.SetInt(LightSelectionProp, 1);
             runtimeMaterial.SetFloat(IntensityProp, lightIntensity);
         }
+        if (brokenLight != null)
+        {
+            brokenLight.enabled = true;
+        }
     }
 
     private void TurnOnGreenLight()
@@ -110,6 +115,10 @@ public class RoE_TechnicianUI : MonoBehaviour
             runtimeMaterial.SetInt(LightSelectionProp, 2);
             runtimeMaterial.SetFloat(IntensityProp, lightIntensity);
         }
+        if (brokenLight != null)
+        {
+            brokenLight.enabled = false;
+        }
     }
 
     private void TurnOffLight()
@@ -118,6 +127,10 @@ public class RoE_TechnicianUI : MonoBehaviour
         {
             runtimeMaterial.SetInt(LightSelectionProp, 2);
             runtimeMaterial.SetFloat(IntensityProp, 0f);
+        }
+        if (brokenLight != null)
+        {
+            brokenLight.enabled = false;
         }
     }
 

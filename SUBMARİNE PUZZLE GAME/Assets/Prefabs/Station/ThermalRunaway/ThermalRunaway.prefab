@@ -617,7 +617,8 @@ GameObject:
   m_Component:
   - component: {fileID: 861916307638868852}
   - component: {fileID: 7867537480780630666}
-  m_Layer: 0
+  - component: {fileID: 5977863038587660979}
+  m_Layer: 2
   m_Name: ValveFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -662,6 +663,27 @@ MonoBehaviour:
   - {fileID: 2725094430524441033}
   showDuration: 0.6
   hideDuration: 0.2
+--- !u!65 &5977863038587660979
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3044837704619298320}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.9099264, y: 3.4920096, z: 1.2881134}
+  m_Center: {x: 0, y: 0.746608, z: -0.003201127}
 --- !u!1 &3114376783413350538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1316,7 +1338,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2544093848075874274}
   - component: {fileID: 104744169408828518}
-  m_Layer: 0
+  - component: {fileID: 8184561348272972546}
+  m_Layer: 2
   m_Name: ValveBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1361,6 +1384,27 @@ MonoBehaviour:
   - {fileID: 4568554085073376793}
   showDuration: 0.6
   hideDuration: 0.2
+--- !u!65 &8184561348272972546
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8951124535733262883}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.894225, y: 3.4478297, z: 1.2980798}
+  m_Center: {x: -0.0045164227, y: 0.72712326, z: -0.01355049}
 --- !u!1 &9085353392322765006
 GameObject:
   m_ObjectHideFlags: 0
