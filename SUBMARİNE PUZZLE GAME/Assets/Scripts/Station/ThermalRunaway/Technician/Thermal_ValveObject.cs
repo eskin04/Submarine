@@ -1,5 +1,5 @@
 using UnityEngine;
-using DG.Tweening; // DOTween kütüphanesi eklendi
+using DG.Tweening;
 
 [RequireComponent(typeof(Collider))]
 public class Thermal_ValveObject : MonoBehaviour
@@ -7,25 +7,26 @@ public class Thermal_ValveObject : MonoBehaviour
     [Header("References")]
     public Thermal_StationManager manager;
     public ThermalValveType myValveType;
-    public Transform buttonMesh;
 
-    [Header("Settings")]
-    public Vector3 pressAxis = Vector3.down;
-    public float pressDepth = 0.05f;
-    public float pressDuration = 0.15f;
-    private Vector3 initialLocalPos;
-    private Interactable ınteractable;
+    [Header("Lever Settings")]
+
+    public Transform leverMesh;
+
+    public Vector3 rotationAxis = Vector3.right;
+
+    public float rotationAmount = 90f;
+
+    public float animationDuration = 0.15f;
+
+    private Quaternion initialLocalRotation;
 
     private void Start()
     {
-        if (buttonMesh != null)
+        if (leverMesh != null)
         {
-            initialLocalPos = buttonMesh.localPosition;
+            initialLocalRotation = leverMesh.localRotation;
         }
-
-        ınteractable = GetComponent<Interactable>();
     }
-
 
     public void InteractWithValve()
     {
@@ -36,16 +37,16 @@ public class Thermal_ValveObject : MonoBehaviour
 
         manager.PumpValveRPC(myValveType);
 
-        if (buttonMesh != null)
+        if (leverMesh != null)
         {
-            buttonMesh.DOKill();
-            buttonMesh.localPosition = initialLocalPos;
+            leverMesh.DOKill();
+            leverMesh.localRotation = initialLocalRotation;
 
-            buttonMesh.DOLocalMove(initialLocalPos + (pressAxis * pressDepth), pressDuration / 2f)
+            Vector3 targetRotation = initialLocalRotation.eulerAngles + (rotationAxis * rotationAmount);
+
+            leverMesh.DOLocalRotate(targetRotation, animationDuration / 2f)
                       .SetEase(Ease.OutQuad)
                       .SetLoops(2, LoopType.Yoyo);
         }
-        if (ınteractable.IsInteracting())
-            ınteractable.StopInteract();
     }
 }

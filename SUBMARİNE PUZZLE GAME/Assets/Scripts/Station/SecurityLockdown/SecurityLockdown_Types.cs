@@ -8,10 +8,8 @@ public enum LockdownColor
     Red,
     Blue,
     Green,
-    Brown,
     Yellow,
     White,
-    Pink,
 }
 
 public enum LockDownStationState

@@ -11,8 +11,10 @@ public class SecurityLockdown_EngineerUI : MonoBehaviour
     public Image backgroundImage;
     public GameObject legendPanel;
     public GameObject lockedPanel;
-    public TMP_Text legendText;
     public GameObject resetPanel;
+
+    public GameObject legendItemPrefab;
+    public Transform legendContainer;
 
     private LegendData[] currentLegend;
     private bool isReady = false;
@@ -26,15 +28,37 @@ public class SecurityLockdown_EngineerUI : MonoBehaviour
 
     private void ShowLegendScreen()
     {
-        backgroundImage.DOColor(new Color(0.1f, 0.4f, 0.8f), 0.5f);
+        backgroundImage.DOColor(new Color(0.25f, 0.25f, 0.25f), 0.5f);
+
         lockedPanel.SetActive(false);
         legendPanel.SetActive(true);
         resetPanel.SetActive(false);
 
-        legendText.text = "--- REGION MAP ---\n";
+
+        foreach (Transform child in legendContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
         foreach (var data in currentLegend)
         {
-            legendText.text += $"<color={GetHexCode(data.color)}>{data.assignedRegion}</color>\n";
+            GameObject newItem = Instantiate(legendItemPrefab, legendContainer);
+
+            Image colorBox = newItem.GetComponentInChildren<Image>();
+            TMP_Text regionText = newItem.GetComponentInChildren<TMP_Text>();
+
+            if (colorBox != null)
+            {
+                if (ColorUtility.TryParseHtmlString(GetHexCode(data.color), out Color parsedColor))
+                {
+                    colorBox.color = parsedColor;
+                }
+            }
+
+            if (regionText != null)
+            {
+                regionText.text = data.assignedRegion.ToString();
+            }
         }
     }
 
@@ -81,10 +105,8 @@ public class SecurityLockdown_EngineerUI : MonoBehaviour
             case LockdownColor.Red: return "#FF0000";
             case LockdownColor.Blue: return "#0000FF";
             case LockdownColor.Green: return "#008000";
-            case LockdownColor.Brown: return "#571717";
             case LockdownColor.Yellow: return "#FFFF00";
             case LockdownColor.White: return "#FFFFFF";
-            case LockdownColor.Pink: return "#FFC0CB";
             default: return "#FFFFFF";
         }
     }

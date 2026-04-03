@@ -151,7 +151,6 @@ public class ModuleInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, CursorManager.RaycastDistance, CursorManager.InteractableLayer))
         {
-            Debug.Log("Raycast hit: " + hit.collider.name);
             if (!isHoveringMesh)
             {
                 CursorManager.OnHoverStateChanged?.Invoke(true);
