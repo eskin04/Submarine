@@ -25,7 +25,6 @@ public class ModuleInteraction : MonoBehaviour
     private IInteractable ınteractable;
 
     private bool isHoveringMesh = false;
-    private Camera activeCam;
     private Camera mainCam;
 
     void Awake()
@@ -82,8 +81,7 @@ public class ModuleInteraction : MonoBehaviour
 
                 CursorManager.OnInteractionStarted?.Invoke();
                 isHoveringMesh = false;
-
-                activeCam = isMoveable ? playerCameraTransform.GetComponent<Camera>() : playerInteractCameraTransform.GetComponent<Camera>();
+                HighlightManager.Instance.ActivateModuleHighlights(transform);
 
             }
         }
@@ -123,7 +121,7 @@ public class ModuleInteraction : MonoBehaviour
             if (isUnlockCursor)
             {
 
-
+                HighlightManager.Instance.DeactivateModuleHighlights();
                 CursorManager.OnInteractionEnded?.Invoke();
                 isHoveringMesh = false;
             }
@@ -154,7 +152,9 @@ public class ModuleInteraction : MonoBehaviour
             if (!isHoveringMesh)
             {
                 CursorManager.OnHoverStateChanged?.Invoke(true);
+                HighlightManager.Instance.SetHoveredObject(hit.transform);
                 isHoveringMesh = true;
+
             }
         }
         else
@@ -162,6 +162,7 @@ public class ModuleInteraction : MonoBehaviour
             if (isHoveringMesh)
             {
                 CursorManager.OnHoverStateChanged?.Invoke(false);
+                HighlightManager.Instance.SetHoveredObject(null);
                 isHoveringMesh = false;
             }
         }
