@@ -20,7 +20,7 @@ public class Interactable : MonoBehaviour, IInteractable
     {
         outline = gameObject.AddComponent<Outline>();
         outline.OutlineMode = Outline.Mode.OutlineVisible;
-        outline.OutlineColor = Color.white;
+        outline.OutlineColor = Color.yellow;
         outline.OutlineWidth = 3f;
         outline.enabled = false;
     }
