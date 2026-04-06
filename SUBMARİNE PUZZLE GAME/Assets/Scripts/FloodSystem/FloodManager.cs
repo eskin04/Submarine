@@ -26,7 +26,7 @@ public class FloodManager : NetworkBehaviour
     private Queue<StationController> pendingMainStations = new Queue<StationController>();
 
     private List<StationController> brokenStations = new List<StationController>();
-    // private StationController destroyedStation;
+    private StationController destroyedStation = null;
 
     private bool isStart;
     private bool isGameOver;
@@ -99,7 +99,10 @@ public class FloodManager : NetworkBehaviour
 
             case StationState.Destroyed:
                 if (brokenStations.Contains(station))
+                {
+                    destroyedStation = station;
                     brokenStations.Remove(station);
+                }
                 break;
 
             case StationState.Reparied:
@@ -186,7 +189,7 @@ public class FloodManager : NetworkBehaviour
 
     private void CalculateWater()
     {
-        if (currentWater.value >= maxWater)
+        if (currentWater.value >= maxWater || destroyedStation != null)
         {
             isGameOver = true;
             OnGameEnd?.Invoke(0);

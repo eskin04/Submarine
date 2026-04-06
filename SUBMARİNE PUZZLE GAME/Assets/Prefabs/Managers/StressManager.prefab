@@ -55,13 +55,13 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   maxStress: 100
-  passiveStressRate: 5
+  passiveStressRate: 0
   passiveStressInterval: 10
-  diceCheckInterval: 15
+  diceCheckInterval: 1500
   eventCooldownDuration: 45
-  initialGracePeriod: 1
+  initialGracePeriod: 2500
   currentStress:
-    _value: 40
+    _value: 0
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
   currentEventName:

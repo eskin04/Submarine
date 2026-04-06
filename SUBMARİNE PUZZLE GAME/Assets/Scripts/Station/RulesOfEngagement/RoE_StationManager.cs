@@ -44,6 +44,8 @@ public class RoE_StationManager : NetworkBehaviour
     public ObjectCategory activeCategoryY;
     public string activeRuleDescription;
 
+    private List<ActiveThreat> succesThreats = new List<ActiveThreat>();
+
 
 
     void OnEnable()
@@ -355,7 +357,7 @@ public class RoE_StationManager : NetworkBehaviour
         if (success)
         {
             RpcSendFeedback("success!", Color.green);
-
+            succesThreats.Add(threat);
             DestroyThreat(threat);
 
         }
@@ -420,9 +422,13 @@ public class RoE_StationManager : NetworkBehaviour
     private void EndRoundAndRepair()
     {
 
-        if (stationController != null)
+        if (stationController != null && succesThreats.Count > threatManager.activeThreats.Count / 2)
         {
             stationController.SetReparied();
+        }
+        else
+        {
+            stationController.SetDestroyed();
         }
 
         isRoundActive = false;
