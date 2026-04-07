@@ -9,6 +9,7 @@ public class MainGameView : View
     [SerializeField] private TMP_Text waterLevelText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text stressText;
+    [SerializeField] private GameObject HidenByInteraction;
 
 
     void Awake()
@@ -53,6 +54,14 @@ public class MainGameView : View
         if (timerText != null)
         {
             timerText.text = timeString;
+        }
+    }
+
+    public void SetInteractionVisibility(bool isVisible)
+    {
+        if (HidenByInteraction != null)
+        {
+            HidenByInteraction.SetActive(isVisible);
         }
     }
 

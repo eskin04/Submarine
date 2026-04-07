@@ -322,7 +322,7 @@ public class RoE_StationManager : NetworkBehaviour
 
         stationController.ReportTimeOutFailure();
 
-        DestroyThreat(threat);
+        DestroyThreat(threat, true);
         RpcTriggerImpactEffect();
 
 
@@ -368,6 +368,7 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("failure!", Color.red);
 
             DestroyThreat(threat);
+            RpcTriggerImpactEffect();
 
         }
         if (action == Roe_PlayerAction.Shoot)
@@ -393,15 +394,15 @@ public class RoE_StationManager : NetworkBehaviour
         }
     }
 
-    private void DestroyThreat(ActiveThreat threat)
+    private void DestroyThreat(ActiveThreat threat, bool isHullBreach = false)
     {
         threat.isDestroyed = true;
 
         RpcThreatDestroyed(threatManager.activeThreats.IndexOf(threat));
-        CheckRoundCompletion();
+        CheckRoundCompletion(isHullBreach);
     }
 
-    private void CheckRoundCompletion()
+    private void CheckRoundCompletion(bool isHullBreach)
     {
         bool allDestroyed = true;
         foreach (var t in threatManager.activeThreats)
@@ -415,20 +416,20 @@ public class RoE_StationManager : NetworkBehaviour
 
         if (allDestroyed)
         {
-            EndRoundAndRepair();
+            EndRoundAndRepair(isHullBreach);
         }
     }
 
-    private void EndRoundAndRepair()
+    private void EndRoundAndRepair(bool isHullBreach)
     {
 
-        if (stationController != null && succesThreats.Count > threatManager.activeThreats.Count / 2)
+        if (isHullBreach && succesThreats.Count < threatManager.activeThreats.Count / 2)
         {
-            stationController.SetReparied();
+            stationController.SetDestroyed();
         }
         else
         {
-            stationController.SetDestroyed();
+            stationController.SetReparied();
         }
 
         isRoundActive = false;

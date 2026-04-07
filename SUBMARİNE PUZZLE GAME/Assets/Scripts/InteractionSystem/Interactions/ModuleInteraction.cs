@@ -71,7 +71,7 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (playerCameraTransform != null)
         {
-            InstanceHandler.GetInstance<GameViewManager>().HideView<MainGameView>();
+            InstanceHandler.GetInstance<MainGameView>().SetInteractionVisibility(false);
             playerController.enabled = false;
             SetInteractPosition();
             if (rb != null) rb.isKinematic = true;
@@ -111,8 +111,7 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (playerCameraTransform != null)
         {
-            InstanceHandler.GetInstance<GameViewManager>().ShowView<MainGameView>(hideOthers: false);
-
+            InstanceHandler.GetInstance<MainGameView>().SetInteractionVisibility(true);
             ınteractable.StopInteract();
             playerController.enabled = true;
             SetCameraPositionBack();
