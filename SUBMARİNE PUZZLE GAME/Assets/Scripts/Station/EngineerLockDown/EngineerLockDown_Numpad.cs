@@ -72,7 +72,7 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
 
     private void UpdateDisplay()
     {
-        if (displayScreen != null) displayScreen.text = currentInput.PadLeft(maxDigits, '_');
+        if (displayScreen != null) displayScreen.text = currentInput;
     }
 
     private void HandleStateChanged(EngineerLockDownStationState state)

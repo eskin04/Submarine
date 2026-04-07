@@ -41,16 +41,16 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     {
         overrideSteps.Clear();
         List<int> overrideNumbers = GenerateUniqueNumbers(6, 10, 99);
-        int cumulativeTotal = 0;
+        int stepTotal = 0;
         int numIndex = 0;
 
         for (int i = 0; i < 3; i++)
         {
             int tNum = overrideNumbers[numIndex++];
             int eNum = overrideNumbers[numIndex++];
-            cumulativeTotal += (tNum + eNum);
+            stepTotal = tNum + eNum;
 
-            overrideSteps.Add(new EngineerLockDownStepData { techNumber = tNum, engNumber = eNum, expectedTotal = cumulativeTotal });
+            overrideSteps.Add(new EngineerLockDownStepData { techNumber = tNum, engNumber = eNum, expectedTotal = stepTotal });
         }
     }
 
@@ -76,6 +76,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
                 if (stationController != null) stationController.SetReparied();
                 RpcOverrideStateChanged(overrideState.value);
                 RpcOverrideSolved();
+                RequestEngineerDoorOpenRPC();
             }
         }
         else
