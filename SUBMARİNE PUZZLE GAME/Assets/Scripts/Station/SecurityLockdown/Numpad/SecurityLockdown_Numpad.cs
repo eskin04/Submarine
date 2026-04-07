@@ -7,7 +7,7 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
 {
     [Header("Settings")]
     public RegionID myRegion;
-    public int maxDigits = 5;
+    public TMP_Text regionLabel;
 
     [Header("References")]
     public TMP_Text displayScreen;
@@ -29,6 +29,10 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         {
             runtimeMaterial = statusLightRenderer.materials[0];
             TurnOffLight();
+        }
+        if (regionLabel != null)
+        {
+            regionLabel.text = $"{myRegion}";
         }
     }
 
@@ -81,8 +85,9 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
     {
         if (displayScreen != null)
         {
-            int limit = stationManager.currentVariationDigits.value;
-            displayScreen.text = currentInput.PadLeft(limit, '_');
+            // int limit = stationManager.currentVariationDigits.value;
+            // displayScreen.text = currentInput.PadLeft(limit, '_');
+            displayScreen.text = currentInput;
         }
     }
 
