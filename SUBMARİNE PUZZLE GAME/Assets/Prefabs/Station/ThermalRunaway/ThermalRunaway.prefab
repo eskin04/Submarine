@@ -100,17 +100,17 @@ MonoBehaviour:
   frontHeat: 25
   backHeat: 25
   baseHeatIncreaseRate: 3
-  activeValveHeatMultiplier: 0.75
-  inactiveValveHeatMultiplier: 1.25
+  activeValveHeatMultiplier: 0.85
+  inactiveValveHeatMultiplier: 1.2
   possibleHeatRates:
-  - weight: 30
-    heatAmount: 1.25
-    roundTime: 60
-  - weight: 40
-    heatAmount: 1.5
-    roundTime: 50
-  - weight: 30
-    heatAmount: 1.75
+  - weight: 45
+    heatAmount: 1.4
+    roundTime: 65
+  - weight: 35
+    heatAmount: 1.725
+    roundTime: 55
+  - weight: 20
+    heatAmount: 2.1
     roundTime: 45
   activeCoolingValve: 0
   engineerSliderPosition: 50
@@ -141,32 +141,32 @@ MonoBehaviour:
     minPressure: 40.1
     maxPressure: 50
     coolingAmount: 2
-    bottleneckChance: 2
+    bottleneckChance: 1.5
   - zoneName: Yellow3
     minPressure: 50.1
     maxPressure: 60
     coolingAmount: 2.25
-    bottleneckChance: 3
+    bottleneckChance: 2
   - zoneName: Yellow4
     minPressure: 60.1
     maxPressure: 70
     coolingAmount: 2.5
-    bottleneckChance: 4
+    bottleneckChance: 2.5
   - zoneName: Red1
     minPressure: 70.1
     maxPressure: 80
     coolingAmount: 3
-    bottleneckChance: 7
+    bottleneckChance: 5
   - zoneName: Red2
     minPressure: 80.1
     maxPressure: 90
     coolingAmount: 4
-    bottleneckChance: 8
+    bottleneckChance: 7
   - zoneName: Red3
     minPressure: 90.1
     maxPressure: 100
     coolingAmount: 5
-    bottleneckChance: 9
+    bottleneckChance: 8
   currentEmin: 0.4
   currentEmax: 1.4
   currentPumpMultiplier: 1
@@ -176,25 +176,25 @@ MonoBehaviour:
   possibleRhythms:
   - rhythmName: Fast Rhythm
     weight: 40
-    eMin: 0.2
-    eMax: 0.6
+    eMin: 0.1
+    eMax: 0.5
     pumpMultiplier: 0.9
-    bottleneckMultiplier: 0.8
+    bottleneckMultiplier: 0.75
   - rhythmName: Normal Rhythm
     weight: 30
-    eMin: 0.4
-    eMax: 0.8
-    pumpMultiplier: 1.25
+    eMin: 0.3
+    eMax: 0.7
+    pumpMultiplier: 1.1
     bottleneckMultiplier: 1
   - rhythmName: Slow Rhythm
     weight: 30
-    eMin: 0.6
-    eMax: 1
-    pumpMultiplier: 1.5
+    eMin: 0.5
+    eMax: 0.9
+    pumpMultiplier: 1.3
     bottleneckMultiplier: 1.1
   isBottleneckActive: 0
   bottleneckCooldownTimer: 0
-  bottleneckTimeLimit: 5
+  bottleneckTimeLimit: 3
   networkTickRate: 0.05
   isTesting: 0
 --- !u!114 &6907251808274555336
