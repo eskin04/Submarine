@@ -31,6 +31,6 @@ public class Thermal_BottleneckButton : MonoBehaviour
 
 
 
-        manager.SubmitBottleneckCodeRPC(colorIndex, myLocation);
+        // manager.SubmitBottleneckCodeRPC(colorIndex, myLocation);
     }
 }
