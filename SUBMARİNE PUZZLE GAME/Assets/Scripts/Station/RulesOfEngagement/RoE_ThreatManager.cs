@@ -116,7 +116,39 @@ public class RoE_ThreatManager : NetworkBehaviour
             if (randomPoint <= currentSum)
             {
                 threat.currentDistance = Random.Range(profile.minDistance, profile.maxDistance);
-                threat.approachSpeed = Random.Range(profile.minSpeed, profile.maxSpeed);
+
+                float newSpeed = 0f;
+                bool isUnique = false;
+                int safetyCounter = 0;
+
+                while (!isUnique && safetyCounter < 50)
+                {
+                    safetyCounter++;
+
+                    float rawSpeed = Random.Range(profile.minSpeed, profile.maxSpeed);
+                    newSpeed = Mathf.Round(rawSpeed * 10f) / 10f;
+
+                    isUnique = true;
+
+                    foreach (var existingThreat in activeThreats)
+                    {
+                        if (existingThreat != threat && !existingThreat.isDestroyed)
+                        {
+                            if (Mathf.Abs(existingThreat.approachSpeed - newSpeed) < 0.05f)
+                            {
+                                isUnique = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (safetyCounter >= 50)
+                {
+                    Debug.LogWarning("[RoE] Benzersiz hız bulunamadı! Hız aralığı (min-max) sahadaki cisim sayısı için çok dar olabilir.");
+                }
+
+                threat.approachSpeed = newSpeed;
                 return;
             }
         }

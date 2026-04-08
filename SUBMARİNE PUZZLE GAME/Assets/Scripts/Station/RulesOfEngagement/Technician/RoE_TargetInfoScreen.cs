@@ -34,33 +34,33 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     private void OnLockStateChanged()
     {
         if (!isThreatSelected) isThreatSelected = true;
-        if (cooldownCoroutine != null)
-        {
-            StopCoroutine(cooldownCoroutine);
-            cooldownCoroutine = null;
-        }
+        // if (cooldownCoroutine != null)
+        // {
+        //     StopCoroutine(cooldownCoroutine);
+        //     cooldownCoroutine = null;
+        // }
 
-        cooldownCoroutine = StartCoroutine(LockCooldownRoutine());
+        // cooldownCoroutine = StartCoroutine(LockCooldownRoutine());
     }
 
-    private IEnumerator LockCooldownRoutine()
-    {
-        float cooldownDuration = technicianUI.selectionCooldown;
-        float elapsed = 0f;
-        cooldownText.color = Color.orange;
+    // private IEnumerator LockCooldownRoutine()
+    // {
+    //     float cooldownDuration = technicianUI.selectionCooldown;
+    //     float elapsed = 0f;
+    //     cooldownText.color = Color.orange;
 
-        while (elapsed < cooldownDuration)
-        {
+    //     while (elapsed < cooldownDuration)
+    //     {
 
-            float remaining = cooldownDuration - elapsed;
-            cooldownText.text = $"Locked: {remaining}s";
-            elapsed++;
-            yield return new WaitForSeconds(1f);
-        }
-        cooldownText.text = "Locked: 0s";
-        cooldownText.color = Color.green;
+    //         float remaining = cooldownDuration - elapsed;
+    //         cooldownText.text = $"Locked: {remaining}s";
+    //         elapsed++;
+    //         yield return new WaitForSeconds(1f);
+    //     }
+    //     cooldownText.text = "Locked: 0s";
+    //     cooldownText.color = Color.green;
 
-    }
+    // }
 
 
 
