@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using System.Threading;
 
 public class Thermal_EngineerPanel : MonoBehaviour
 {
@@ -74,6 +75,11 @@ public class Thermal_EngineerPanel : MonoBehaviour
         if (isWin)
         {
             PlayCoolingDownAnimation();
+        }
+        else
+        {
+            timerText.text = "Failed";
+            timerText.color = Color.red;
         }
     }
 

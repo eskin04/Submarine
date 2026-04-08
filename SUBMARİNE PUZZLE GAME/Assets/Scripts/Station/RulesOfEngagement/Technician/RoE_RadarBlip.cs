@@ -47,7 +47,7 @@ public class RoE_RadarBlip : MonoBehaviour
         myCodeName = codeName;
         uiManager = manager;
 
-        // if (codeText) codeText.text = codeName;
+        if (codeText) codeText.text = codeName;
         if (blipImage == null) blipImage = gameObject.GetComponent<Image>();
 
         btn.onClick.RemoveAllListeners();

@@ -49,6 +49,7 @@ public class Thermal_StationManager : NetworkBehaviour
     [Header("Bottleneck System")]
     public bool isBottleneckActive = false;
     public float bottleneckCooldownTimer = 0f;
+    public float bottleneckTimeLimit = 5f;
     private List<int> currentBottleneckSequence = new List<int>();
     private int currentSequenceIndex = 0;
 
@@ -387,46 +388,58 @@ public class Thermal_StationManager : NetworkBehaviour
     private void TriggerBottleneck()
     {
         isBottleneckActive = true;
-        currentSequenceIndex = 0;
-        currentBottleneckSequence.Clear();
         bottleneckLocation = activeCoolingValve;
-        int length = Random.Range(3, 5);
-        for (int i = 0; i < length; i++)
-        {
-            currentBottleneckSequence.Add(Random.Range(0, 3));
-        }
+        StartCoroutine(HandleBottleneckTimer());
 
-        Debug.Log($"<color=yellow>!!! {bottleneckLocation} VANASINDA DARBOĞAZ OLUŞTU !!!</color>");
+        // currentSequenceIndex = 0;
+        // currentBottleneckSequence.Clear();
+        // int length = Random.Range(3, 5);
+        // for (int i = 0; i < length; i++)
+        // {
+        //     currentBottleneckSequence.Add(Random.Range(0, 3));
+        // }
+
+        // Debug.Log($"<color=yellow>!!! {bottleneckLocation} VANASINDA DARBOĞAZ OLUŞTU !!!</color>");
 
         RpcOnBottleneckTriggered(currentBottleneckSequence.ToArray(), bottleneckLocation);
     }
 
-    [ServerRpc(requireOwnership: false)]
-    public void SubmitBottleneckCodeRPC(int colorCode, ThermalValveType buttonLocation)
+    private System.Collections.IEnumerator HandleBottleneckTimer()
     {
-        if (!isBottleneckActive || !isStationBroken) return;
-        if (buttonLocation != bottleneckLocation) return;
-        if (currentBottleneckSequence[currentSequenceIndex] == colorCode)
-        {
-            currentSequenceIndex++;
-            Debug.Log($"<color=cyan>[MÜHENDİS]</color> Doğru Tuş! ({currentSequenceIndex}/{currentBottleneckSequence.Count})");
+        yield return new WaitForSeconds(bottleneckTimeLimit);
 
-            if (currentSequenceIndex >= currentBottleneckSequence.Count)
-            {
-                isBottleneckActive = false;
-                bottleneckCooldownTimer = 10f;
-                Debug.Log("<color=lime>!!! DARBOĞAZ ÇÖZÜLDÜ !!! 10sn Koruma Aktif.</color>");
-                RpcOnBottleneckSolved();
-            }
-        }
-        else
-        {
-            currentSequenceIndex = 0;
-            Debug.Log("<color=red>[MÜHENDİS]</color> YANLIŞ TUŞ! Şifre sıfırlandı.");
-            stationController.ReportRepairMistake();
-            RpcOnBottleneckFailed();
-        }
+        isBottleneckActive = false;
+        bottleneckCooldownTimer = 10f;
+        Debug.Log("<color=yellow>!!! DARBOĞAZ SÜRESİ DOLDU, KORUMA AKTİF !!!</color>");
+        RpcOnBottleneckSolved();
     }
+
+    // [ServerRpc(requireOwnership: false)]
+    // public void SubmitBottleneckCodeRPC(int colorCode, ThermalValveType buttonLocation)
+    // {
+    //     if (!isBottleneckActive || !isStationBroken) return;
+    //     if (buttonLocation != bottleneckLocation) return;
+    //     if (currentBottleneckSequence[currentSequenceIndex] == colorCode)
+    //     {
+    //         currentSequenceIndex++;
+    //         Debug.Log($"<color=cyan>[MÜHENDİS]</color> Doğru Tuş! ({currentSequenceIndex}/{currentBottleneckSequence.Count})");
+
+    //         if (currentSequenceIndex >= currentBottleneckSequence.Count)
+    //         {
+    //             isBottleneckActive = false;
+    //             bottleneckCooldownTimer = 10f;
+    //             Debug.Log("<color=lime>!!! DARBOĞAZ ÇÖZÜLDÜ !!! 10sn Koruma Aktif.</color>");
+    //             RpcOnBottleneckSolved();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         currentSequenceIndex = 0;
+    //         Debug.Log("<color=red>[MÜHENDİS]</color> YANLIŞ TUŞ! Şifre sıfırlandı.");
+    //         stationController.ReportRepairMistake();
+    //         RpcOnBottleneckFailed();
+    //     }
+    // }
 
 
     [ObserversRpc]
@@ -434,8 +447,8 @@ public class Thermal_StationManager : NetworkBehaviour
     {
         isBottleneckActive = true;
 
-        if (frontTechnicianPanel != null) frontTechnicianPanel.HandleBottleneckTrigger(sequence, location);
-        if (backTechnicianPanel != null) backTechnicianPanel.HandleBottleneckTrigger(sequence, location);
+        // if (frontTechnicianPanel != null) frontTechnicianPanel.HandleBottleneckTrigger(sequence, location);
+        // if (backTechnicianPanel != null) backTechnicianPanel.HandleBottleneckTrigger(sequence, location);
 
         if (engineerPanel != null) engineerPanel.SetBottleneckState(true);
     }
@@ -450,8 +463,8 @@ public class Thermal_StationManager : NetworkBehaviour
     private void RpcOnBottleneckSolved()
     {
         isBottleneckActive = false;
-        if (frontTechnicianPanel != null) frontTechnicianPanel.StopSequence();
-        if (backTechnicianPanel != null) backTechnicianPanel.StopSequence();
+        // if (frontTechnicianPanel != null) frontTechnicianPanel.StopSequence();
+        // if (backTechnicianPanel != null) backTechnicianPanel.StopSequence();
 
         if (engineerPanel != null) engineerPanel.SetBottleneckState(false);
     }
