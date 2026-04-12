@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 #endif
 using PurrNet;
 using Cinemachine;
+using FMODUnity;
 
 namespace StarterAssets
 {
@@ -41,6 +42,14 @@ namespace StarterAssets
 		public GameObject CinemachineCameraTarget;
 		public float TopClamp = 90.0f;
 		public float BottomClamp = -90.0f;
+
+		[Header("Audio - Footsteps")]
+		[SerializeField] private AudioEventChannelSO _sfxChannel;
+		[SerializeField] private EventReference _footstepSound;
+		[SerializeField] private float _baseStepDistance = 2.0f; // Yürüme için adım mesafesi
+		[SerializeField] private float _sprintStepDistance = 2.5f; // Koşma için adım mesafesi
+
+		private Vector3 _lastStepPosition;
 
 		// cinemachine
 		private float _cinemachineTargetPitch;
@@ -119,6 +128,8 @@ namespace StarterAssets
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
+
+			_lastStepPosition = transform.position;
 		}
 
 		private void Update()
@@ -218,6 +229,45 @@ namespace StarterAssets
 
 			// move the player
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+
+			// Eğer oyuncu yerdeyse ve hareket ediyorsa (hızı sıfır değilse)
+			if (Grounded && _speed > 0.1f)
+			{
+				// Şu anki hıza göre (koşma/yürüme) hedef adım mesafesini belirle
+				float currentStepDistance = _input.sprint ? _sprintStepDistance : _baseStepDistance;
+
+				// Son adım atılan yerden yeterince uzaklaşıldıysa yeni ses çıkar
+				if (Vector3.Distance(transform.position, _lastStepPosition) > currentStepDistance)
+				{
+					PlayFootstepSound();
+					_lastStepPosition = transform.position;
+				}
+			}
+			else
+			{
+				// Havada veya dururken son adım pozisyonunu güncelle ki yere inince hemen ses çıkmasın
+				_lastStepPosition = transform.position;
+			}
+		}
+		[ObserversRpc(runLocally: true)]
+		private void PlayFootstepSound()
+		{
+			// Veri paketini oluştur
+			AudioEventPayload payload = new AudioEventPayload(
+				_footstepSound,
+				transform.position
+			);
+
+			// Telsizden (Channel) anons geç
+			if (_sfxChannel != null)
+			{
+				_sfxChannel.RaiseEvent(payload);
+			}
+			else
+			{
+				Debug.LogWarning("[Audio] SFX_EventChannel atanmamış!");
+			}
 		}
 
 		private void JumpAndGravity()

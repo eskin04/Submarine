@@ -20,8 +20,26 @@
 	<object class="MixerBusEffectChain" id="{e406c86f-585b-46ae-864f-b5d5df191f5b}">
 		<relationship name="effects">
 			<destination>{85e82b74-e7cb-4485-8447-d5c3139e9fb5}</destination>
+			<destination>{4839e33e-4656-415b-8423-634aa6ad4b67}</destination>
+			<destination>{cc519dd8-1c76-4109-8d5f-053032934a5f}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{88eca51f-bce2-4fc5-8ef4-9b0ca12be049}" />
 	<object class="MixerBusFader" id="{85e82b74-e7cb-4485-8447-d5c3139e9fb5}" />
+	<object class="SFXReverbEffect" id="{4839e33e-4656-415b-8423-634aa6ad4b67}">
+		<property name="HFDecayRatio">
+			<value>22.5</value>
+		</property>
+		<property name="highCut">
+			<value>2000</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>70</value>
+		</property>
+	</object>
+	<object class="ThreeEQEffect" id="{cc519dd8-1c76-4109-8d5f-053032934a5f}">
+		<property name="highGain">
+			<value>-20</value>
+		</property>
+	</object>
 </objects>

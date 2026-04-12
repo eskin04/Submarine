@@ -552,6 +552,16 @@ MonoBehaviour:
   CinemachineCameraTarget: {fileID: 8103510876627158064}
   TopClamp: 89
   BottomClamp: -89
+  _sfxChannel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _footstepSound:
+    Guid:
+      Data1: 564542649
+      Data2: 1094746238
+      Data3: -168950113
+      Data4: -314600080
+    Path: event:/SFX/Player/FootSteps
+  _baseStepDistance: 2
+  _sprintStepDistance: 2.5
 --- !u!114 &55955304582083461
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,7 +6,6 @@ public class UICursorHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         CursorManager.OnHoverStateChanged?.Invoke(true);
-        Debug.Log("Hovering over: " + gameObject.name);
     }
 
     public void OnPointerExit(PointerEventData eventData)
