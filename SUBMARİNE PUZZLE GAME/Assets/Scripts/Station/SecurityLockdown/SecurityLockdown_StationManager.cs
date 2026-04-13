@@ -40,6 +40,10 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     [Header("Settings")]
     public int sequenceLength = 4;
 
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference lockDownStartSound;
+
     [ContextMenu("1. START MAIN LOCKDOWN (TEST)")]
     public void StartStation()
     {
@@ -57,6 +61,17 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 
         RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray());
         RpcStateChanged(currentState.value);
+        RpcStartLockdownSound();
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void RpcStartLockdownSound()
+    {
+        if (_channel != null && !lockDownStartSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(lockDownStartSound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
     }
 
     #region GENERATION LOGIC (SERVER)

@@ -3380,6 +3380,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 4752171683982580062}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &3966664668285541394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8191,6 +8206,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 1638383592711695627}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &100045792244038051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11170,6 +11200,21 @@ MonoBehaviour:
   resetPanel: {fileID: 2435049161892655995}
   legendItemPrefab: {fileID: 4125888627804699427, guid: df1e06396814e634694d794152de431e, type: 3}
   legendContainer: {fileID: 890739044881265763}
+  _channel: {fileID: 11400000, guid: 079bd1d8cbaa9304db0a2fb85225ff94, type: 2}
+  clickSound:
+    Guid:
+      Data1: -942032671
+      Data2: 1318766729
+      Data3: -546194551
+      Data4: 369167219
+    Path: event:/SFX/SL/PanelClick
+  warningSound:
+    Guid:
+      Data1: -731295958
+      Data2: 1306019156
+      Data3: -716711752
+      Data4: -1649580644
+    Path: event:/SFX/SL/Error
 --- !u!1 &2623662671410142904
 GameObject:
   m_ObjectHideFlags: 0
@@ -12766,6 +12811,7 @@ GameObject:
   - component: {fileID: 183819941022883679}
   - component: {fileID: 8125508285358277855}
   - component: {fileID: 8240434496112552240}
+  - component: {fileID: 1758921939979158880}
   m_Layer: 0
   m_Name: ShowLegendButton
   m_TagString: Untagged
@@ -12887,6 +12933,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1758921939979158880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2934405939388099936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &3074662092169935169
 GameObject:
   m_ObjectHideFlags: 0
@@ -13801,6 +13859,21 @@ MonoBehaviour:
   lockedWarningPanel: {fileID: 8698668845109234728}
   resetPanel: {fileID: 432040509073441503}
   codesText: {fileID: 1945053137171155428}
+  _channel: {fileID: 11400000, guid: 079bd1d8cbaa9304db0a2fb85225ff94, type: 2}
+  clickSound:
+    Guid:
+      Data1: -942032671
+      Data2: 1318766729
+      Data3: -546194551
+      Data4: 369167219
+    Path: event:/SFX/SL/PanelClick
+  warningSound:
+    Guid:
+      Data1: -731295958
+      Data2: 1306019156
+      Data3: -716711752
+      Data4: -1649580644
+    Path: event:/SFX/SL/Error
 --- !u!1 &3305716143452808254
 GameObject:
   m_ObjectHideFlags: 0
@@ -14646,6 +14719,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 1200073103024823777}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &564111275698666947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14991,6 +15079,14 @@ MonoBehaviour:
     techRegionCount: 2
     engRegionCount: 0
   sequenceLength: 4
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  lockDownStartSound:
+    Guid:
+      Data1: 647999223
+      Data2: 1279021474
+      Data3: -545211757
+      Data4: 2129155508
+    Path: event:/SFX/SL/LockDown
 --- !u!114 &2745671120115358505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19333,6 +19429,7 @@ GameObject:
   - component: {fileID: 8910492401384475526}
   - component: {fileID: 8491361080045218228}
   - component: {fileID: 8922071791140826882}
+  - component: {fileID: 8402608581148960330}
   m_Layer: 0
   m_Name: ReadyButton
   m_TagString: Untagged
@@ -19454,6 +19551,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &8402608581148960330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4453262188920204024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &4463948310358067918
 GameObject:
   m_ObjectHideFlags: 0
@@ -20847,6 +20956,7 @@ GameObject:
   - component: {fileID: 7412472149323592796}
   - component: {fileID: 8363833990809096768}
   - component: {fileID: 7739769084714237340}
+  - component: {fileID: 5693380540095889576}
   m_Layer: 0
   m_Name: ReceiveCodeButton
   m_TagString: Untagged
@@ -20968,6 +21078,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5693380540095889576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5099133047511368489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &5166377485929615090
 GameObject:
   m_ObjectHideFlags: 0
@@ -22019,6 +22141,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 195925137804100113}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &959655339118183206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23189,6 +23326,7 @@ GameObject:
   - component: {fileID: 4556931323517449962}
   - component: {fileID: 3230105924056018381}
   - component: {fileID: 725304662651410417}
+  - component: {fileID: 7679911660288726989}
   m_Layer: 0
   m_Name: ReceiveCodeButton
   m_TagString: Untagged
@@ -23310,6 +23448,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7679911660288726989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5900041830377788444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &6009647596123417403
 GameObject:
   m_ObjectHideFlags: 0
@@ -24669,6 +24819,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 2615928225958805332}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &7771109249285424694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26813,6 +26978,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 6687018249994478091}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &5758221132213166103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29866,6 +30046,7 @@ GameObject:
   - component: {fileID: 6002489059732862352}
   - component: {fileID: 5834460317855290200}
   - component: {fileID: 1615037428595086228}
+  - component: {fileID: 1896271544166545710}
   m_Layer: 0
   m_Name: ResetButton
   m_TagString: Untagged
@@ -29999,6 +30180,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1896271544166545710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7484524310313716255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &7551623548512971645
 GameObject:
   m_ObjectHideFlags: 0
@@ -31749,6 +31942,21 @@ MonoBehaviour:
   stationManager: {fileID: 437014334892463219}
   statusLightRenderer: {fileID: 8250749296760409542}
   lightIntensity: 5
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  buttonSound:
+    Guid:
+      Data1: 491969861
+      Data2: 1175937551
+      Data3: -1841666924
+      Data4: 1360715065
+    Path: event:/SFX/SL/NumpadButton
+  correctSound:
+    Guid:
+      Data1: -1244655592
+      Data2: 1235050018
+      Data3: 1890103742
+      Data4: 30442766
+    Path: event:/SFX/SL/Correct
 --- !u!114 &6788749179719444045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34477,6 +34685,7 @@ GameObject:
   - component: {fileID: 491614705913282274}
   - component: {fileID: 6696195462833961236}
   - component: {fileID: 3930490346828003000}
+  - component: {fileID: 2557651284003226201}
   m_Layer: 0
   m_Name: ReadyButton
   m_TagString: Untagged
@@ -34598,6 +34807,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2557651284003226201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8464232029120220051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1377d60446782ae48836e5dd490ea354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICursorHover
 --- !u!1 &8480291981165116487
 GameObject:
   m_ObjectHideFlags: 0

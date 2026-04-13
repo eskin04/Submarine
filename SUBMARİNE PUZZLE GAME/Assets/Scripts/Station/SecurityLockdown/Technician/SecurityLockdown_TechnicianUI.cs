@@ -14,6 +14,13 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
     public GameObject resetPanel;
     public TMP_Text codesText;
 
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    private FMODEmitter _activeWarningEmitter;
+
+    public FMODUnity.EventReference clickSound;
+    public FMODUnity.EventReference warningSound;
+
     private SequenceData[] currentCodes;
     private bool isReady = false;
 
@@ -44,9 +51,20 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
         }
     }
 
+    private void PlayClickSound()
+    {
+        if (_channel != null && !clickSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(clickSound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
+    }
+
     public void OnShowDataPressed()
     {
         ShowDataScreen();
+        PlayClickSound();
+        StopWarningSound();
     }
 
 
@@ -56,11 +74,13 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
         isReady = true;
         stationManager.SetTechReadyRPC();
         ShowResetScreen();
+        PlayClickSound();
     }
 
     public void OnHardResetPressed()
     {
         stationManager.RequestHardResetRPC();
+        PlayClickSound();
     }
 
     private void ShowResetScreen()
@@ -76,6 +96,27 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
         lockedWarningPanel.SetActive(true);
         displayDataPanel.SetActive(false);
         resetPanel.SetActive(false);
+        PlayWarningSound();
+    }
+
+    private void PlayWarningSound()
+    {
+        if (_activeWarningEmitter != null) return;
+
+        if (!warningSound.IsNull)
+        {
+            _activeWarningEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(warningSound, this.transform);
+        }
+    }
+
+    private void StopWarningSound()
+    {
+        if (_activeWarningEmitter != null)
+        {
+            _activeWarningEmitter.StopSound();
+            _activeWarningEmitter = null;
+
+        }
     }
 
     private string GetHexCode(LockdownColor color)

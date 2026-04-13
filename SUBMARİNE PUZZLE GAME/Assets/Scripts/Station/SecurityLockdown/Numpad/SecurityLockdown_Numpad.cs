@@ -18,6 +18,11 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
     public float lightIntensity = 5.0f;
     private Material runtimeMaterial;
 
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference buttonSound;
+    public FMODUnity.EventReference correctSound;
+
     private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
     private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
 
@@ -59,8 +64,19 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         {
             currentInput += number.ToString();
             UpdateDisplay();
+            PlayButtonSound();
+
 
             displayScreen.transform.DOPunchScale(Vector3.one * 0.1f, 0.1f);
+        }
+    }
+
+    private void PlayButtonSound()
+    {
+        if (_channel != null && !buttonSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(buttonSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 
@@ -122,7 +138,17 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
             {
                 runtimeMaterial.SetFloat(LightSelectionProp, 2);
                 runtimeMaterial.SetFloat(IntensityProp, lightIntensity);
+                PlayCorrectSound();
             }
+        }
+    }
+
+    private void PlayCorrectSound()
+    {
+        if (_channel != null && !correctSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(correctSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 

@@ -612,9 +612,33 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2378838127280634816}
+        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
+        m_MethodName: PlayRadarLoop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onStopInteract:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2378838127280634816}
+        m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
+        m_MethodName: StopRadarLoop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &7253578683372520156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2131,9 +2155,32 @@ MonoBehaviour:
   sweepSpeed: -45
   beamWidth: 75
   visualOffset: -90
+  radarLoopSound:
+    Guid:
+      Data1: 1325754664
+      Data2: 1311554970
+      Data3: -1214315346
+      Data4: -1160882757
+    Path: event:/SFX/Roe/Radar
   statusLightRenderer: {fileID: 1333349123523908694}
   lightIntensity: 3
   brokenLight: {fileID: 8536011440919890348}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  glassOpenSound:
+    Guid:
+      Data1: -860192225
+      Data2: 1300188334
+      Data3: -1456781433
+      Data4: -826918176
+    Path: event:/SFX/Roe/evadeGlassCover
+  sfxChannel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  shootSound:
+    Guid:
+      Data1: -371223886
+      Data2: 1282886071
+      Data3: 1613376133
+      Data4: 304481481
+    Path: event:/SFX/Roe/Torpido
 --- !u!1 &6075662852396915295
 GameObject:
   m_ObjectHideFlags: 0
@@ -4129,6 +4176,30 @@ PrefabInstance:
     m_TransformParent: {fileID: 6478654486933550172}
     m_Modifications:
     - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _channel
+      value: 
+      objectReference: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Path
+      value: event:/SFX/Roe/ButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data1
+      value: 515994522
+      objectReference: {fileID: 0}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data2
+      value: 1262529346
+      objectReference: {fileID: 0}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data3
+      value: 1973407389
+      objectReference: {fileID: 0}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data4
+      value: -12884059
+      objectReference: {fileID: 0}
+    - target: {fileID: 1620217932938698113, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2378838127280634816}
@@ -4177,9 +4248,57 @@ PrefabInstance:
       value: SM_RulesOfEngagement 1
       objectReference: {fileID: 0}
     - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _channel
+      value: 
+      objectReference: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Path
+      value: event:/SFX/Roe/ButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data1
+      value: 515994522
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data2
+      value: 1262529346
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data3
+      value: 1973407389
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data4
+      value: -12884059
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355607467494473904, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2378838127280634816}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _channel
+      value: 
+      objectReference: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Path
+      value: event:/SFX/Roe/ButtonClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data1
+      value: 515994522
+      objectReference: {fileID: 0}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data2
+      value: 1262529346
+      objectReference: {fileID: 0}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data3
+      value: 1973407389
+      objectReference: {fileID: 0}
+    - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
+      propertyPath: _buttonClickSound.Guid.Data4
+      value: -12884059
+      objectReference: {fileID: 0}
     - target: {fileID: 5012433431141496399, guid: bff762234d465b942ae75965b6fb66f0, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
