@@ -78,8 +78,8 @@ public class Thermal_WarningLight : MonoBehaviour
 
         WarningState targetState = WarningState.Off;
 
-        if (isBottleneck) targetState = WarningState.Solid;
-        else if (currentHeat >= 75f) targetState = WarningState.Flashing;
+        if (isBottleneck) targetState = WarningState.Flashing;
+        else if (currentHeat >= 75f) targetState = WarningState.Solid;
 
         if (targetState == currentState) return;
 

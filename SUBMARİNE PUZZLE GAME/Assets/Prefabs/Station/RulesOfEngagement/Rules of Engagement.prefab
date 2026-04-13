@@ -614,7 +614,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2378838127280634816}
         m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
-        m_MethodName: PlayRadarLoop
+        m_MethodName: OnInteractEnter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -629,7 +629,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2378838127280634816}
         m_TargetAssemblyTypeName: RoE_TechnicianUI, Assembly-CSharp
-        m_MethodName: StopRadarLoop
+        m_MethodName: OnInteractExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

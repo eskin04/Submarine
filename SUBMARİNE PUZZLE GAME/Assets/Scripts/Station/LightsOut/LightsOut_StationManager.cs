@@ -318,6 +318,17 @@ public class LightsOut_StationManager : NetworkBehaviour
         }
     }
 
+    [ServerRpc(requireOwnership: false)]
+    public void UnregisterSwitchPressRPC(WireColor unpressedColor)
+    {
+        // Şalterin rengini oyuncunun girdiği listeden sil
+        if (playerInputSequence.Contains(unpressedColor))
+        {
+            playerInputSequence.Remove(unpressedColor);
+        }
+    }
+
+
     [ObserversRpc]
     public void RpcOpenLeverDoor()
     {

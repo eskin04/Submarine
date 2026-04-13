@@ -48,15 +48,34 @@ public class LightsOut_Switch : NetworkBehaviour
 
     private void OnClicked()
     {
-        if (switchObject != null)
+        if (!isPressed)
         {
-            switchObject.transform.DOLocalRotate(new Vector3(0, RotateAngle, 0), 0.2f);
+            // ŞALTERİ İNDİR
+            if (switchObject != null)
+            {
+                switchObject.transform.DOLocalRotate(new Vector3(0, RotateAngle, 0), 0.2f);
+            }
             isPressed = true;
-        }
 
-        if (stationManager != null)
+            if (stationManager != null)
+            {
+                stationManager.RegisterSwitchPressRPC(myLabelColor);
+            }
+        }
+        else
         {
-            stationManager.RegisterSwitchPressRPC(myLabelColor);
+            // ŞALTERİ GERİ KALDIR (UNDO)
+            if (switchObject != null)
+            {
+                switchObject.transform.DOLocalRotate(new Vector3(0, originalRot, 0), 0.2f);
+            }
+            isPressed = false;
+
+            if (stationManager != null)
+            {
+                // StationManager'a bu rengi sıradan çıkarmasını söylüyoruz
+                stationManager.UnregisterSwitchPressRPC(myLabelColor);
+            }
         }
     }
 
@@ -71,7 +90,7 @@ public class LightsOut_Switch : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        if (isPressed || (moduleInteractable != null && !moduleInteractable.IsInteracting())) return;
+        if (moduleInteractable != null && !moduleInteractable.IsInteracting()) return;
 
         OnClicked();
 

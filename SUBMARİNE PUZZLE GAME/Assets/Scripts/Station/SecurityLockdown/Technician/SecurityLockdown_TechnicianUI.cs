@@ -119,6 +119,11 @@ public class SecurityLockdown_TechnicianUI : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        StopWarningSound();
+    }
+
     private string GetHexCode(LockdownColor color)
     {
         switch (color)

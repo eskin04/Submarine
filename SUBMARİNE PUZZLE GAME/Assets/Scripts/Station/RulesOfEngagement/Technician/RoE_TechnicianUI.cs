@@ -35,7 +35,7 @@ public class RoE_TechnicianUI : MonoBehaviour
 
     [Header("Audio - Radar Loop")]
     public FMODUnity.EventReference radarLoopSound;
-    private FMODEmitter _activeRadarEmitter;
+    private FMOD.Studio.EventInstance _radarInstance;
 
     [Header("Status Light")]
     public MeshRenderer statusLightRenderer;
@@ -78,6 +78,21 @@ public class RoE_TechnicianUI : MonoBehaviour
             runtimeMaterial = statusLightRenderer.materials[0];
         }
 
+        if (!radarLoopSound.IsNull)
+        {
+            _radarInstance = FMODUnity.RuntimeManager.CreateInstance(radarLoopSound);
+            _radarInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject));
+            _radarInstance.start();
+
+            SetRadarIntensity(0.2f);
+        }
+
+    }
+
+    private void OnDestroy()
+    {
+        _radarInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        _radarInstance.release();
     }
     private void Update()
     {
@@ -411,22 +426,14 @@ public class RoE_TechnicianUI : MonoBehaviour
         }
     }
 
-    public void PlayRadarLoop()
-    {
-        if (_activeRadarEmitter != null) return;
+    public void OnInteractEnter() => SetRadarIntensity(1.0f);
+    public void OnInteractExit() => SetRadarIntensity(0.2f);
 
-        if (!radarLoopSound.IsNull)
-        {
-            _activeRadarEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(radarLoopSound, this.transform);
-        }
-    }
-    public void StopRadarLoop()
+    private void SetRadarIntensity(float value)
     {
-        if (_activeRadarEmitter != null)
+        if (_radarInstance.isValid())
         {
-            _activeRadarEmitter.StopSound();
-
-            _activeRadarEmitter = null;
+            _radarInstance.setParameterByName("RadarIntensity", value);
         }
     }
 
