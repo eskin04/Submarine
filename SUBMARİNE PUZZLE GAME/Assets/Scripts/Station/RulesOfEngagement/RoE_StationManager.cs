@@ -375,6 +375,7 @@ public class RoE_StationManager : NetworkBehaviour
         {
             previousDestroyedObject = threat.realIdentity.linkedObject;
             previousPassedObject = null;
+            RpcPlayShootSound();
         }
         else if (action == Roe_PlayerAction.Pass)
         {
@@ -383,6 +384,15 @@ public class RoE_StationManager : NetworkBehaviour
         }
         SetNewRandomRule();
         UpdateHistory(threat.realIdentity.linkedObject);
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void RpcPlayShootSound()
+    {
+        if (technicianUI != null)
+        {
+            technicianUI.PlayShootSound();
+        }
     }
 
     private void UpdateHistory(RoE_ObjectData obj)

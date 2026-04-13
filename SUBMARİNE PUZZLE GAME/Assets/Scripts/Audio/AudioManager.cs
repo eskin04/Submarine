@@ -12,7 +12,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioEventChannelSO _uiChannel;
 
     [Header("Havuz Ayarları")]
-    [SerializeField] private FMODEmitter _emitterPrefab; // Üzerinde FMODEmitter olan boş bir prefab
+    [SerializeField] private FMODEmitter _emitterPrefab;
     [SerializeField] private int _initialPoolSize = 10;
 
     // Emitter Havuzu
@@ -20,11 +20,9 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton Kurulumu
         if (Instance == null)
         {
             Instance = this;
-            // Sahneler arası geçişte sesin kesilmemesi için (Opsiyonel)
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -36,9 +34,6 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-
-
-        // 2. Oyun başlarken havuzu doldur (Senin mevcut kodun)
         for (int i = 0; i < _initialPoolSize; i++)
         {
             CreateNewEmitterForPool();
@@ -47,7 +42,6 @@ public class AudioManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Eski One-Shot fonksiyonlarımız aynen duruyor
         if (_sfxChannel != null) _sfxChannel.OnAudioEventRequested += Play3DSound;
         if (_environmentChannel != null) _environmentChannel.OnAudioEventRequested += Play3DSound;
         if (_uiChannel != null) _uiChannel.OnAudioEventRequested += Play2DSound;
@@ -60,71 +54,50 @@ public class AudioManager : MonoBehaviour
         if (_uiChannel != null) _uiChannel.OnAudioEventRequested -= Play2DSound;
     }
 
-    /// <summary>
-    /// SFX ve Çevre gibi uzamsal (3D) sesleri çalan ana fonksiyon
-    /// </summary>
     private void Play3DSound(AudioEventPayload payload)
     {
         if (payload.EventReference.IsNull) return;
 
 
-        // 1. FMOD'dan bir ses kopyası (Instance) oluştur
         EventInstance instance = RuntimeManager.CreateInstance(payload.EventReference);
 
-        // 2. Sesin dünyadaki 3D pozisyonunu ayarla
         instance.set3DAttributes(RuntimeUtils.To3DAttributes(payload.Position));
 
-        // 3. Eğer payload içinde özel bir parametre (Örn: Basınç seviyesi) varsa FMOD'a gönder
         if (!string.IsNullOrEmpty(payload.ParameterName))
         {
             instance.setParameterByName(payload.ParameterName, payload.ParameterValue);
         }
 
-        // 4. Sesi başlat
         instance.start();
 
-        // 5. Serbest bırak (Ses bitince FMOD belleği kendi kendine temizler)
         instance.release();
     }
 
-    /// <summary>
-    /// UI menüsü gibi pozisyondan bağımsız (2D) sesleri çalan fonksiyon
-    /// </summary>
     private void Play2DSound(AudioEventPayload payload)
     {
         if (payload.EventReference.IsNull) return;
 
-        // UI sesleri için pozisyona veya instance oluşturmaya gerek yoktur, "OneShot" yeterlidir.
         RuntimeManager.PlayOneShot(payload.EventReference);
     }
 
-    // ====================================================
-    // YENİ HAVUZ SİSTEMİ METOTLARI
-    // ====================================================
-
-    /// <summary>
-    /// Sürekli çalan veya bir objeye yapışması gereken sesler için havuzdan Emitter çeker
-    /// </summary>
     public FMODEmitter PlayLoopingOrAttachedSound(EventReference eventRef, Transform targetTransform)
     {
         FMODEmitter emitter = GetEmitterFromPool();
 
-        // Emitter objesini sesin çalacağı yere taşı ve objeye bağla (Parenting)
         emitter.transform.SetPositionAndRotation(targetTransform.position, targetTransform.rotation);
         emitter.transform.SetParent(targetTransform);
         emitter.gameObject.SetActive(true);
 
-        // Sesi başlat ve "Durdurulduğunda ReturnToPool fonksiyonunu çalıştır" de
         emitter.Play(eventRef, ReturnToPool);
 
-        return emitter; // Kumandayı tetikleyen koda geri veriyoruz
+        return emitter;
     }
 
     private FMODEmitter GetEmitterFromPool()
     {
         if (_emitterPool.Count == 0)
         {
-            CreateNewEmitterForPool(); // Havuz boşaldıysa yeni üret (Performans için uyarı da verebilirsin)
+            CreateNewEmitterForPool();
         }
         return _emitterPool.Dequeue();
     }
@@ -132,7 +105,7 @@ public class AudioManager : MonoBehaviour
     private void ReturnToPool(FMODEmitter emitter)
     {
         emitter.gameObject.SetActive(false);
-        emitter.transform.SetParent(this.transform); // AudioManager'ın altına geri al
+        emitter.transform.SetParent(this.transform);
         _emitterPool.Enqueue(emitter);
     }
 

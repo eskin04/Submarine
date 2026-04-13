@@ -33,11 +33,23 @@ public class RoE_TechnicianUI : MonoBehaviour
     public float beamWidth = 20f;
     public float visualOffset = 0f;
 
+    [Header("Audio - Radar Loop")]
+    public FMODUnity.EventReference radarLoopSound;
+    private FMODEmitter _activeRadarEmitter;
+
     [Header("Status Light")]
     public MeshRenderer statusLightRenderer;
     public float lightIntensity = 5.0f;
     public Light brokenLight;
     private Material runtimeMaterial;
+
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference glassOpenSound;
+
+    [Header("Audio - Global SFX")]
+    public AudioEventChannelSO sfxChannel;
+    public FMODUnity.EventReference shootSound;
 
     private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
     private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
@@ -385,11 +397,45 @@ public class RoE_TechnicianUI : MonoBehaviour
         {
             evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 1f)
                 .SetEase(Ease.OutBack);
+
+            if (_channel != null && !glassOpenSound.IsNull)
+            {
+                AudioEventPayload payload = new AudioEventPayload(glassOpenSound, evadeGlassCover.transform.position);
+                _channel.RaiseEvent(payload);
+            }
         }
         else
         {
             evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 1f)
                 .SetEase(Ease.OutBounce);
+        }
+    }
+
+    public void PlayRadarLoop()
+    {
+        if (_activeRadarEmitter != null) return;
+
+        if (!radarLoopSound.IsNull)
+        {
+            _activeRadarEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(radarLoopSound, this.transform);
+        }
+    }
+    public void StopRadarLoop()
+    {
+        if (_activeRadarEmitter != null)
+        {
+            _activeRadarEmitter.StopSound();
+
+            _activeRadarEmitter = null;
+        }
+    }
+
+    public void PlayShootSound()
+    {
+        if (sfxChannel != null && !shootSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(shootSound, this.transform.position);
+            sfxChannel.RaiseEvent(payload);
         }
     }
 

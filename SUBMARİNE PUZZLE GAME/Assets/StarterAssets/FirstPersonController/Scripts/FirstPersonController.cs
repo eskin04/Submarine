@@ -231,13 +231,10 @@ namespace StarterAssets
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
 
-			// Eğer oyuncu yerdeyse ve hareket ediyorsa (hızı sıfır değilse)
 			if (Grounded && _speed > 0.1f)
 			{
-				// Şu anki hıza göre (koşma/yürüme) hedef adım mesafesini belirle
 				float currentStepDistance = _input.sprint ? _sprintStepDistance : _baseStepDistance;
 
-				// Son adım atılan yerden yeterince uzaklaşıldıysa yeni ses çıkar
 				if (Vector3.Distance(transform.position, _lastStepPosition) > currentStepDistance)
 				{
 					PlayFootstepSound();
@@ -246,20 +243,17 @@ namespace StarterAssets
 			}
 			else
 			{
-				// Havada veya dururken son adım pozisyonunu güncelle ki yere inince hemen ses çıkmasın
 				_lastStepPosition = transform.position;
 			}
 		}
 		[ObserversRpc(runLocally: true)]
 		private void PlayFootstepSound()
 		{
-			// Veri paketini oluştur
 			AudioEventPayload payload = new AudioEventPayload(
 				_footstepSound,
 				transform.position
 			);
 
-			// Telsizden (Channel) anons geç
 			if (_sfxChannel != null)
 			{
 				_sfxChannel.RaiseEvent(payload);
