@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
 
 public class EngineerLockDown_Door : MonoBehaviour
 {
@@ -9,8 +10,14 @@ public class EngineerLockDown_Door : MonoBehaviour
     [Header("Animation Settings")]
     public Vector3 openOffset = new Vector3(-1.5f, 0, 0);
     public float openDuration = 1.0f;
-    public float stayOpenTime = 5.0f;
+    public float closeDuration = 1.0f;
     public Ease doorEase = Ease.InOutSine;
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _doorOpenSound;
+    [SerializeField] private EventReference _doorCloseSound;
+
 
     private Vector3 closedPos;
     private Tween currentTween;
@@ -42,23 +49,38 @@ public class EngineerLockDown_Door : MonoBehaviour
         }
     }
 
-    private void OpenDoorTemporarily()
+    private void OpenDoorTemporarily(float stayOpenTime)
     {
         if (doorPanel == null || isDoorOpen) return;
-
+        PlayDoorSound(true);
         currentTween?.Kill();
         isDoorOpen = true;
         currentTween = doorPanel.DOLocalMove(closedPos + openOffset, openDuration)
             .SetEase(doorEase)
             .OnComplete(() =>
             {
-                currentTween = doorPanel.DOLocalMove(closedPos, openDuration)
+
+                currentTween = doorPanel.DOLocalMove(closedPos, closeDuration)
                     .SetDelay(stayOpenTime)
                     .SetEase(doorEase).OnComplete(() =>
                     {
+                        PlayDoorSound(false);
                         isDoorOpen = false;
                     });
             });
+    }
+
+    private void PlayDoorSound(bool opening)
+    {
+        if (_channel != null)
+        {
+            EventReference soundToPlay = opening ? _doorOpenSound : _doorCloseSound;
+            if (!soundToPlay.IsNull)
+            {
+                AudioEventPayload payload = new AudioEventPayload(soundToPlay, doorPanel.position);
+                _channel.RaiseEvent(payload);
+            }
+        }
     }
 
     private void ForceCloseDoor()
@@ -66,6 +88,7 @@ public class EngineerLockDown_Door : MonoBehaviour
         if (doorPanel == null) return;
         isDoorOpen = false;
         currentTween?.Kill();
-        currentTween = doorPanel.DOLocalMove(closedPos, openDuration).SetEase(doorEase);
+        PlayDoorSound(false);
+        currentTween = doorPanel.DOLocalMove(closedPos, closeDuration).SetEase(doorEase);
     }
 }

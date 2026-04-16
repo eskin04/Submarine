@@ -1450,6 +1450,30 @@ PrefabInstance:
       propertyPath: manager
       value: 
       objectReference: {fileID: 3883705053624038791}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _channel
+      value: 
+      objectReference: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _switchSound.Path
+      value: event:/SFX/Thermal/Switch
+      objectReference: {fileID: 0}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _switchSound.Guid.Data1
+      value: 561567257
+      objectReference: {fileID: 0}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _switchSound.Guid.Data2
+      value: 1148996316
+      objectReference: {fileID: 0}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _switchSound.Guid.Data3
+      value: -200505727
+      objectReference: {fileID: 0}
+    - target: {fileID: 41841793366170991, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
+      propertyPath: _switchSound.Guid.Data4
+      value: 1504008766
+      objectReference: {fileID: 0}
     - target: {fileID: 165704222487483196, guid: f256c62d8bcc801489c7ab4c8ae85131, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1802,6 +1826,14 @@ MonoBehaviour:
   rotationAxis: {x: 0, y: 0, z: -1}
   rotationAmount: 90
   animationDuration: 0.15
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _pumpSound:
+    Guid:
+      Data1: -503443620
+      Data2: 1237164660
+      Data3: -1396411230
+      Data4: 1485210181
+    Path: event:/SFX/Thermal/Pump
 --- !u!4 &8013082038750862185 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2452192231792105016, guid: 4292540ae4e8ef946b673100a0b79bbd, type: 3}
@@ -1988,6 +2020,14 @@ MonoBehaviour:
   rotationAxis: {x: 0, y: 0, z: -1}
   rotationAmount: 90
   animationDuration: 0.15
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _pumpSound:
+    Guid:
+      Data1: -503443620
+      Data2: 1237164660
+      Data3: -1396411230
+      Data4: 1485210181
+    Path: event:/SFX/Thermal/Pump
 --- !u!4 &5461389945949716746 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2452192231792105016, guid: 4292540ae4e8ef946b673100a0b79bbd, type: 3}

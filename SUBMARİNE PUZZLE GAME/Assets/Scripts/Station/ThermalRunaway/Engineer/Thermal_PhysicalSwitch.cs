@@ -1,5 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
+
 
 [RequireComponent(typeof(Collider))]
 public class Thermal_PhysicalSwitch : MonoBehaviour
@@ -20,6 +22,10 @@ public class Thermal_PhysicalSwitch : MonoBehaviour
     public float dragThreshold = 50f;
 
     public bool invertDragDirection = false;
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _switchSound;
 
     private Vector3 startMousePos;
     private bool hasSwitchedThisDrag = false;
@@ -81,6 +87,16 @@ public class Thermal_PhysicalSwitch : MonoBehaviour
         hasSwitchedThisDrag = true;
         manager.SwitchValveDirectionRPC(targetState);
         UpdateSwitchVisuals(targetState);
-        //  PlaySwitchSound();
+        PlaySwitchSound();
+    }
+
+    private void PlaySwitchSound()
+    {
+        if (_channel != null && !_switchSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_switchSound, transform.position);
+            _channel.RaiseEvent(payload);
+        }
+
     }
 }

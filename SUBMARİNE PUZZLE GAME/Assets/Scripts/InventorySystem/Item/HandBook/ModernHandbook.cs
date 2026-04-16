@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using FMODUnity;
 
 public class ModernHandbook : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class ModernHandbook : MonoBehaviour
     public float flipDuration = 0.5f;
     public Ease flipEase = Ease.InOutQuad; // DOTween yumuşatma eğrisi
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _scrollSound;
+
     private int currentPageIndex = 0; // Sol sayfanın indeksi (0, 2, 4...)
     private bool isFlipping = false;
 
@@ -39,6 +44,8 @@ public class ModernHandbook : MonoBehaviour
         // Mouse tekerleği girdisi
         float scroll = Input.mouseScrollDelta.y;
 
+
+
         if (scroll > 0 && currentPageIndex < bookPages.Length - 2)
         {
             FlipRightToLeft(); // İleri (Aşağı kaydırma)
@@ -49,10 +56,19 @@ public class ModernHandbook : MonoBehaviour
         }
     }
 
+    private void PlayScrollSound()
+    {
+        if (_channel != null && !_scrollSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_scrollSound, transform.position);
+            _channel.RaiseEvent(payload);
+        }
+    }
+
     private void FlipRightToLeft()
     {
         isFlipping = true;
-
+        PlayScrollSound();
         hingeFront.sprite = bookPages[currentPageIndex + 1];
         hingeBack.sprite = bookPages[currentPageIndex + 2];
         rightPageStatic.sprite = GetPageSprite(currentPageIndex + 3);
@@ -84,7 +100,7 @@ public class ModernHandbook : MonoBehaviour
     private void FlipLeftToRight()
     {
         isFlipping = true;
-
+        PlayScrollSound();
         hingeFront.sprite = bookPages[currentPageIndex - 1];
         hingeBack.sprite = bookPages[currentPageIndex];
         leftPageStatic.sprite = GetPageSprite(currentPageIndex - 2);

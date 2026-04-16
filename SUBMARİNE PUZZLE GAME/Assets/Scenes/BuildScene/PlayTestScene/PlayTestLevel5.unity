@@ -3334,6 +3334,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6559211400383613986, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
   m_PrefabInstance: {fileID: 1256691749}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1256691751 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2374320289674024824, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
+  m_PrefabInstance: {fileID: 1256691749}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1354365459
 GameObject:
   m_ObjectHideFlags: 0
@@ -4405,6 +4410,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2910778993789460089, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
+      propertyPath: doorPanel
+      value: 
+      objectReference: {fileID: 1256691751}
     - target: {fileID: 5211292287369652627, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
       propertyPath: m_Name
       value: EngineerLockdown

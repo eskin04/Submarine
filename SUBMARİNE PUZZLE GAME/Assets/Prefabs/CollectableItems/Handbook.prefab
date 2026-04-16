@@ -105,9 +105,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: efcdfcbaf9f4c554bb89a473d9e44058, type: 3}
   - {fileID: 21300000, guid: 9b42f2a9e43fb4643bd3d49d422268ae, type: 3}
   - {fileID: 21300000, guid: 5f492e88ca05296409a3a8405f862930, type: 3}
-  emptyPageBackground: {fileID: 21300000, guid: 3c47abcf3fb3d12408efe3073b2e379f, type: 3}
+  emptyPageBackground: {fileID: 21300000, guid: b0fc853120a32e7409d2498a08fcf213, type: 3}
   flipDuration: 0.5
   flipEase: 7
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _scrollSound:
+    Guid:
+      Data1: -1810994330
+      Data2: 1174142571
+      Data3: -311128142
+      Data4: -1006993896
+    Path: event:/SFX/Handbook/ScrollPage
 --- !u!225 &3547210196739688453
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -907,6 +915,22 @@ MonoBehaviour:
   bookGroup: {fileID: 3547210196739688453}
   bookOpenPosition: {x: 0.35, y: -0.5, z: -0.65}
   bookOpenRotation: {x: 0, y: 90, z: -35}
+  flipDuration: 0.3
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _openSound:
+    Guid:
+      Data1: 61844108
+      Data2: 1138908995
+      Data3: -1581037430
+      Data4: 17366520
+    Path: event:/SFX/Handbook/BookOpen
+  _closeSound:
+    Guid:
+      Data1: 1267343683
+      Data2: 1217081985
+      Data3: -1388017015
+      Data4: 2048880777
+    Path: event:/SFX/Handbook/BookClose
 --- !u!1 &8802816607932940106
 GameObject:
   m_ObjectHideFlags: 0

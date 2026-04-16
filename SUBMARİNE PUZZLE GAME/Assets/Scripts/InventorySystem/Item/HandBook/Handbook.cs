@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
+using UnityEngine.UI;
 
 public class Handbook : NetworkBehaviour, IInventoryItem
 {
@@ -15,6 +17,13 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     public bool IsOperate => isOperate;
     private bool isOperating = false;
     public bool IsOperating => isOperating;
+    public float flipDuration = 0.5f;
+
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _openSound;
+    [SerializeField] private EventReference _closeSound;
     private bool canOperate = true;
     private Vector3 initialRotation;
     private Transform inspectPosition;
@@ -61,6 +70,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             isOperate = !isOperate;
             isOperating = true;
             ToggleBookAnim();
+            ToggleSound();
         }
     }
 
@@ -70,10 +80,10 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         if (isOperate)
         {
             book.SetParent(inspectPosition);
-            topCover.DOLocalRotate(Vector3.zero, .5f);
-            sideCover.DOLocalRotate(new Vector3(-180, 0, 0), .5f);
-            book.DOLocalMove(bookOpenPosition, .5f).OnComplete(() => isOperating = false);
-            book.DOLocalRotate(bookOpenRotation, .5f);
+            topCover.DOLocalRotate(Vector3.zero, flipDuration);
+            sideCover.DOLocalRotate(new Vector3(-180, 0, 0), flipDuration);
+            book.DOLocalMove(bookOpenPosition, flipDuration).OnComplete(() => isOperating = false);
+            book.DOLocalRotate(bookOpenRotation, flipDuration);
             bookGroup.alpha = 1f;
             bookGroup.interactable = true;
             bookGroup.blocksRaycasts = true;
@@ -83,15 +93,36 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         else
         {
             book.SetParent(originalParent);
-            topCover.DOLocalRotate(new Vector3(90, 0, 0), .5f);
-            sideCover.DOLocalRotate(new Vector3(-90, 0, 0), .5f);
-            book.DOLocalMove(Vector3.zero, .5f).OnComplete(() => isOperating = false);
-            book.DOLocalRotate(initialRotation, .5f);
+            topCover.DOLocalRotate(new Vector3(90, 0, 0), flipDuration);
+            sideCover.DOLocalRotate(new Vector3(-90, 0, 0), flipDuration);
+            book.DOLocalMove(Vector3.zero, flipDuration).OnComplete(() => isOperating = false);
+            book.DOLocalRotate(initialRotation, flipDuration);
             bookGroup.alpha = 0f;
             bookGroup.interactable = false;
             bookGroup.blocksRaycasts = false;
             if (invManager != null) invManager.IsScrollLocked = false;
 
+        }
+    }
+
+    private void ToggleSound()
+    {
+        if (isOperate)
+        {
+            PlaySound(_openSound);
+        }
+        else
+        {
+            PlaySound(_closeSound);
+        }
+    }
+
+    private void PlaySound(EventReference sound)
+    {
+        if (_channel != null && !sound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(sound, transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 

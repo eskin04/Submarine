@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
 
 public class EngineerLockDown_DoorSwitch : MonoBehaviour
 {
@@ -10,6 +11,12 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
     public Transform switchHandle;
     public Vector3 pulledRotation = new Vector3(90, 0, 0);
     public float pullAnimTime = 0.3f;
+    public float closeAnimTime = 0.1f;
+    public float stayOpenTime = 5.0f;
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _switchSound;
 
     private Vector3 originalRotation;
     private bool isAnimating = false;
@@ -27,18 +34,30 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
     {
         if (isAnimating || overrideManager == null) return;
 
-        overrideManager.RequestEngineerDoorOpenRPC();
+        overrideManager.RequestEngineerDoorOpenRPC(stayOpenTime);
 
         if (switchHandle != null)
         {
             isAnimating = true;
-            switchHandle.DOLocalRotate(pulledRotation, pullAnimTime).OnComplete(() =>
+            // sadece x ekseninde dönecek şekilde hedef rotasyonu oluştur
+            Vector3 targetRotation = new Vector3(pulledRotation.x, originalRotation.y, originalRotation.z);
+            switchHandle.DOLocalRotate(targetRotation, pullAnimTime).OnComplete(() =>
             {
-                switchHandle.DOLocalRotate(originalRotation, pullAnimTime).SetDelay(0.5f).OnComplete(() =>
+                switchHandle.DOLocalRotate(originalRotation, closeAnimTime).SetDelay(stayOpenTime + 1f).OnComplete(() =>
                 {
                     isAnimating = false;
                 });
             });
+            PlaySwitchSound();
+        }
+    }
+
+    private void PlaySwitchSound()
+    {
+        if (_channel != null && !_switchSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_switchSound, transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 

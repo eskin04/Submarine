@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using FMODUnity;
 
 [RequireComponent(typeof(Collider))]
 public class Thermal_ValveObject : MonoBehaviour
@@ -17,6 +18,10 @@ public class Thermal_ValveObject : MonoBehaviour
     public float rotationAmount = 90f;
 
     public float animationDuration = 0.15f;
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _pumpSound;
 
     private Quaternion initialLocalRotation;
 
@@ -47,6 +52,18 @@ public class Thermal_ValveObject : MonoBehaviour
             leverMesh.DOLocalRotate(targetRotation, animationDuration / 2f)
                       .SetEase(Ease.OutQuad)
                       .SetLoops(2, LoopType.Yoyo);
+
+            PlayPumpSound();
         }
+    }
+
+    private void PlayPumpSound()
+    {
+        if (_channel != null && !_pumpSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_pumpSound, transform.position);
+            _channel.RaiseEvent(payload);
+        }
+
     }
 }

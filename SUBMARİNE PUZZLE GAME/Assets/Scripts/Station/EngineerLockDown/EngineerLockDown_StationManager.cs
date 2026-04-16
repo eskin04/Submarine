@@ -11,7 +11,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     public static event System.Action OnOverrideFailed;
     public static event System.Action OnOverrideSolved;
     public static event System.Action OnOverrideDataSynced;
-    public static event System.Action OnEngineerDoorRequested;
+    public static event System.Action<float> OnEngineerDoorRequested;
     public StationController stationController;
 
     [Header("Override State (SyncVars)")]
@@ -91,7 +91,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void RequestEngineerDoorOpenRPC()
+    public void RequestEngineerDoorOpenRPC(float stayOpenTime = 5.0f)
     {
         if (overrideState.value == EngineerLockDownStationState.Active)
         {
@@ -99,7 +99,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
             return;
         }
 
-        RpcTriggerEngineerDoor();
+        RpcTriggerEngineerDoor(stayOpenTime);
     }
 
 
@@ -113,9 +113,9 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     }
 
     [ObserversRpc]
-    private void RpcTriggerEngineerDoor()
+    private void RpcTriggerEngineerDoor(float stayOpenTime)
     {
-        OnEngineerDoorRequested?.Invoke();
+        OnEngineerDoorRequested?.Invoke(stayOpenTime);
     }
 
 

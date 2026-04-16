@@ -12,6 +12,12 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
     [Header("3 Step Status Lights")]
     public MeshRenderer[] stepLights;
     public float lightIntensity = 5.0f;
+
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference buttonSound;
+    public FMODUnity.EventReference correctSound;
+    public FMODUnity.EventReference wrongSound;
     private Material[] runtimeMaterials = new Material[3];
 
     private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
@@ -34,6 +40,7 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
         EngineerLockDown_StationManager.OnOverrideStateChanged += HandleStateChanged;
         EngineerLockDown_StationManager.OnOverrideStepCompleted += LightUpGreen;
         EngineerLockDown_StationManager.OnOverrideFailed += ResetAllLightsToRed;
+        EngineerLockDown_StationManager.OnOverrideFailed += PlayWrongSound;
     }
 
     private void OnDisable()
@@ -41,6 +48,7 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
         EngineerLockDown_StationManager.OnOverrideStateChanged -= HandleStateChanged;
         EngineerLockDown_StationManager.OnOverrideStepCompleted -= LightUpGreen;
         EngineerLockDown_StationManager.OnOverrideFailed -= ResetAllLightsToRed;
+        EngineerLockDown_StationManager.OnOverrideFailed -= PlayWrongSound;
     }
 
     public void OnNumberPressed(int number)
@@ -51,6 +59,17 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
             currentInput += number.ToString();
             UpdateDisplay();
             displayScreen.transform.DOPunchScale(Vector3.one * 0.1f, 0.1f);
+            PlayButtonSound();
+
+        }
+    }
+
+    private void PlayButtonSound()
+    {
+        if (_channel != null && !buttonSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(buttonSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 
@@ -102,7 +121,26 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
             {
                 runtimeMaterials[stepIndex].SetFloat(LightSelectionProp, 2);
                 runtimeMaterials[stepIndex].SetFloat(IntensityProp, lightIntensity);
+                PlayCorrectSound();
             }
+        }
+    }
+
+    private void PlayCorrectSound()
+    {
+        if (_channel != null && !correctSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(correctSound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
+    }
+
+    private void PlayWrongSound()
+    {
+        if (_channel != null && !wrongSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(wrongSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 }

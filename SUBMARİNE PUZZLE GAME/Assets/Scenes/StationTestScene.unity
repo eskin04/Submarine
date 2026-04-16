@@ -1156,7 +1156,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1155693809}
-  - component: {fileID: 1155693808}
   m_Layer: 0
   m_Name: door
   m_TagString: Untagged
@@ -1164,23 +1163,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1155693808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1155693807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dda321e79d4fc654e8122e10dc2853d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EngineerLockDown_Door
-  doorPanel: {fileID: 81538981}
-  openOffset: {x: 0, y: 0, z: 1.5}
-  openDuration: 1.5
-  stayOpenTime: 5
-  doorEase: 4
 --- !u!4 &1155693809
 Transform:
   m_ObjectHideFlags: 0
@@ -3115,7 +3097,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1133684107167844315, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.701
+      value: 4.4
       objectReference: {fileID: 0}
     - target: {fileID: 1133684107167844315, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3149,6 +3131,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2910778993789460089, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
+      propertyPath: doorPanel
+      value: 
+      objectReference: {fileID: 81538981}
     - target: {fileID: 5211292287369652627, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
       propertyPath: m_Name
       value: EngineerLockdown
