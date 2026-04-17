@@ -6,7 +6,6 @@ public class SpatialSyncCore
     public const int GRID_SIZE = 8;
     public const int REQUIRED_CLICKS = 6;
 
-    // Veritabanındaki manuel deseni oyuna yükler ve dinamik noktaları bulur
     public bool TryLoadManualPattern(SpatialPattern pattern, out Vector2Int offset, out Dictionary<Vector2Int, List<Vector2Int>> graph, out Vector2Int refPoint, out Vector2Int targetPoint)
     {
         offset = Vector2Int.zero;
@@ -14,7 +13,6 @@ public class SpatialSyncCore
         refPoint = Vector2Int.zero;
         targetPoint = Vector2Int.zero;
 
-        // 1. Rastgele Offset (Taşma Kontrolü ile)
         offset = new Vector2Int(Random.Range(0, GRID_SIZE), Random.Range(0, GRID_SIZE));
 
         foreach (var branch in pattern.branches)
@@ -24,15 +22,13 @@ public class SpatialSyncCore
                 Vector2Int worldPos = node + offset;
                 if (worldPos.x < 0 || worldPos.x >= GRID_SIZE || worldPos.y < 0 || worldPos.y >= GRID_SIZE)
                 {
-                    return false; // Herhangi bir dal taştıysa baştan başla
+                    return false;
                 }
                 if (!graph.ContainsKey(worldPos))
                     graph[worldPos] = new List<Vector2Int>();
             }
         }
 
-        // 2. Noktaları Çizgilere (Edge) Dönüştür
-        // Dizideki sıralamayı baz alarak birbirine bağlarız. Aynı noktadan geçilirse döngü (loop) oluşur!
         foreach (var branch in pattern.branches)
         {
             for (int i = 0; i < branch.nodes.Length - 1; i++)
@@ -48,7 +44,6 @@ public class SpatialSyncCore
             }
         }
 
-        // 3. ÇOKLU ÇÖZÜM GARANTİLİ DİNAMİK NOKTA ARAMA
         List<(Vector2Int, Vector2Int)> validPairs = new List<(Vector2Int, Vector2Int)>();
         List<Vector2Int> allNodes = new List<Vector2Int>(graph.Keys);
 
@@ -64,7 +59,6 @@ public class SpatialSyncCore
                 List<Vector2Int> visited = new List<Vector2Int> { possibleRef };
                 int validPathCount = CountExactPaths(graph, possibleRef, possibleTarget, REQUIRED_CLICKS - 1, visited);
 
-                // Bu iki nokta arasında en az 2 farklı rotadan tam 5 adımda ulaşılabiliyor mu?
                 if (validPathCount >= 1)
                 {
                     validPairs.Add((possibleRef, possibleTarget));
@@ -72,10 +66,8 @@ public class SpatialSyncCore
             }
         }
 
-        // 4. SONUÇ
         if (validPairs.Count > 0)
         {
-            // Bulunan onlarca geçerli ikiliden birini rastgele seç (Oyunun ezberlenmesini engeller)
             var chosenPair = validPairs[Random.Range(0, validPairs.Count)];
             refPoint = chosenPair.Item1;
             targetPoint = chosenPair.Item2;
@@ -102,7 +94,6 @@ public class SpatialSyncCore
         return totalPaths;
     }
 
-    // Doğrulama sistemi graf üzerinden çalıştığı için her zaman kusursuzdur
     public bool ValidateCircuitInput(Dictionary<Vector2Int, List<Vector2Int>> graph, Vector2Int currentPos, Vector2Int inputPos, Vector2Int targetPoint, int currentStep, List<Vector2Int> visitedNodes)
     {
         if (!graph.ContainsKey(inputPos) || !graph[currentPos].Contains(inputPos) || visitedNodes.Contains(inputPos))

@@ -2,19 +2,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public class EngineerUIManager : MonoBehaviour
 {
-    [Header("UI Katmanları")]
+    [Header("UI")]
     public RectTransform nodeLayer;
     public RectTransform edgeLayer;
 
-    [Header("Prefab'ler")]
+    [Header("Prefabs")]
     public GameObject nodePrefab;
 
-    [Header("Izgara Ayarları")]
+    [Header("Graph Settings")]
     public float cellSize = 100f;
     public float edgeThickness = 6f;
+
+    public TextMeshProUGUI legendText;
 
 
     private List<GameObject> _spawnedNodes = new List<GameObject>();
@@ -24,16 +27,32 @@ public class EngineerUIManager : MonoBehaviour
     private Color _refColor = Color.cyan;
     private Color _nodeColor = new Color(0.2f, 0.8f, 0.2f);
 
-    private Vector2 GetUIPosition(Vector2Int gridPos)
-    {
-        float x = (gridPos.x * cellSize) + (cellSize / 2f);
-        float y = (gridPos.y * cellSize) + (cellSize / 2f);
-        return new Vector2(x, y);
-    }
 
     public void DrawCircuit(Dictionary<Vector2Int, List<Vector2Int>> graph, Vector2Int refPoint)
     {
         ClearUI();
+
+        if (graph.Count == 0) return;
+
+        Vector2 minGrid = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 maxGrid = new Vector2(float.MinValue, float.MinValue);
+
+        foreach (var node in graph.Keys)
+        {
+            if (node.x < minGrid.x) minGrid.x = node.x;
+            if (node.x > maxGrid.x) maxGrid.x = node.x;
+            if (node.y < minGrid.y) minGrid.y = node.y;
+            if (node.y > maxGrid.y) maxGrid.y = node.y;
+        }
+
+        Vector2 patternCenter = (minGrid + maxGrid) / 2f;
+
+        Vector2 containerCenter = new Vector2(nodeLayer.rect.width / 2f, nodeLayer.rect.height / 2f);
+
+        if (legendText != null)
+        {
+            legendText.text = GetCoordinateString(refPoint);
+        }
 
         List<Vector2Int> drawnNodes = new List<Vector2Int>();
         HashSet<string> drawnEdges = new HashSet<string>();
@@ -42,9 +61,11 @@ public class EngineerUIManager : MonoBehaviour
         {
             Vector2Int startNode = kvp.Key;
 
+            Vector2 startUI = ((Vector2)startNode - patternCenter) * cellSize + containerCenter;
+
             if (!drawnNodes.Contains(startNode))
             {
-                DrawNode(startNode, refPoint);
+                DrawNodeAtPosition(startUI, startNode, refPoint);
                 drawnNodes.Add(startNode);
             }
 
@@ -55,93 +76,71 @@ public class EngineerUIManager : MonoBehaviour
 
                 if (!drawnEdges.Contains(edgeID1) && !drawnEdges.Contains(edgeID2))
                 {
-                    DrawEdgeWithImage(startNode, endNode);
+                    Vector2 endUI = ((Vector2)endNode - patternCenter) * cellSize + containerCenter;
+
+                    DrawEdgeBetweenPoints(startUI, endUI);
                     drawnEdges.Add(edgeID1);
                 }
             }
         }
     }
 
-    private void DrawNode(Vector2Int gridPos, Vector2Int refPoint)
+    private void DrawNodeAtPosition(Vector2 uiPos, Vector2Int gridPos, Vector2Int refPoint)
     {
         GameObject nodeObj = Instantiate(nodePrefab, nodeLayer);
         RectTransform rt = nodeObj.GetComponent<RectTransform>();
 
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.zero;
-        rt.anchoredPosition = GetUIPosition(gridPos);
+
+        rt.anchoredPosition = uiPos;
 
         Image img = nodeObj.GetComponent<Image>();
-        TextMeshProUGUI textComp = nodeObj.GetComponentInChildren<TextMeshProUGUI>();
 
-        Transform highlightTransform = nodeObj.transform.Find("HighlightBG");
-        GameObject highlightObj = highlightTransform != null ? highlightTransform.gameObject : null;
-        // -----------------------------------------------------------------------
-
-        // 1. EĞER BU NOKTA REFERANS (BAŞLANGIÇ) NOKTASIYSA
         if (gridPos == refPoint)
         {
             img.color = _refColor;
+            img.transform.localScale = Vector3.one;
 
-            if (textComp != null)
-                textComp.text = GetCoordinateString(gridPos);
-
-            if (highlightObj != null)
-                highlightObj.SetActive(true); // Vurgu arka planını aç
+            img.transform.DOScale(1.5f, 1.5f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+                .SetLink(nodeObj);
         }
-        // 2. DİĞER TÜM NOKTALAR
-        else
-        {
-            img.color = _nodeColor;
+        else img.color = _nodeColor;
 
-            if (textComp != null)
-                textComp.text = ""; // Yazıyı sil
 
-            if (highlightObj != null)
-                highlightObj.SetActive(false); // Vurgu arka planını kapat
-        }
 
         _spawnedNodes.Add(nodeObj);
     }
 
-    // --- YENİ ÇİZGİ FONKSİYONU (PurrNet Hatasını ve Materyal Sorununu Çözer) ---
-    private void DrawEdgeWithImage(Vector2Int startGridPos, Vector2Int endGridPos)
+    private void DrawEdgeBetweenPoints(Vector2 startUI, Vector2 endUI)
     {
-        Vector2 startUI = GetUIPosition(startGridPos);
-        Vector2 endUI = GetUIPosition(endGridPos);
-
-        // 1. Yeni bir GameObject oluştur
         GameObject edgeObj = new GameObject("EdgeImage", typeof(RectTransform), typeof(Image));
         RectTransform rt = edgeObj.GetComponent<RectTransform>();
 
-        // 2. Parent ata (Layer hiyerarşisi bozulmasın diye 'false' ile)
         rt.SetParent(edgeLayer, false);
 
-        rt.anchorMin = Vector2.zero; // X:0, Y:0
-        rt.anchorMax = Vector2.zero; // X:0, Y:0
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.zero;
 
-        // 3. Image bileşenini ayarla (Standart Unlit/UI materyali kullanır)
         Image img = edgeObj.GetComponent<Image>();
         img.color = _lineColor;
-        // İstersen buraya bir Sprite atayabilirsin: img.sprite = myGlowSprite;
 
-        // 4. Çizginin Pivot noktasını Sol-Orta (0, 0.5) yap ki uzarken sadece ileriye gitsin
         rt.pivot = new Vector2(0f, 0.5f);
 
-        // 5. Çizgiyi başlangıç noktasına yerleştir
         rt.anchoredPosition = startUI;
 
-        // 6. Mesafe (Uzunluk) ve Açı (Rotation) Hesaplama
         Vector2 direction = endUI - startUI;
         float distance = direction.magnitude;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // 7. Genişliği mesafe kadar uzat, açıyı döndür
         rt.sizeDelta = new Vector2(distance, edgeThickness);
         rt.localEulerAngles = new Vector3(0, 0, angle);
 
         _spawnedEdges.Add(edgeObj);
     }
+
 
     public void ClearUI()
     {
@@ -151,11 +150,10 @@ public class EngineerUIManager : MonoBehaviour
         _spawnedEdges.Clear();
     }
 
-    // Backend koordinatını Harf ve Sayıya çevirir (Örn: 0,0 -> A1)
     private string GetCoordinateString(Vector2Int gridPos)
     {
-        char letter = (char)('A' + gridPos.x); // X=0 için 'A', X=1 için 'B'
-        int number = gridPos.y + 1;            // Y=0 için '1', Y=1 için '2'
+        char letter = (char)('A' + gridPos.x);
+        int number = gridPos.y + 1;
         return $"{letter}{number}";
     }
 }
