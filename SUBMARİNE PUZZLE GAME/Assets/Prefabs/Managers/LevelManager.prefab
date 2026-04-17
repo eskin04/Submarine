@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4133845521896623869}
   - component: {fileID: 103014562115170215}
+  - component: {fileID: 5958444231654197938}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -55,3 +56,22 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   currentLevelData: {fileID: 11400000, guid: 1157afd030917704b81a3264cbe25151, type: 2}
   resultMains: []
+--- !u!114 &5958444231654197938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5908188079420736604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d52f25d25ffd5f1449064db4d09e490c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SubmarineAmbienceManager
+  submarineAmbience:
+    Guid:
+      Data1: -181129695
+      Data2: 1182572204
+      Data3: -414163300
+      Data4: -287946372
+    Path: event:/Ambiance/Submarine

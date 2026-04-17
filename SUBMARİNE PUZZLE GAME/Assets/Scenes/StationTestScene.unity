@@ -2444,7 +2444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6012084449589093825, guid: 7539d933f78258140ac8419566631eb8, type: 3}
       propertyPath: minPlayersToStart
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7860565826931442517, guid: 7539d933f78258140ac8419566631eb8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2666,6 +2666,14 @@ PrefabInstance:
       propertyPath: doorPanel
       value: 
       objectReference: {fileID: 81538981}
+    - target: {fileID: 2910778993789460089, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
+      propertyPath: openOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2910778993789460089, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
+      propertyPath: openOffset.z
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5211292287369652627, guid: 7866a14230c2bcf4c9e4436730635413, type: 3}
       propertyPath: m_Name
       value: EngineerLockdown

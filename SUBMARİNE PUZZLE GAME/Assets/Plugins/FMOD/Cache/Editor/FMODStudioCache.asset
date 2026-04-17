@@ -80,7 +80,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 1600
+  Length: 2500
 --- !u!114 &-7706603638278806566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,10 +282,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639119902718224454
+  lastModified: 639120706129316027
   FileSizes:
   - Name: Desktop
-    Value: 1976
+    Value: 2064
   Exists: 1
 --- !u!114 &-4750148133276140053
 MonoBehaviour:
@@ -374,13 +374,13 @@ MonoBehaviour:
     Data4: 1928587641
   Banks:
   - {fileID: 4258567297402627855}
-  IsStream: 1
+  IsStream: 0
   Is3D: 1
   IsOneShot: 1
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 2000
+  Length: 0
 --- !u!114 &-3280833575969409615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -434,7 +434,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 310
+  Length: 1216
 --- !u!114 &-2465408210372480596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -661,6 +661,7 @@ MonoBehaviour:
   - {fileID: 2543604692222824843}
   - {fileID: -4187371527243161283}
   - {fileID: 4258567297402627855}
+  - {fileID: 1205409145638789475}
   EditorEvents:
   - {fileID: -7706603638278806566}
   - {fileID: -7834315790855915447}
@@ -684,13 +685,14 @@ MonoBehaviour:
   - {fileID: -3209480962608630143}
   - {fileID: -6721440106454315885}
   - {fileID: 3850593565394578250}
+  - {fileID: 6435166189276427876}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639119902719260002
+  cacheTime: 639120708417165653
   SerializableEventsDict:
   - key: event:/FlashLight
     index: 0
@@ -736,6 +738,8 @@ MonoBehaviour:
     index: 20
   - key: event:/SFX/OverrideProtocol/Wrong
     index: 21
+  - key: event:/Ambiance/Submarine
+    index: 22
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -818,6 +822,26 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2371
+--- !u!114 &1205409145638789475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Ambiance.bank
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorBankRef
+  Path: ../FModAudioSystem/Build/Desktop/Ambiance.bank
+  Name: Ambiance
+  StudioPath: bank:/Ambiance
+  lastModified: 639120708417165653
+  FileSizes:
+  - Name: Desktop
+    Value: 4863872
+  Exists: 1
 --- !u!114 &1573998819260606846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,7 +978,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639119902718219408
+  lastModified: 639120706129297995
   FileSizes:
   - Name: Desktop
     Value: 1616
@@ -1028,10 +1052,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639119902719260002
+  lastModified: 639120675888300615
   FileSizes:
   - Name: Desktop
-    Value: 1035616
+    Value: 1041856
   Exists: 1
 --- !u!114 &5098008000765588720
 MonoBehaviour:
@@ -1141,6 +1165,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 600
+--- !u!114 &6435166189276427876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambiance/Submarine
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Ambiance/Submarine
+  Guid:
+    Data1: -181129695
+    Data2: 1182572204
+    Data3: -414163300
+    Data4: -287946372
+  Banks:
+  - {fileID: 1205409145638789475}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 425376
 --- !u!114 &6747246967498729223
 MonoBehaviour:
   m_ObjectHideFlags: 0

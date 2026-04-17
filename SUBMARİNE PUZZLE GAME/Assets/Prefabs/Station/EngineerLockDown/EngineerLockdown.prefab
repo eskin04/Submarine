@@ -1997,8 +1997,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EngineerLockDown_Door
   doorPanel: {fileID: 0}
   openOffset: {x: 0.017, y: 0, z: 0}
-  openDuration: 1.5
-  closeDuration: 0.1
+  openDuration: 2.5
+  closeDuration: 0.15
   doorEase: 4
   _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
   _doorOpenSound:
@@ -2987,7 +2987,7 @@ Transform:
   m_GameObject: {fileID: 3104861689577410324}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.189, y: 0.083, z: 0.183}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -6097,7 +6097,7 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   utilityEventData: {fileID: 0}
   stationName: EngineerLockDown
-  stationType: 0
+  stationType: 1
   stationTier: 0
   mistakeWaterPenalty: 3
   timeoutWaterPenalty: 6

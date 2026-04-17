@@ -51,7 +51,7 @@ public class EngineerUIManager : MonoBehaviour
 
         if (legendText != null)
         {
-            legendText.text = GetCoordinateString(refPoint);
+            legendText.text = "Reference: " + GetCoordinateString(refPoint);
         }
 
         List<Vector2Int> drawnNodes = new List<Vector2Int>();
