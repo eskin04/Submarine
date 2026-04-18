@@ -963,7 +963,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8045234095716115186}
   - {fileID: 5234836860239674375}
   m_Father: {fileID: 8686599911271302565}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1961,6 +1960,7 @@ GameObject:
   m_Component:
   - component: {fileID: 56683715361976492}
   - component: {fileID: 2910778993789460089}
+  - component: {fileID: 5978303479198131462}
   m_Layer: 0
   m_Name: DoorController
   m_TagString: Untagged
@@ -1977,7 +1977,7 @@ Transform:
   m_GameObject: {fileID: 1831821002805647758}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.14, y: -0.15, z: -0.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2015,6 +2015,27 @@ MonoBehaviour:
       Data3: 1367149479
       Data4: 1806358213
     Path: event:/SFX/Environment/EngineerDoorClose
+--- !u!65 &5978303479198131462
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831821002805647758}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6178595, y: 2.5132306, z: 0.36552262}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2049421050211211783
 GameObject:
   m_ObjectHideFlags: 0
@@ -5538,7 +5559,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5265996687613659267}
   - {fileID: 937629882636773635}
   m_Father: {fileID: 531002342765499753}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6104,6 +6124,7 @@ MonoBehaviour:
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
+  systemMessageDelay: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -10577,7 +10598,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2622668587732282809}
   - {fileID: 8977959747218187376}
   m_Father: {fileID: 3772348830985796983}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -11330,130 +11350,6 @@ MonoBehaviour:
   colorID: 0
   meshRenderer: {fileID: 6534836007392851797}
   lightIntensity: 5
---- !u!1001 &830035138968999562
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 3870326137189339837}
-    m_Modifications:
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.296
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5322027934129456307, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_Name
-      value: SecurityLockdownScreen
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
---- !u!4 &5265996687613659267 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-  m_PrefabInstance: {fileID: 830035138968999562}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &3257823615030885627
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 456516513405180699}
-    m_Modifications:
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.296
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5322027934129456307, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_Name
-      value: SecurityLockdownScreen
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
---- !u!4 &8045234095716115186 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-  m_PrefabInstance: {fileID: 3257823615030885627}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4947602747458553725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11543,66 +11439,4 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5155783108321903375, guid: cc31e50702b9d4742874031585a83096, type: 3}
   m_PrefabInstance: {fileID: 4947602747458553725}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &7419086335066370992
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 678587402235342205}
-    m_Modifications:
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.296
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5322027934129456307, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-      propertyPath: m_Name
-      value: SecurityLockdownScreen
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
---- !u!4 &2622668587732282809 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4796461807534235145, guid: 9e1b13b1612f3bb4ab5b009deae2321c, type: 3}
-  m_PrefabInstance: {fileID: 7419086335066370992}
   m_PrefabAsset: {fileID: 0}

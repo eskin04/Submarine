@@ -1,8 +1,9 @@
 using UnityEngine;
 using DG.Tweening;
 using FMODUnity;
+using PurrNet;
 
-public class EngineerLockDown_Door : MonoBehaviour
+public class EngineerLockDown_Door : NetworkBehaviour
 {
     [Header("Door Panel")]
     public Transform doorPanel;
@@ -21,12 +22,16 @@ public class EngineerLockDown_Door : MonoBehaviour
 
     private Vector3 closedPos;
     private Tween currentTween;
-    private bool isDoorOpen = false;
+    private bool isDoorOpen = true;
 
     private void Awake()
     {
         if (doorPanel != null)
+        {
             closedPos = doorPanel.localPosition;
+            doorPanel.localPosition = closedPos + openOffset;
+        }
+
     }
 
     private void OnEnable()
@@ -90,5 +95,21 @@ public class EngineerLockDown_Door : MonoBehaviour
         currentTween?.Kill();
         PlayDoorSound(false);
         currentTween = doorPanel.DOLocalMove(closedPos, closeDuration).SetEase(doorEase);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            transform.GetComponent<Collider>().enabled = false;
+            CloseDoorRpc();
+        }
+    }
+
+    [ObserversRpc]
+    private void CloseDoorRpc()
+    {
+        transform.GetComponent<Collider>().enabled = false;
+        Invoke(nameof(ForceCloseDoor), 1f);
     }
 }

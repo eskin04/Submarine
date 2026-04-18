@@ -155,7 +155,6 @@ GameObject:
   - component: {fileID: 6468683186769125340}
   - component: {fileID: 1687317702923344011}
   - component: {fileID: 2541796452304681315}
-  - component: {fileID: 6318692756545286179}
   m_Layer: 0
   m_Name: MeshLine
   m_TagString: Untagged
@@ -257,24 +256,6 @@ MonoBehaviour:
   sagLimitFactor: 1
   sortingOrder: 0
   depthStep: 0.02
---- !u!114 &6318692756545286179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4200204154186210373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 2
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!1 &8128386803651603630
 GameObject:
   m_ObjectHideFlags: 0

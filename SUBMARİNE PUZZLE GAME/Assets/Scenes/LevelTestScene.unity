@@ -240,6 +240,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170051374909468288, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
+      propertyPath: stationType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6873144442070088629, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
       propertyPath: m_Name
       value: SpatialSync
@@ -921,7 +925,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3422959138658205067, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: stationType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4496220526299081464, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2772,6 +2776,10 @@ PrefabInstance:
     - target: {fileID: 3625256876392611145, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
       propertyPath: m_Name
       value: Station_LightsOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 4249653420332214630, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
+      propertyPath: stationType
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

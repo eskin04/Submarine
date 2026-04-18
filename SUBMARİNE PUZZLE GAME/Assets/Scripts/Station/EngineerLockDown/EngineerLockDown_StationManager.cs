@@ -115,6 +115,7 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     [ObserversRpc]
     private void RpcTriggerEngineerDoor(float stayOpenTime)
     {
+        Debug.Log($"<color=orange>[MANAGER RPC]</color> RpcTriggerEngineerDoor çalıştı! Makine: {(isServer ? "HOST" : "CLIENT")}");
         OnEngineerDoorRequested?.Invoke(stayOpenTime);
     }
 

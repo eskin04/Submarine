@@ -19,6 +19,7 @@ public class StationController : NetworkBehaviour
     public float mistakeStressPenalty = 10.0f;
     public float repairStressReward = 15.0f;
     public float timeoutStressPenalty = 20.0f;
+    public float systemMessageDelay = 0;
 
     [SerializeField] private SyncVar<StationState> stationState = new SyncVar<StationState>(StationState.Default);
     [SerializeField] private UnityEvent onStart;
@@ -166,6 +167,13 @@ public class StationController : NetworkBehaviour
     [ObserversRpc(runLocally: true)]
     public void RpcShowSystemMessage(bool isFailure)
     {
+        StartCoroutine(ShowSystemMessageCoroutine(isFailure));
+    }
+
+    private System.Collections.IEnumerator ShowSystemMessageCoroutine(bool isFailure)
+    {
+        if (!isFailure) systemMessageDelay = 0;
+        yield return new WaitForSeconds(systemMessageDelay);
         if (utilityEventData == null)
         {
             GlobalEvents.OnShowSystemMessage?.Invoke(stationName, isFailure);

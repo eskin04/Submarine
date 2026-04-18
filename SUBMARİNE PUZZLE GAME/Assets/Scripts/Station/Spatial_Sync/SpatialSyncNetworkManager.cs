@@ -21,6 +21,10 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     public readonly SyncVar<ushort> TargetWorldY = new(0);
     public readonly SyncVar<ushort> CurrentStep = new(0);
 
+    public static event System.Action<int> OnStepCorrect;
+    public static event System.Action OnPuzzleReset;
+    public static event System.Action OnStationStarted;
+
     private Dictionary<Vector2Int, List<Vector2Int>> _activeGraph;
     private Vector2Int _currentPos;
     private List<Vector2Int> _visitedNodes = new List<Vector2Int>();
@@ -157,6 +161,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
                 Vector2Int targetP = new Vector2Int(tx, ty);
                 sSTechnicianUIManager.SetTarget(targetP);
             }
+            OnStationStarted?.Invoke();
         }
     }
 
@@ -190,7 +195,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
             _currentPos = inputPos;
             _visitedNodes.Add(inputPos);
 
-            CorrectStepObserversRpc((ushort)previousPos.x, (ushort)previousPos.y, (ushort)inputPos.x, (ushort)inputPos.y);
+            CorrectStepObserversRpc((ushort)previousPos.x, (ushort)previousPos.y, (ushort)inputPos.x, (ushort)inputPos.y, (ushort)CurrentStep.value);
 
             if (CurrentStep.value >= SpatialSyncCore.REQUIRED_CLICKS)
             {
@@ -206,7 +211,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     }
 
     [ObserversRpc]
-    private void CorrectStepObserversRpc(ushort prevX, ushort prevY, ushort nextX, ushort nextY)
+    private void CorrectStepObserversRpc(ushort prevX, ushort prevY, ushort nextX, ushort nextY, ushort step)
     {
         Vector2Int prev = new Vector2Int(prevX, prevY);
         Vector2Int next = new Vector2Int(nextX, nextY);
@@ -216,7 +221,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         {
             sSTechnicianUIManager.AddPathStep(prev, next);
         }
-
+        OnStepCorrect?.Invoke(step);
     }
 
     [ObserversRpc]
@@ -225,6 +230,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         sSTechnicianUIManager.UpdateInputText("Fail!");
         sSTechnicianUIManager.SetTarget(new Vector2Int(TargetWorldX.value, TargetWorldY.value));
         stationController.ReportRepairMistake();
+        OnPuzzleReset?.Invoke();
         // İleride buraya eklenebilecekler:
         // 1. Fmod ile "BZZZTT" hata sesi.
         // 2. Denizaltının o odasındaki kırmızı alarm ışıklarının yanıp sönmesi.
