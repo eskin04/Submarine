@@ -174,17 +174,10 @@ public class StationController : NetworkBehaviour
     {
         if (!isFailure) systemMessageDelay = 0;
         yield return new WaitForSeconds(systemMessageDelay);
-        if (utilityEventData == null)
-        {
-            GlobalEvents.OnShowSystemMessage?.Invoke(stationName, isFailure);
 
-        }
-        else
-        {
-            string utiltystationName = utilityEventData.targetStatName.ToString();
-            GlobalEvents.OnShowSystemMessage?.Invoke(utiltystationName, isFailure);
+        GlobalEvents.OnShowSystemMessage?.Invoke(stationName, isFailure);
 
-        }
+
     }
 
 

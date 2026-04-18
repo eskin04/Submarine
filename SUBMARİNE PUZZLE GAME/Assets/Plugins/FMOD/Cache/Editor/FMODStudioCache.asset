@@ -81,33 +81,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2500
---- !u!114 &-7706603638278806566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/FlashLight
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/FlashLight
-  Guid:
-    Data1: -244861275
-    Data2: 1128749921
-    Data3: 171843717
-    Data4: -324967261
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-7383547035524585367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,11 +255,38 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639120706129316027
+  lastModified: 639121242025395421
   FileSizes:
   - Name: Desktop
-    Value: 2064
+    Value: 2076
   Exists: 1
+--- !u!114 &-5220958796145749874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Player/FlashLight
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/Player/FlashLight
+  Guid:
+    Data1: 493189314
+    Data2: 1299860777
+    Data3: 1071742652
+    Data4: -311192450
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1000
 --- !u!114 &-4750148133276140053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,7 +663,6 @@ MonoBehaviour:
   - {fileID: 4258567297402627855}
   - {fileID: 1205409145638789475}
   EditorEvents:
-  - {fileID: -7706603638278806566}
   - {fileID: -7834315790855915447}
   - {fileID: 416856234182336719}
   - {fileID: 8123039637646667642}
@@ -686,59 +685,60 @@ MonoBehaviour:
   - {fileID: -6721440106454315885}
   - {fileID: 3850593565394578250}
   - {fileID: 6435166189276427876}
+  - {fileID: -5220958796145749874}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639120708417165653
+  cacheTime: 639121243862909646
   SerializableEventsDict:
-  - key: event:/FlashLight
-    index: 0
   - key: event:/SFX/Player/FootSteps
-    index: 1
+    index: 0
   - key: event:/SFX/SL/Correct
-    index: 2
+    index: 1
   - key: event:/SFX/Thermal/Switch
-    index: 3
+    index: 2
   - key: event:/SFX/Roe/EvadeGlassCover
-    index: 4
+    index: 3
   - key: event:/SFX/Roe/Radar
-    index: 5
+    index: 4
   - key: event:/SFX/SL/Error
-    index: 6
+    index: 5
   - key: event:/SFX/Handbook/BookClose
-    index: 7
+    index: 6
   - key: event:/SFX/SL/NumpadButton
-    index: 8
+    index: 7
   - key: event:/SFX/Thermal/Pump
-    index: 9
+    index: 8
   - key: event:/SFX/Handbook/ScrollPage
-    index: 10
+    index: 9
   - key: event:/SFX/Handbook/BookOpen
-    index: 11
+    index: 10
   - key: event:/SFX/Roe/ButtonClick
-    index: 12
+    index: 11
   - key: event:/SFX/Roe/Torpido
-    index: 13
+    index: 12
   - key: event:/SFX/SL/PanelClick
-    index: 14
+    index: 13
   - key: event:/SFX/SL/LockDown
-    index: 15
+    index: 14
   - key: event:/SFX/Environment/TechnicianDoor
-    index: 16
+    index: 15
   - key: event:/SFX/Environment/TechnicianSwitch
-    index: 17
+    index: 16
   - key: event:/SFX/Environment/EngineerDoorOpen
-    index: 18
+    index: 17
   - key: event:/SFX/Environment/EngineerDoorClose
-    index: 19
+    index: 18
   - key: event:/SFX/OverrideProtocol/Correct
-    index: 20
+    index: 19
   - key: event:/SFX/OverrideProtocol/Wrong
-    index: 21
+    index: 20
   - key: event:/Ambiance/Submarine
+    index: 21
+  - key: event:/SFX/Player/FlashLight
     index: 22
 --- !u!114 &222821979863919972
 MonoBehaviour:
@@ -978,7 +978,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639120706129297995
+  lastModified: 639121242025380013
   FileSizes:
   - Name: Desktop
     Value: 1616
@@ -1052,10 +1052,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639120675888300615
+  lastModified: 639121243862909646
   FileSizes:
   - Name: Desktop
-    Value: 1041856
+    Value: 1050208
   Exists: 1
 --- !u!114 &5098008000765588720
 MonoBehaviour:

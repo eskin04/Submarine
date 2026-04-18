@@ -1,13 +1,12 @@
 using UnityEngine;
 using PurrNet;
 using DG.Tweening;
+using FMODUnity;
 
 public class LocalHeadlamp : NetworkBehaviour
 {
     [Header("Components")]
     [SerializeField] private Light headLight;
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip toggleSound;
 
     [Header("Settings")]
     [SerializeField] private KeyCode operateKey = KeyCode.F;
@@ -21,6 +20,10 @@ public class LocalHeadlamp : NetworkBehaviour
     [SerializeField] private float flickerThreshold = 20f;
     [SerializeField] private float minFlickerInterval = 2f;
     [SerializeField] private float maxFlickerInterval = 6f;
+
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO _channel;
+    [SerializeField] private EventReference _clickSound;
 
     private bool isLightOn = false;
     private float localBattery;
@@ -181,6 +184,10 @@ public class LocalHeadlamp : NetworkBehaviour
 
     private void PlaySound()
     {
-        if (audioSource && toggleSound) audioSource.PlayOneShot(toggleSound);
+        if (_channel != null && !_clickSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_clickSound, transform.position);
+            _channel.RaiseEvent(payload);
+        }
     }
 }

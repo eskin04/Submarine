@@ -1995,6 +1995,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dda321e79d4fc654e8122e10dc2853d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EngineerLockDown_Door
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
   doorPanel: {fileID: 0}
   openOffset: {x: 0.017, y: 0, z: 0}
   openDuration: 2.5
@@ -6115,8 +6124,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  utilityEventData: {fileID: 0}
-  stationName: EngineerLockDown
+  utilityEventData: {fileID: 11400000, guid: c07a91418877dc24695e9f4964d454d8, type: 2}
+  stationName: Override Protocol
   stationType: 1
   stationTier: 0
   mistakeWaterPenalty: 3

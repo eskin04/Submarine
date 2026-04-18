@@ -306,12 +306,12 @@ public class Thermal_StationManager : NetworkBehaviour
                 {
                     if (pumpedValve == ThermalValveType.Front)
                     {
-                        frontHeat = Mathf.Max(10f, frontHeat - actualCooling);
+                        frontHeat = Mathf.Max(1f, frontHeat - actualCooling);
                         Debug.Log("Front Cooling: " + actualCooling);
                     }
                     else
                     {
-                        backHeat = Mathf.Max(10f, backHeat - actualCooling);
+                        backHeat = Mathf.Max(1f, backHeat - actualCooling);
                         Debug.Log("Back Cooling: " + actualCooling);
 
                     }
