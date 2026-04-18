@@ -43,6 +43,7 @@ public class RoE_StationManager : NetworkBehaviour
     public ObjectCategory activeCategoryX;
     public ObjectCategory activeCategoryY;
     public string activeRuleDescription;
+    public bool isCurrentRuleShoot;
 
     private List<ActiveThreat> succesThreats = new List<ActiveThreat>();
 
@@ -160,7 +161,11 @@ public class RoE_StationManager : NetworkBehaviour
         activeCategoryX = allCats[0];
         activeCategoryY = allCats[1];
 
+        isCurrentRuleShoot = Random.value > 0.5f;
+        string actionString = isCurrentRuleShoot ? "SHOOT" : "PASS";
+
         activeRuleDescription = currentDailyRule.ruleDescription
+            .Replace("{ACTION}", actionString)
             .Replace("{X}", activeCategoryX.ToString())
             .Replace("{Y}", activeCategoryY.ToString());
 
@@ -307,7 +312,8 @@ public class RoE_StationManager : NetworkBehaviour
             currentRoundActionCount,
             GetCurrentWaterLevelPercentage(),
             activeCategoryX,
-            activeCategoryY
+            activeCategoryY,
+            isCurrentRuleShoot
         );
 
         bool isCorrect = (action == Roe_PlayerAction.Shoot && shouldHaveShot) ||
@@ -368,7 +374,6 @@ public class RoE_StationManager : NetworkBehaviour
             RpcSendFeedback("failure!", Color.red);
 
             DestroyThreat(threat);
-            RpcTriggerImpactEffect();
 
         }
         if (action == Roe_PlayerAction.Shoot)
@@ -376,6 +381,8 @@ public class RoE_StationManager : NetworkBehaviour
             previousDestroyedObject = threat.realIdentity.linkedObject;
             previousPassedObject = null;
             RpcPlayShootSound();
+            RpcTriggerImpactEffect();
+
         }
         else if (action == Roe_PlayerAction.Pass)
         {

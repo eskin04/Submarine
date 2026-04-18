@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a52325e7499d66d4cbbe91b10f47ca77, type: 3}
   m_Name: Rule 22
   m_EditorClassIdentifier: Assembly-CSharp::RoE_RuleData
-  ruleDescription: If the previously PASSED object was {X}, SHOOT the next {Y} object.
+  ruleDescription: If the previously {ACTION} object was {X}, {ACTION} the next {Y}
+    object.
   logicType: 12
   innerRadarDistanceThreshold: 0

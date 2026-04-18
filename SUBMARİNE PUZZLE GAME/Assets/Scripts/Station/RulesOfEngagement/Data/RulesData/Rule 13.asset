@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a52325e7499d66d4cbbe91b10f47ca77, type: 3}
   m_Name: Rule 13
   m_EditorClassIdentifier: Assembly-CSharp::RoE_RuleData
-  ruleDescription: SHOOT if the object is slower than 4m/s AND is in the inner radar.
+  ruleDescription: '{ACTION} if the object is slower than 4m/s AND is in the inner
+    radar.'
   logicType: 19
   innerRadarDistanceThreshold: 100

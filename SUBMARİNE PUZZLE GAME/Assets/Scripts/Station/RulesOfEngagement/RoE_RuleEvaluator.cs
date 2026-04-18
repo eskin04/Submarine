@@ -14,7 +14,8 @@ public static class RoE_RuleEvaluator
         int actionCount,
         float waterLevel,
         ObjectCategory catX,
-        ObjectCategory catY)
+        ObjectCategory catY,
+        bool isRuleActionShoot)
     {
         if (target == null || target.realIdentity == null || target.realIdentity.linkedObject == null) return false;
 
@@ -28,93 +29,97 @@ public static class RoE_RuleEvaluator
         bool isSlowest = slowestThreat != null && slowestThreat == target;
         bool isInnerRadar = target.currentDistance <= currentRule.innerRadarDistanceThreshold;
 
+        bool isConditionMet = false;
+
         switch (currentRule.logicType)
         {
             case RuleLogicType.Pass_If_3rd_Object:
-                return actionCount != 3;
+            case RuleLogicType.Shoot_If_1st_Object:
+                isConditionMet = (currentRule.logicType == RuleLogicType.Pass_If_3rd_Object) ? (actionCount == 3) : (actionCount == 1);
+                break;
 
             case RuleLogicType.Pass_X:
-                return !cats.Contains(catX);
+            case RuleLogicType.Shoot_X_If_Faster_Than_2:
+                isConditionMet = cats.Contains(catX);
+                if (currentRule.logicType == RuleLogicType.Shoot_X_If_Faster_Than_2)
+                    isConditionMet = isConditionMet && (target.approachSpeed > 2f);
+                break;
 
             case RuleLogicType.Shoot_Y_In_Inner_Radar:
-                return cats.Contains(catY) && isInnerRadar;
+                isConditionMet = cats.Contains(catY) && isInnerRadar;
+                break;
 
             case RuleLogicType.Shoot_Slowest:
-                return isSlowest;
-
-            case RuleLogicType.Shoot_If_1st_Object:
-                return actionCount == 1;
+                isConditionMet = isSlowest;
+                break;
 
             case RuleLogicType.Pass_Explosive_If_Water_Above_50:
-                if (waterLevel > 50f && cats.Contains(ObjectCategory.Explosive)) return false;
-                return true;
+                isConditionMet = (waterLevel > 50f && cats.Contains(ObjectCategory.Explosive));
+                break;
 
             case RuleLogicType.Shoot_Fastest_If_Multiple_And_Not_X:
-                if (activeThreats.Count > 1 && isFastest && !cats.Contains(catX)) return true;
-                return false;
+                isConditionMet = (activeThreats.Count > 1 && isFastest && !cats.Contains(catX));
+                break;
 
             case RuleLogicType.Shoot_If_Faster_Than_3_And_Explosive_Or_Mechanical:
-                return target.approachSpeed > 3f &&
-                      (cats.Contains(ObjectCategory.Explosive) || cats.Contains(ObjectCategory.Mechanical));
+                isConditionMet = (target.approachSpeed > 3f && (cats.Contains(ObjectCategory.Explosive) || cats.Contains(ObjectCategory.Mechanical)));
+                break;
 
             case RuleLogicType.Shoot_X_ONLY_In_Inner_Radar:
-                if (cats.Contains(catX)) return isInnerRadar;
-                return false;
+                isConditionMet = (cats.Contains(catX) && isInnerRadar);
+                break;
 
             case RuleLogicType.Pass_If_Shares_Category_With_Previous:
-                if (lastTwoObjects.Count == 0) return true;
-                bool sharesAny = cats.Intersect(lastTwoObjects.Last().categories).Any();
-                return !sharesAny;
+                isConditionMet = (lastTwoObjects.Count > 0 && cats.Intersect(lastTwoObjects.Last().categories).Any());
+                break;
 
             case RuleLogicType.Shoot_Fastest_If_Water_Below_25:
-                if (waterLevel < 25f) return isFastest;
-                return false;
+                isConditionMet = (waterLevel < 25f && isFastest);
+                break;
 
             case RuleLogicType.Shoot_X_If_Water_Below_25_Shoot_Y_If_Above_75:
-                if (waterLevel < 25f) return cats.Contains(catX);
-                if (waterLevel > 75f) return cats.Contains(catY);
-                return false;
+                isConditionMet = ((waterLevel < 25f && cats.Contains(catX)) || (waterLevel > 75f && cats.Contains(catY)));
+                break;
 
             case RuleLogicType.Shoot_Y_If_Previous_Passed_Was_X:
-                if (previousPassed != null && previousPassed.categories.Contains(catX))
-                {
-                    return cats.Contains(catY);
-                }
-                return false;
+                isConditionMet = (previousPassed != null && previousPassed.categories.Contains(catX) && cats.Contains(catY));
+                break;
 
             case RuleLogicType.Shoot_If_Shares_Category_With_Last_Two_And_Extra:
-                if (lastTwoObjects.Count < 2) return false;
-                bool sharesWithFirst = cats.Intersect(lastTwoObjects[0].categories).Any();
-                bool sharesWithSecond = cats.Intersect(lastTwoObjects[1].categories).Any();
-                return sharesWithFirst && sharesWithSecond && cats.Count > 1;
+                isConditionMet = (lastTwoObjects.Count >= 2 &&
+                                  cats.Intersect(lastTwoObjects[0].categories).Any() &&
+                                  cats.Intersect(lastTwoObjects[1].categories).Any() &&
+                                  cats.Count > 1);
+                break;
 
             case RuleLogicType.Pass_If_Previous_Destroyed_Was_X:
-                if (previousDestroyed != null && previousDestroyed.categories.Contains(catX)) return false;
-                return true;
+                isConditionMet = (previousDestroyed != null && previousDestroyed.categories.Contains(catX));
+                break;
 
             case RuleLogicType.Shoot_Fastest_If_Not_X:
-                return isFastest && !cats.Contains(catX);
+                isConditionMet = (isFastest && !cats.Contains(catX));
+                break;
 
             case RuleLogicType.Shoot_X_AND_Y:
-                return cats.Contains(catX) && cats.Contains(catY);
+                isConditionMet = (cats.Contains(catX) && cats.Contains(catY));
+                break;
 
             case RuleLogicType.Shoot_X_OR_Y:
-                return cats.Contains(catX) || cats.Contains(catY);
+                isConditionMet = (cats.Contains(catX) || cats.Contains(catY));
+                break;
 
             case RuleLogicType.Pass_Single_Category:
-                return cats.Count > 1;
+                isConditionMet = (cats.Count == 1);
+                break;
 
             case RuleLogicType.Shoot_If_Slower_Than_4_And_Inner_Radar:
-                return target.approachSpeed < 4f && isInnerRadar;
-
-            case RuleLogicType.Shoot_X_If_Faster_Than_2:
-                return target.approachSpeed > 2f && cats.Contains(catX);
+                isConditionMet = (target.approachSpeed < 4f && isInnerRadar);
+                break;
 
             case RuleLogicType.Shoot_Triple_Category:
-                return cats.Count == 3;
-
-            default:
-                return false;
+                isConditionMet = (cats.Count == 3);
+                break;
         }
+        return isRuleActionShoot == isConditionMet;
     }
 }

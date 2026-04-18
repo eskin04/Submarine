@@ -646,6 +646,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dda321e79d4fc654e8122e10dc2853d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EngineerLockDown_Door
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
   doorPanel: {fileID: 1183549666}
   openOffset: {x: 0, y: 0, z: 1.5}
   openDuration: 1.5
@@ -925,7 +934,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3422959138658205067, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: stationType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4496220526299081464, guid: 67481011ed258ff43ac6ca767c5baee7, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2779,7 +2788,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4249653420332214630, guid: a7c56697556650443a77ce4ec3388cc7, type: 3}
       propertyPath: stationType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

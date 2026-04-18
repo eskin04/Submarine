@@ -1658,6 +1658,7 @@ MonoBehaviour:
   activeCategoryX: 0
   activeCategoryY: 0
   activeRuleDescription: 
+  isCurrentRuleShoot: 0
 --- !u!114 &2244890089872307753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1711,11 +1712,12 @@ MonoBehaviour:
   stationName: Rules of Engagement
   stationType: 0
   stationTier: 0
-  mistakeWaterPenalty: 3
-  timeoutWaterPenalty: 6
+  mistakeWaterPenalty: 10
+  timeoutWaterPenalty: 20
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
+  systemMessageDelay: 0
   stationState:
     _value: 0
     _ownerAuth: 0
