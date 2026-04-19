@@ -47,7 +47,7 @@ public class LightsOut_RoomLight : MonoBehaviour
             if (isFirstTime)
             {
                 isFirstTime = false;
-                myLight.DOIntensity(.5f, 2.15f).OnComplete(() => myLight.enabled = false);
+                myLight.DOIntensity(originalIntensity * 0.4f, 2.15f).OnComplete(() => myLight.enabled = false);
             }
             else
             {
