@@ -25,6 +25,14 @@ public class FMODEmitter : MonoBehaviour
         _onPlaybackFinished?.Invoke(this);
     }
 
+    public void SetPaused(bool isPaused)
+    {
+        if (_instance.isValid())
+        {
+            _instance.setPaused(isPaused);
+        }
+    }
+
     public void SetParameter(string name, float value)
     {
         _instance.setParameterByName(name, value);

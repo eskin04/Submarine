@@ -27,6 +27,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1000
+--- !u!114 &-7980243131007683334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/CapOpen
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/CapOpen
+  Guid:
+    Data1: -238696004
+    Data2: 1074524111
+    Data3: -478310731
+    Data4: 1551130928
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 700
 --- !u!114 &-7834315790855915447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,10 +282,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639121242025395421
+  lastModified: 639121934750349991
   FileSizes:
   - Name: Desktop
-    Value: 2076
+    Value: 2476
   Exists: 1
 --- !u!114 &-5220958796145749874
 MonoBehaviour:
@@ -307,6 +334,33 @@ MonoBehaviour:
   - Name: Desktop
     Value: 738208
   Exists: 1
+--- !u!114 &-4600983939020995075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/Wiring
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/Wiring
+  Guid:
+    Data1: 1917570077
+    Data2: 1176583137
+    Data3: 649121467
+    Data4: -1913324991
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 678
 --- !u!114 &-4187371527243161283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +489,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1216
+--- !u!114 &-2933896110222700330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/CapClose
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/CapClose
+  Guid:
+    Data1: 2044350316
+    Data2: 1146952598
+    Data3: 2134817161
+    Data4: -559045725
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1500
 --- !u!114 &-2465408210372480596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,6 +698,60 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 912
+--- !u!114 &-1571314476956765419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/BlackOutStart
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/BlackOutStart
+  Guid:
+    Data1: -1225772748
+    Data2: 1241141083
+    Data3: -1896531041
+    Data4: 1863778881
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 4493
+--- !u!114 &-1421390539066634396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/MainSwitch
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/MainSwitch
+  Guid:
+    Data1: 628784327
+    Data2: 1094675484
+    Data3: 1756859782
+    Data4: -1409056691
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 687
 --- !u!114 &-446051766321657249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,13 +821,22 @@ MonoBehaviour:
   - {fileID: 3850593565394578250}
   - {fileID: 6435166189276427876}
   - {fileID: -5220958796145749874}
+  - {fileID: -4600983939020995075}
+  - {fileID: -1571314476956765419}
+  - {fileID: 2173394298047780849}
+  - {fileID: -2933896110222700330}
+  - {fileID: 2204125995949181853}
+  - {fileID: 6410584792230858004}
+  - {fileID: -7980243131007683334}
+  - {fileID: -1421390539066634396}
+  - {fileID: 6653106904833731690}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639121243862909646
+  cacheTime: 639121980884373862
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -740,6 +884,24 @@ MonoBehaviour:
     index: 21
   - key: event:/SFX/Player/FlashLight
     index: 22
+  - key: event:/SFX/BlackOut/Wiring
+    index: 23
+  - key: event:/SFX/BlackOut/BlackOutStart
+    index: 24
+  - key: event:/SFX/BlackOut/CableRemoval
+    index: 25
+  - key: event:/SFX/BlackOut/CapClose
+    index: 26
+  - key: event:/SFX/BlackOut/Switchs
+    index: 27
+  - key: event:/SFX/BlackOut/Generator
+    index: 28
+  - key: event:/SFX/BlackOut/CapOpen
+    index: 29
+  - key: event:/SFX/BlackOut/MainSwitch
+    index: 30
+  - key: event:/SFX/BlackOut/LeverReset
+    index: 31
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,6 +1078,60 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 4692
+--- !u!114 &2173394298047780849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/CableRemoval
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/CableRemoval
+  Guid:
+    Data1: 78391628
+    Data2: 1108548368
+    Data3: -1964399727
+    Data4: -1687156441
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 263
+--- !u!114 &2204125995949181853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/Switchs
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/Switchs
+  Guid:
+    Data1: -643117674
+    Data2: 1156053798
+    Data3: 573873854
+    Data4: -1594012252
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 375
 --- !u!114 &2400447466208961466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -978,7 +1194,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639121242025380013
+  lastModified: 639121934750340007
   FileSizes:
   - Name: Desktop
     Value: 1616
@@ -1052,10 +1268,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639121243862909646
+  lastModified: 639121980884373862
   FileSizes:
   - Name: Desktop
-    Value: 1050208
+    Value: 1671552
   Exists: 1
 --- !u!114 &5098008000765588720
 MonoBehaviour:
@@ -1165,6 +1381,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 600
+--- !u!114 &6410584792230858004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/Generator
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/Generator
+  Guid:
+    Data1: 9479867
+    Data2: 1211993294
+    Data3: -1132121925
+    Data4: 999294426
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 10008
 --- !u!114 &6435166189276427876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1192,6 +1435,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 425376
+--- !u!114 &6653106904833731690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/BlackOut/LeverReset
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/BlackOut/LeverReset
+  Guid:
+    Data1: 1748657077
+    Data2: 1320259286
+    Data3: -1814334060
+    Data4: -1646075671
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1450
 --- !u!114 &6747246967498729223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1341,15 +1611,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
   Path: event:/SFX/SL/LockDown
   Guid:
-    Data1: 647999223
-    Data2: 1279021474
-    Data3: -545211757
-    Data4: 2129155508
+    Data1: 1415172681
+    Data2: 1255247634
+    Data3: -1496043331
+    Data4: -129080409
   Banks:
   - {fileID: 4258567297402627855}
   IsStream: 0
-  Is3D: 1
-  IsOneShot: 0
+  Is3D: 0
+  IsOneShot: 1
   Parameters: []
   MinDistance: 1
   MaxDistance: 20

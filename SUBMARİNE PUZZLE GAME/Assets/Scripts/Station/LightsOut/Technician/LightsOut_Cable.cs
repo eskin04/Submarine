@@ -1,4 +1,5 @@
 using UnityEngine;
+using FMODUnity;
 
 [RequireComponent(typeof(Collider))]
 public class LightsOut_Cable : MonoBehaviour
@@ -9,6 +10,13 @@ public class LightsOut_Cable : MonoBehaviour
 
     [Header("References")]
     public LightsOut_TechnicianUI uiManager;
+
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+
+    public EventReference wiringSound;
+    public EventReference unwiringSound;
+
 
     private MeshRenderer meshRenderer;
 
@@ -99,11 +107,29 @@ public class LightsOut_Cable : MonoBehaviour
         if (foundPort != null)
         {
             uiManager.OnCableDropped(this, foundPort);
+            PlayWiringSound(true);
+
         }
         else
         {
             ResetPosition();
+            PlayWiringSound(false);
+
             uiManager.OnCableDisconnected(this);
+        }
+    }
+
+    private void PlayWiringSound(bool isWiring)
+    {
+        if (_channel != null)
+        {
+            EventReference soundToPlay = isWiring ? wiringSound : unwiringSound;
+
+            if (!soundToPlay.IsNull)
+            {
+                AudioEventPayload payload = new AudioEventPayload(soundToPlay, this.transform.position);
+                _channel.RaiseEvent(payload);
+            }
         }
     }
 

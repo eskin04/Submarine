@@ -93,14 +93,11 @@ public class LightsOut_StationManager : NetworkBehaviour
                 allSwitches.Add(sw);
             }
 
-            // Bu fonksiyon sahte renkleri atar ve RpcSyncSwitches'i çağırır
             SetSwitchTextColor(allSwitches);
-            areSwitchesInitialized = true; // Artık atandığını işaretliyoruz
+            areSwitchesInitialized = true;
         }
         else
         {
-            // Eğer daha önceden atanmışsa, sadece butonların fiziksel pozisyonlarını 
-            // eski haline getirmek (resetlemek) için mevcut listeyi yolluyoruz.
             RpcSyncSwitches(allSwitches);
         }
 
@@ -314,7 +311,7 @@ public class LightsOut_StationManager : NetworkBehaviour
         playerInputSequence.Add(pressedColor);
         if (playerInputSequence.Count >= 4)
         {
-            RpcOpenLeverDoor();
+            RpcOpenLeverDoor(true);
         }
     }
 
@@ -330,11 +327,11 @@ public class LightsOut_StationManager : NetworkBehaviour
 
 
     [ObserversRpc]
-    public void RpcOpenLeverDoor()
+    public void RpcOpenLeverDoor(bool isOpening)
     {
         if (lever != null)
         {
-            lever.ToggleDoor(true);
+            lever.ToggleDoor(isOpening);
         }
     }
 
@@ -350,8 +347,7 @@ public class LightsOut_StationManager : NetworkBehaviour
 
         if (playerInputSequence.Count != 4)
         {
-            ResetPuzzlePenalty();
-            RpcResetLever();
+            StartCoroutine(ResetPuzzleAfterDelay(1f));
             return;
         }
 
@@ -367,10 +363,18 @@ public class LightsOut_StationManager : NetworkBehaviour
         }
         else
         {
-            ResetPuzzlePenalty();
-            RpcResetLever();
+            RpcSetGlobalLights(true);
+            StartCoroutine(ResetPuzzleAfterDelay(1f));
 
         }
+    }
+
+    private IEnumerator ResetPuzzleAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        RpcResetLever();
+        yield return new WaitForSeconds(0.4f);
+        ResetPuzzlePenalty();
     }
 
 
@@ -381,7 +385,6 @@ public class LightsOut_StationManager : NetworkBehaviour
         if (lever != null)
         {
             lever.ResetLever();
-            // lever.ToggleDoor(false);
         }
     }
 

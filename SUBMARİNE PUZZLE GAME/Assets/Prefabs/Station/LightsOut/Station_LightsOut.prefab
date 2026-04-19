@@ -210,6 +210,14 @@ MonoBehaviour:
   parentObject: {fileID: 3759822498684407778}
   dragLimitBox: {fileID: 3321250855140670292}
   doorTransform: {fileID: 3646313463000644130}
+  _channel: {fileID: 11400000, guid: 079bd1d8cbaa9304db0a2fb85225ff94, type: 2}
+  ligtsOutStartSound:
+    Guid:
+      Data1: -1225772748
+      Data2: 1241141083
+      Data3: -1896531041
+      Data4: 1863778881
+    Path: event:/SFX/BlackOut/BlackOutStart
 --- !u!1 &148680363579344642
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,6 +861,16 @@ MonoBehaviour:
   - {fileID: 4186088947217490611}
   - {fileID: 2777899423255885207}
   - {fileID: 1654112400890986862}
+  generatorMesh: {fileID: 5598231736957187800}
+  rotationDuration: 1
+  rotationAmount: {x: 0, y: 0, z: 360}
+  generatorLoopSound:
+    Guid:
+      Data1: 9479867
+      Data2: 1211993294
+      Data3: -1132121925
+      Data4: 999294426
+    Path: event:/SFX/BlackOut/Generator
 --- !u!1 &4583715925700121183
 GameObject:
   m_ObjectHideFlags: 0
@@ -1405,6 +1423,36 @@ MonoBehaviour:
   leverDoor: {fileID: 35859545209218279}
   pullAngle: 89
   pullDuration: 0.4
+  resetDuration: 0.2
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  leverPullSound:
+    Guid:
+      Data1: 628784327
+      Data2: 1094675484
+      Data3: 1756859782
+      Data4: -1409056691
+    Path: event:/SFX/BlackOut/MainSwitch
+  leverResetSound:
+    Guid:
+      Data1: 1748657077
+      Data2: 1320259286
+      Data3: -1814334060
+      Data4: -1646075671
+    Path: event:/SFX/BlackOut/LeverReset
+  doorOpenSound:
+    Guid:
+      Data1: -238696004
+      Data2: 1074524111
+      Data3: -478310731
+      Data4: 1551130928
+    Path: event:/SFX/BlackOut/CapOpen
+  doorCloseSound:
+    Guid:
+      Data1: 2044350316
+      Data2: 1146952598
+      Data3: 2134817161
+      Data4: -559045725
+    Path: event:/SFX/BlackOut/CapClose
 --- !u!1 &6353704300360570083
 GameObject:
   m_ObjectHideFlags: 0
@@ -2231,6 +2279,14 @@ MonoBehaviour:
   originalRot: 160
   labelText: {fileID: 3783537780106587689}
   switchObject: {fileID: 2940970019891726561}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1 &3735809347356879612 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1596914813105758867, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
@@ -2286,6 +2342,14 @@ MonoBehaviour:
   originalRot: 160
   labelText: {fileID: 6060511783378551390}
   switchObject: {fileID: 3735809347356879612}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1 &4132969065292936259 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2065571365553355820, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
@@ -2341,6 +2405,14 @@ MonoBehaviour:
   originalRot: 160
   labelText: {fileID: 9029545894671849153}
   switchObject: {fileID: 4132969065292936259}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!114 &4186088947217490611 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2298765413596949212, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
@@ -2407,9 +2479,22 @@ MonoBehaviour:
   originalRot: 160
   labelText: {fileID: 3959829065647441633}
   switchObject: {fileID: 5228867440125909258}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!4 &5313630631098419116 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7803873555173707715, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
+  m_PrefabInstance: {fileID: 2734005211448215663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5598231736957187800 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7512507048288239287, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
   m_PrefabInstance: {fileID: 2734005211448215663}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &7157063659244091989 stripped

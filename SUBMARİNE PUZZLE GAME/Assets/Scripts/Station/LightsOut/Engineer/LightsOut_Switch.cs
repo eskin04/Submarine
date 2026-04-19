@@ -17,6 +17,10 @@ public class LightsOut_Switch : NetworkBehaviour
     public TMP_Text labelText;
     public GameObject switchObject;
 
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference switchSound;
+
     private bool isPressed = false;
 
 
@@ -34,6 +38,8 @@ public class LightsOut_Switch : NetworkBehaviour
         ResetButton();
     }
 
+
+
     private Color GetUnityColor(WireColor colorEnum)
     {
         switch (colorEnum)
@@ -50,7 +56,6 @@ public class LightsOut_Switch : NetworkBehaviour
     {
         if (!isPressed)
         {
-            // ŞALTERİ İNDİR
             if (switchObject != null)
             {
                 switchObject.transform.DOLocalRotate(new Vector3(0, RotateAngle, 0), 0.2f);
@@ -64,7 +69,6 @@ public class LightsOut_Switch : NetworkBehaviour
         }
         else
         {
-            // ŞALTERİ GERİ KALDIR (UNDO)
             if (switchObject != null)
             {
                 switchObject.transform.DOLocalRotate(new Vector3(0, originalRot, 0), 0.2f);
@@ -73,9 +77,18 @@ public class LightsOut_Switch : NetworkBehaviour
 
             if (stationManager != null)
             {
-                // StationManager'a bu rengi sıradan çıkarmasını söylüyoruz
                 stationManager.UnregisterSwitchPressRPC(myLabelColor);
             }
+        }
+        PlaySwitchSound();
+    }
+
+    private void PlaySwitchSound()
+    {
+        if (_channel != null && !switchSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(switchSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 

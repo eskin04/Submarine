@@ -131,6 +131,21 @@ MonoBehaviour:
   cableID: 0
   myPhysicalColor: 1
   uiManager: {fileID: 0}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  wiringSound:
+    Guid:
+      Data1: 1917570077
+      Data2: 1176583137
+      Data3: 649121467
+      Data4: -1913324991
+    Path: event:/SFX/BlackOut/Wiring
+  unwiringSound:
+    Guid:
+      Data1: 78391628
+      Data2: 1108548368
+      Data3: -1964399727
+      Data4: -1687156441
+    Path: event:/SFX/BlackOut/CableRemoval
 --- !u!114 &8124053873768061113
 MonoBehaviour:
   m_ObjectHideFlags: 0

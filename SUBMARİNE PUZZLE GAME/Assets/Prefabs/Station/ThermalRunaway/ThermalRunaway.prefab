@@ -220,13 +220,14 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   utilityEventData: {fileID: 0}
   stationName: Thermal Runaway
-  stationType: 1
+  stationType: 0
   stationTier: 0
   mistakeWaterPenalty: 3
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
+  systemMessageDelay: 0
   stationState:
     _value: 0
     _ownerAuth: 0

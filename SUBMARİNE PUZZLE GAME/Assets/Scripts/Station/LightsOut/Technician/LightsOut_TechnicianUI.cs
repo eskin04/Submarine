@@ -21,8 +21,13 @@ public class LightsOut_TechnicianUI : NetworkBehaviour
     public BoxCollider dragLimitBox;
     public Transform doorTransform;
 
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference ligtsOutStartSound;
+
     private List<LightsOut_Cable> createdCables = new List<LightsOut_Cable>();
     private List<CableData> localPuzzleData = new List<CableData>();
+    private bool isFirstTime = true;
 
     public void HandlePuzzleSync(List<CableData> puzzleData)
     {
@@ -31,6 +36,18 @@ public class LightsOut_TechnicianUI : NetworkBehaviour
         foreach (var data in puzzleData)
         {
             UpdateVisuals(data.cableID, data.currentPortIndex);
+        }
+        if (!isFirstTime) return;
+        isFirstTime = false;
+        PlayStartSound();
+    }
+
+    private void PlayStartSound()
+    {
+        if (_channel != null && !ligtsOutStartSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(ligtsOutStartSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 

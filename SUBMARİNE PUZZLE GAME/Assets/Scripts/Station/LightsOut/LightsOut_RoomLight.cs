@@ -9,6 +9,7 @@ public class LightsOut_RoomLight : MonoBehaviour
     private Light myLight;
     private float originalIntensity;
     [SerializeField] private bool isNormalLight;
+    private bool isFirstTime = true;
 
     private void Awake()
     {
@@ -43,7 +44,15 @@ public class LightsOut_RoomLight : MonoBehaviour
         }
         else if (isNormalLight)
         {
-            myLight.DOIntensity(0, 2f).OnComplete(() => myLight.enabled = false);
+            if (isFirstTime)
+            {
+                isFirstTime = false;
+                myLight.DOIntensity(0, 2.6f).OnComplete(() => myLight.enabled = false);
+            }
+            else
+            {
+                myLight.enabled = false;
+            }
         }
         else
         {
