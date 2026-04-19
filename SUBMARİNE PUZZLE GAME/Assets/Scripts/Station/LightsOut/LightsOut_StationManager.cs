@@ -347,7 +347,7 @@ public class LightsOut_StationManager : NetworkBehaviour
 
         if (playerInputSequence.Count != 4)
         {
-            StartCoroutine(ResetPuzzleAfterDelay(1f));
+            StartCoroutine(ResetPuzzleAfterDelay());
             return;
         }
 
@@ -364,16 +364,15 @@ public class LightsOut_StationManager : NetworkBehaviour
         else
         {
             RpcSetGlobalLights(true);
-            StartCoroutine(ResetPuzzleAfterDelay(1f));
+            StartCoroutine(ResetPuzzleAfterDelay());
 
         }
     }
 
-    private IEnumerator ResetPuzzleAfterDelay(float delay)
+    private IEnumerator ResetPuzzleAfterDelay()
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(1.25f);
         RpcResetLever();
-        yield return new WaitForSeconds(0.4f);
         ResetPuzzlePenalty();
     }
 

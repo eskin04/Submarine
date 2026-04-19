@@ -35,7 +35,7 @@ public class LightsOut_EngineerUI : NetworkBehaviour
         MainGameState.startGame += ResumeGeneratorSound;
     }
 
-    private void OnDisable()
+    protected override void OnDestroy()
     {
         LightsOut_StationManager.OnPowerStatusChanged -= HandlePowerStatus;
         MainGameState.startGame -= ResumeGeneratorSound;
