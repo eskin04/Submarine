@@ -21,7 +21,6 @@ public class LightsOut_Lever : NetworkBehaviour
     private Vector3 originalRotation;
     private Vector3 originalDoorRotation;
     private Interactable ınteractable;
-    private bool isFirstTime = true;
 
     private void Start()
     {
@@ -88,11 +87,9 @@ public class LightsOut_Lever : NetworkBehaviour
 
     public void ToggleDoor(bool isOpening)
     {
-        // if (!isFirstTime) return;
         if (isOpening)
         {
             leverDoor.DOLocalRotate(new Vector3(0, 180, 90), 0.2f);
-            isFirstTime = false;
             PlayDoorSound(true);
         }
         else

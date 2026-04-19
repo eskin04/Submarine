@@ -51,7 +51,6 @@ public class Thermal_StationManager : NetworkBehaviour
     public float bottleneckCooldownTimer = 0f;
     public float bottleneckTimeLimit = 5f;
     private List<int> currentBottleneckSequence = new List<int>();
-    private int currentSequenceIndex = 0;
 
     [Header("Network")]
     public float networkTickRate = 0.05f;

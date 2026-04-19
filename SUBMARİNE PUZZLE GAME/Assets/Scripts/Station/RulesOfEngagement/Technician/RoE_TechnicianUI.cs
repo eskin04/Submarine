@@ -60,7 +60,6 @@ public class RoE_TechnicianUI : MonoBehaviour
     private Coroutine displayCoroutine = null;
     private RoE_RadarBlip currentVisualBlip = null;
 
-    private float nextSelectionTime = 0f;
     private bool isCoverOpen = false;
 
     public System.Action OnLockStateChanged;

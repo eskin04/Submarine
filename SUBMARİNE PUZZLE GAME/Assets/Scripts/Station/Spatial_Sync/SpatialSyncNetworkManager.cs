@@ -29,8 +29,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     private Vector2Int _currentPos;
     private List<Vector2Int> _visitedNodes = new List<Vector2Int>();
 
-    private Vector2Int _currentTechPos;
-    private bool _techHasStarted = false;
 
     private void Awake()
     {
@@ -94,8 +92,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
             if (patternDatabase.TryGetPattern(pId, out SpatialPattern pattern))
             {
                 isValid = _coreLogic.TryLoadManualPattern(pattern, out Vector2Int offset, out _activeGraph, out Vector2Int refP, out Vector2Int targetP);
-                _currentTechPos = refP;
-                _techHasStarted = false;
                 if (isValid)
                 {
                     CurrentPatternID.value = pId;
