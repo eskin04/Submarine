@@ -861,9 +861,9 @@ MonoBehaviour:
   - {fileID: 4186088947217490611}
   - {fileID: 2777899423255885207}
   - {fileID: 1654112400890986862}
-  generatorMesh: {fileID: 5598231736957187800}
+  generatorMesh: {fileID: 8580063694477338291}
   rotationDuration: 1
-  rotationAmount: {x: 0, y: 0, z: 360}
+  rotationAmount: {x: 0, y: 360, z: 0}
   generatorLoopSound:
     Guid:
       Data1: 9479867
@@ -2492,11 +2492,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7803873555173707715, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
   m_PrefabInstance: {fileID: 2734005211448215663}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5598231736957187800 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7512507048288239287, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-  m_PrefabInstance: {fileID: 2734005211448215663}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7157063659244091989 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5090154151269757498, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
@@ -2508,6 +2503,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a7f82391f7576418fe5f77497746fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightsOut_StatusLight
+--- !u!4 &8580063694477338291 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5972794799994711772, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
+  m_PrefabInstance: {fileID: 2734005211448215663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5030366161341637505
 PrefabInstance:
   m_ObjectHideFlags: 0
