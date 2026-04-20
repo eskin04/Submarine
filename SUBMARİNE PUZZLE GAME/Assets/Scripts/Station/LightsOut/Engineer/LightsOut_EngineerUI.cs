@@ -27,18 +27,17 @@ public class LightsOut_EngineerUI : MonoBehaviour
                 .SetEase(Ease.Linear)
                 .SetLoops(-1, LoopType.Incremental);
         }
+        ResumeGeneratorSound();
     }
 
     private void OnEnable()
     {
         LightsOut_StationManager.OnPowerStatusChanged += HandlePowerStatus;
-        MainGameState.startGame += ResumeGeneratorSound;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         LightsOut_StationManager.OnPowerStatusChanged -= HandlePowerStatus;
-        MainGameState.startGame -= ResumeGeneratorSound;
         if (rotationTween != null) rotationTween.Kill();
         if (_activeGeneratorEmitter != null)
         {
