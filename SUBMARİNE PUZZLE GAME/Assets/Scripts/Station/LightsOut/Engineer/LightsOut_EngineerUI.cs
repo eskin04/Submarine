@@ -35,7 +35,7 @@ public class LightsOut_EngineerUI : MonoBehaviour
         MainGameState.startGame += ResumeGeneratorSound;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         LightsOut_StationManager.OnPowerStatusChanged -= HandlePowerStatus;
         MainGameState.startGame -= ResumeGeneratorSound;
