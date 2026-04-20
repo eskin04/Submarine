@@ -58,7 +58,7 @@ public class LightsOut_Switch : NetworkBehaviour
         {
             if (switchObject != null)
             {
-                switchObject.transform.DOLocalRotate(new Vector3(0, RotateAngle, 0), 0.2f);
+                switchObject.transform.DOLocalRotate(new Vector3(RotateAngle, 0, -90), 0.2f);
             }
             isPressed = true;
 
@@ -71,7 +71,7 @@ public class LightsOut_Switch : NetworkBehaviour
         {
             if (switchObject != null)
             {
-                switchObject.transform.DOLocalRotate(new Vector3(0, originalRot, 0), 0.2f);
+                switchObject.transform.DOLocalRotate(new Vector3(originalRot, 0, -90), 0.2f);
             }
             isPressed = false;
 
@@ -96,7 +96,7 @@ public class LightsOut_Switch : NetworkBehaviour
     {
         if (switchObject != null)
         {
-            switchObject.transform.DOLocalRotate(new Vector3(0, originalRot, 0), 0.2f);
+            switchObject.transform.DOLocalRotate(new Vector3(originalRot, 0, -90), 0.2f);
             isPressed = false;
         }
     }

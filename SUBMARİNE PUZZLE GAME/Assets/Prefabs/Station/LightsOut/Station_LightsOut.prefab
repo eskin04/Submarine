@@ -312,6 +312,156 @@ Transform:
   - {fileID: 2641884839837807235}
   m_Father: {fileID: 7104647771062575072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &880653891888628192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5564112729760949214}
+  - component: {fileID: 8241651573964893341}
+  - component: {fileID: 5541687950680990212}
+  - component: {fileID: 1127910097707823791}
+  - component: {fileID: 335802749282907969}
+  m_Layer: 9
+  m_Name: lever3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5564112729760949214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880653891888628192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40557975, y: 0.40557975, z: -0.579228, w: 0.579228}
+  m_LocalPosition: {x: -0.11184132, y: 0.21729827, z: 0.580657}
+  m_LocalScale: {x: 100, y: 100.000015, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7104647771062575072}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: -90}
+--- !u!33 &8241651573964893341
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880653891888628192}
+  m_Mesh: {fileID: 484672184755750240, guid: ed9750301c038874facb6adcc0c896a9, type: 3}
+--- !u!23 &5541687950680990212
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880653891888628192}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f5ffb23c71776424f8f776c97d3fd190, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1127910097707823791
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880653891888628192}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0005582177, y: 0.0010240282, z: 0.0016378539}
+  m_Center: {x: -0.00019938398, y: -0.00040085928, z: -0.00074993796}
+--- !u!114 &335802749282907969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880653891888628192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  stationManager: {fileID: 357880640846289264}
+  moduleInteractable: {fileID: 4328666841198527473}
+  buttonID: 2
+  myLabelColor: 0
+  RotateAngle: 249
+  originalRot: 70
+  labelText: {fileID: 6060511783378551390}
+  switchObject: {fileID: 880653891888628192}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1 &983677079399926933
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,10 +832,10 @@ MonoBehaviour:
   playerInputSequence: 
   isRoundActive: 1
   switchButtons:
-  - {fileID: 1553943713647739872}
-  - {fileID: 1433068803737676324}
-  - {fileID: 4248544648344419049}
-  - {fileID: 2643173494731879876}
+  - {fileID: 1495380978719267089}
+  - {fileID: 6250140326483874125}
+  - {fileID: 335802749282907969}
+  - {fileID: 2586867570772367642}
   technicianUI: {fileID: 3618247698385055660}
   engineerUI: {fileID: 5931046840075462551}
   lever: {fileID: 7886503976297416016}
@@ -721,6 +871,156 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5258084717260568929}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4513962303359719013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5671832413077762668}
+  - component: {fileID: 8624795644970745052}
+  - component: {fileID: 1961027212763135556}
+  - component: {fileID: 6286110439560716740}
+  - component: {fileID: 1495380978719267089}
+  m_Layer: 9
+  m_Name: Lever1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5671832413077762668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513962303359719013}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40557975, y: 0.40557975, z: -0.579228, w: 0.579228}
+  m_LocalPosition: {x: 0.30635858, y: 0.21729827, z: 0.58065736}
+  m_LocalScale: {x: 100, y: 100.000015, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7104647771062575072}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: -90}
+--- !u!33 &8624795644970745052
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513962303359719013}
+  m_Mesh: {fileID: -3442278108173127478, guid: ed9750301c038874facb6adcc0c896a9, type: 3}
+--- !u!23 &1961027212763135556
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513962303359719013}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f5ffb23c71776424f8f776c97d3fd190, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &6286110439560716740
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513962303359719013}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.00057665375, y: 0.0010240282, z: 0.0016378539}
+  m_Center: {x: -0.00020860208, y: -0.000400863, z: -0.00074993854}
+--- !u!114 &1495380978719267089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513962303359719013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  stationManager: {fileID: 357880640846289264}
+  moduleInteractable: {fileID: 4328666841198527473}
+  buttonID: 0
+  myLabelColor: 0
+  RotateAngle: 249
+  originalRot: 70
+  labelText: {fileID: 3959829065647441633}
+  switchObject: {fileID: 4513962303359719013}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1 &4583396791314972638
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,6 +1055,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7999551417125251102}
+  - {fileID: 5671832413077762668}
+  - {fileID: 8148881092072870799}
+  - {fileID: 5564112729760949214}
+  - {fileID: 2931312908322559652}
   - {fileID: 4945382576396122370}
   - {fileID: 2457157564436791461}
   - {fileID: 2164553712325905260}
@@ -847,15 +1151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3a9b2b77ecbd5a498d87ef9f020aa53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightsOut_EngineerUI
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
   statusLights:
   - {fileID: 7157063659244091989}
   - {fileID: 4186088947217490611}
@@ -2028,6 +2323,156 @@ Transform:
   - {fileID: 8933778680230791439}
   m_Father: {fileID: 177303295663035641}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &8586339209988353092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2931312908322559652}
+  - component: {fileID: 251328618679948587}
+  - component: {fileID: 6256892999333854976}
+  - component: {fileID: 3045836702139253689}
+  - component: {fileID: 2586867570772367642}
+  m_Layer: 9
+  m_Name: lever4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2931312908322559652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586339209988353092}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40557975, y: 0.40557975, z: -0.579228, w: 0.579228}
+  m_LocalPosition: {x: -0.3209225, y: 0.21729827, z: 0.5806569}
+  m_LocalScale: {x: 100, y: 100.000015, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7104647771062575072}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: -90}
+--- !u!33 &251328618679948587
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586339209988353092}
+  m_Mesh: {fileID: -4399983586776574640, guid: ed9750301c038874facb6adcc0c896a9, type: 3}
+--- !u!23 &6256892999333854976
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586339209988353092}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f5ffb23c71776424f8f776c97d3fd190, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3045836702139253689
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586339209988353092}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0005795472, y: 0.0010240282, z: 0.0016378539}
+  m_Center: {x: -0.00021004853, y: -0.00040085928, z: -0.0007499389}
+--- !u!114 &2586867570772367642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586339209988353092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  stationManager: {fileID: 357880640846289264}
+  moduleInteractable: {fileID: 4328666841198527473}
+  buttonID: 3
+  myLabelColor: 0
+  RotateAngle: 249
+  originalRot: 70
+  labelText: {fileID: 9029545894671849153}
+  switchObject: {fileID: 8586339209988353092}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1 &8714358032087994468
 GameObject:
   m_ObjectHideFlags: 0
@@ -2095,6 +2540,156 @@ Transform:
   - {fileID: 6822028663499207665}
   m_Father: {fileID: 8933778680230791439}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8790153343903138078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8148881092072870799}
+  - component: {fileID: 2858539547475894408}
+  - component: {fileID: 8919111466052780675}
+  - component: {fileID: 969595348544430163}
+  - component: {fileID: 6250140326483874125}
+  m_Layer: 9
+  m_Name: lever2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8148881092072870799
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8790153343903138078}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40557975, y: 0.40557975, z: -0.579228, w: 0.579228}
+  m_LocalPosition: {x: 0.09732473, y: 0.21729827, z: 0.5806571}
+  m_LocalScale: {x: 100, y: 100.000015, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7104647771062575072}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: -90}
+--- !u!33 &2858539547475894408
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8790153343903138078}
+  m_Mesh: {fileID: -2229464946220024840, guid: ed9750301c038874facb6adcc0c896a9, type: 3}
+--- !u!23 &8919111466052780675
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8790153343903138078}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f5ffb23c71776424f8f776c97d3fd190, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &969595348544430163
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8790153343903138078}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.00056253094, y: 0.0010240282, z: 0.0016378539}
+  m_Center: {x: -0.00020154021, y: -0.00040085928, z: -0.00074993854}
+--- !u!114 &6250140326483874125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8790153343903138078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  stationManager: {fileID: 357880640846289264}
+  moduleInteractable: {fileID: 4328666841198527473}
+  buttonID: 1
+  myLabelColor: 0
+  RotateAngle: 249
+  originalRot: 70
+  labelText: {fileID: 3783537780106587689}
+  switchObject: {fileID: 8790153343903138078}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  switchSound:
+    Guid:
+      Data1: -643117674
+      Data2: 1156053798
+      Data3: 573873854
+      Data4: -1594012252
+    Path: event:/SFX/BlackOut/Switchs
 --- !u!1001 &2734005211448215663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2164,33 +2759,13 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2065571365553355820, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
+    - {fileID: 1596914813105758867, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
+    - {fileID: 946125252709597326, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
+    - {fileID: 7881730882728333669, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7881730882728333669, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1721864412908165441}
-    - targetCorrespondingSourceObject: {fileID: 7881730882728333669, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1553943713647739872}
-    - targetCorrespondingSourceObject: {fileID: 946125252709597326, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3593944795587759020}
-    - targetCorrespondingSourceObject: {fileID: 946125252709597326, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1433068803737676324}
-    - targetCorrespondingSourceObject: {fileID: 1596914813105758867, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5343479772156328521}
-    - targetCorrespondingSourceObject: {fileID: 1596914813105758867, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4248544648344419049}
-    - targetCorrespondingSourceObject: {fileID: 2065571365553355820, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7238342293523624322}
-    - targetCorrespondingSourceObject: {fileID: 2065571365553355820, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2643173494731879876}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
 --- !u!4 &35859545209218279 stripped
 Transform:
@@ -2224,195 +2799,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a7f82391f7576418fe5f77497746fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightsOut_StatusLight
---- !u!1 &2940970019891726561 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 946125252709597326, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-  m_PrefabInstance: {fileID: 2734005211448215663}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &3593944795587759020
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2940970019891726561}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.00056253094, y: 0.0010240282, z: 0.0016378539}
-  m_Center: {x: -0.00020154021, y: -0.00040085928, z: -0.00074993854}
---- !u!114 &1433068803737676324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2940970019891726561}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  stationManager: {fileID: 357880640846289264}
-  moduleInteractable: {fileID: 4328666841198527473}
-  buttonID: 1
-  myLabelColor: 0
-  RotateAngle: 340
-  originalRot: 160
-  labelText: {fileID: 3783537780106587689}
-  switchObject: {fileID: 2940970019891726561}
-  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
-  switchSound:
-    Guid:
-      Data1: -643117674
-      Data2: 1156053798
-      Data3: 573873854
-      Data4: -1594012252
-    Path: event:/SFX/BlackOut/Switchs
---- !u!1 &3735809347356879612 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1596914813105758867, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-  m_PrefabInstance: {fileID: 2734005211448215663}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &5343479772156328521
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3735809347356879612}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0005582177, y: 0.0010240282, z: 0.0016378539}
-  m_Center: {x: -0.00019938398, y: -0.00040085928, z: -0.00074993796}
---- !u!114 &4248544648344419049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3735809347356879612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  stationManager: {fileID: 357880640846289264}
-  moduleInteractable: {fileID: 4328666841198527473}
-  buttonID: 2
-  myLabelColor: 0
-  RotateAngle: 340
-  originalRot: 160
-  labelText: {fileID: 6060511783378551390}
-  switchObject: {fileID: 3735809347356879612}
-  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
-  switchSound:
-    Guid:
-      Data1: -643117674
-      Data2: 1156053798
-      Data3: 573873854
-      Data4: -1594012252
-    Path: event:/SFX/BlackOut/Switchs
---- !u!1 &4132969065292936259 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2065571365553355820, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-  m_PrefabInstance: {fileID: 2734005211448215663}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &7238342293523624322
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4132969065292936259}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0005795472, y: 0.0010240282, z: 0.0016378539}
-  m_Center: {x: -0.00021004853, y: -0.00040085928, z: -0.0007499389}
---- !u!114 &2643173494731879876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4132969065292936259}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  stationManager: {fileID: 357880640846289264}
-  moduleInteractable: {fileID: 4328666841198527473}
-  buttonID: 3
-  myLabelColor: 0
-  RotateAngle: 340
-  originalRot: 160
-  labelText: {fileID: 9029545894671849153}
-  switchObject: {fileID: 4132969065292936259}
-  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
-  switchSound:
-    Guid:
-      Data1: -643117674
-      Data2: 1156053798
-      Data3: 573873854
-      Data4: -1594012252
-    Path: event:/SFX/BlackOut/Switchs
 --- !u!114 &4186088947217490611 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2298765413596949212, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
@@ -2424,69 +2810,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a7f82391f7576418fe5f77497746fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightsOut_StatusLight
---- !u!1 &5228867440125909258 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7881730882728333669, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
-  m_PrefabInstance: {fileID: 2734005211448215663}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1721864412908165441
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5228867440125909258}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.00057665375, y: 0.0010240282, z: 0.0016378539}
-  m_Center: {x: -0.00020860208, y: -0.000400863, z: -0.00074993854}
---- !u!114 &1553943713647739872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5228867440125909258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0454a32974ec3c4188a7e7ff0b1b209, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_Switch
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  stationManager: {fileID: 357880640846289264}
-  moduleInteractable: {fileID: 4328666841198527473}
-  buttonID: 0
-  myLabelColor: 0
-  RotateAngle: 340
-  originalRot: 160
-  labelText: {fileID: 3959829065647441633}
-  switchObject: {fileID: 5228867440125909258}
-  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
-  switchSound:
-    Guid:
-      Data1: -643117674
-      Data2: 1156053798
-      Data3: 573873854
-      Data4: -1594012252
-    Path: event:/SFX/BlackOut/Switchs
 --- !u!4 &5313630631098419116 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7803873555173707715, guid: 39e3449d8a7cc5b4c846dbeb1ace019a, type: 3}
