@@ -66,6 +66,8 @@ public class LightsOut_EngineerUI : MonoBehaviour
     private void ResumeGeneratorSound()
     {
         if (generatorLoopSound.IsNull) return;
+        if (this == null) return;
+        if (generatorMesh == null) return;
 
         if (_activeGeneratorEmitter != null)
         {
@@ -73,8 +75,7 @@ public class LightsOut_EngineerUI : MonoBehaviour
         }
         else
         {
-            Transform targetTransform = generatorMesh != null ? generatorMesh : this.transform;
-            _activeGeneratorEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(generatorLoopSound, targetTransform);
+            _activeGeneratorEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(generatorLoopSound, generatorMesh);
         }
     }
 
