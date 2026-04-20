@@ -4,7 +4,7 @@ using PurrNet;
 using DG.Tweening;
 using FMODUnity;
 
-public class LightsOut_EngineerUI : NetworkBehaviour
+public class LightsOut_EngineerUI : MonoBehaviour
 {
     [Header("References")]
     public List<LightsOut_StatusLight> statusLights;
@@ -35,7 +35,7 @@ public class LightsOut_EngineerUI : NetworkBehaviour
         MainGameState.startGame += ResumeGeneratorSound;
     }
 
-    protected override void OnDestroy()
+    private void OnDestroy()
     {
         LightsOut_StationManager.OnPowerStatusChanged -= HandlePowerStatus;
         MainGameState.startGame -= ResumeGeneratorSound;
