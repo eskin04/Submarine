@@ -39,7 +39,6 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
         if (switchHandle != null)
         {
             isAnimating = true;
-            // sadece x ekseninde dönecek şekilde hedef rotasyonu oluştur
             Vector3 targetRotation = new Vector3(pulledRotation.x, originalRotation.y, originalRotation.z);
             switchHandle.DOLocalRotate(targetRotation, pullAnimTime).OnComplete(() =>
             {

@@ -120,6 +120,7 @@ public class RoE_StationManager : NetworkBehaviour
         previousDestroyedObject = null;
         previousPassedObject = null;
         lastTwoActedObjects.Clear();
+        SetEngineerDisplayActiveRPC(true);
     }
 
     public List<RoE_ObjectData> GenerateRoundObjects()
@@ -448,7 +449,7 @@ public class RoE_StationManager : NetworkBehaviour
         {
             stationController.SetReparied();
         }
-
+        SetEngineerDisplayActiveRPC(false);
         isRoundActive = false;
         isSimulationRunning = false;
 
@@ -480,7 +481,14 @@ public class RoE_StationManager : NetworkBehaviour
         }
     }
 
-
+    [ObserversRpc]
+    private void SetEngineerDisplayActiveRPC(bool isActive)
+    {
+        if (engineerDisplay != null)
+        {
+            engineerDisplay.SetDisplayActive(isActive);
+        }
+    }
 
     [ObserversRpc]
     private void RpcSetSimulationState(bool state)

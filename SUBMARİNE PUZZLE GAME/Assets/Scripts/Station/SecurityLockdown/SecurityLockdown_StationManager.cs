@@ -26,6 +26,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     public bool AreNumpadsActive => currentState.value == LockDownStationState.Active &&
                                     isTechReady.value &&
                                     isEngReady.value;
+    public SyncVar<bool> areNumpadsActiveSync = new SyncVar<bool>(true);
 
     [Header("Generated Puzzle Data (Server Only)")]
     public List<LegendData> currentLegend = new List<LegendData>();
@@ -56,6 +57,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 
         isTechReady.value = false;
         isEngReady.value = false;
+        areNumpadsActiveSync.value = false;
 
         Debug.Log("<color=green>[STATION] Main Lockdown Started!</color>");
 
@@ -73,6 +75,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
             _channel.RaiseEvent(payload);
         }
     }
+
 
     #region GENERATION LOGIC (SERVER)
 
@@ -215,6 +218,7 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
 
         isTechReady.value = false;
         isEngReady.value = false;
+        areNumpadsActiveSync.value = false;
 
         RpcSyncPuzzleData(currentLegend.ToArray(), currentSequence.ToArray());
         RpcTriggerError();
@@ -224,14 +228,20 @@ public class SecurityLockdown_StationManager : NetworkBehaviour
     public void SetTechReadyRPC()
     {
         if (currentState.value == LockDownStationState.Active)
+        {
             isTechReady.value = true;
+            areNumpadsActiveSync.value = AreNumpadsActive;
+        }
     }
 
     [ServerRpc(requireOwnership: false)]
     public void SetEngReadyRPC()
     {
         if (currentState.value == LockDownStationState.Active)
+        {
             isEngReady.value = true;
+            areNumpadsActiveSync.value = AreNumpadsActive;
+        }
     }
 
     [ServerRpc(requireOwnership: false)]

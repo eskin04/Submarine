@@ -27,6 +27,7 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
     private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
 
     private string currentInput = "";
+    private Interactable ınteractable;
 
     private void Awake()
     {
@@ -39,7 +40,9 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         {
             regionLabel.text = $"{myRegion}";
         }
+        ınteractable = GetComponent<Interactable>();
     }
+
 
 
     private void OnEnable()
@@ -47,6 +50,10 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         SecurityLockdown_StationManager.OnStationFailed += ResetLightToRed;
         SecurityLockdown_StationManager.OnStateChanged += HandleStateChanged;
         SecurityLockdown_StationManager.OnRegionSolved += HandleRegionSolved;
+        if (stationManager != null)
+        {
+            stationManager.areNumpadsActiveSync.onChanged += HandleNumpadActivation;
+        }
     }
 
     private void OnDisable()
@@ -54,6 +61,18 @@ public class SecurityLockdown_Numpad : NetworkBehaviour
         SecurityLockdown_StationManager.OnStationFailed -= ResetLightToRed;
         SecurityLockdown_StationManager.OnStateChanged -= HandleStateChanged;
         SecurityLockdown_StationManager.OnRegionSolved -= HandleRegionSolved;
+        if (stationManager != null)
+        {
+            stationManager.areNumpadsActiveSync.onChanged -= HandleNumpadActivation;
+        }
+    }
+
+    private void HandleNumpadActivation(bool areActive)
+    {
+        if (ınteractable != null)
+        {
+            ınteractable.SetInteractable(areActive);
+        }
     }
 
     public void OnNumberPressed(int number)

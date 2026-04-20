@@ -50,6 +50,7 @@ public class EngineerLockDown_Door : NetworkBehaviour
     {
         if (state == EngineerLockDownStationState.Active)
         {
+            transform.GetComponent<Collider>().enabled = false;
             ForceCloseDoor();
         }
     }

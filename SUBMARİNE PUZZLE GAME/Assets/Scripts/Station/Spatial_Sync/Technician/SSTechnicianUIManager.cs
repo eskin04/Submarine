@@ -10,6 +10,7 @@ public class SSTechnicianUIManager : MonoBehaviour
     public RectTransform nodeLayer;
     public RectTransform labelLayer;
     public TextMeshProUGUI punchInputText;
+    public GameObject LegendPanel;
 
 
     [Header("Prefabs")]
@@ -99,6 +100,7 @@ public class SSTechnicianUIManager : MonoBehaviour
 
     public void SetTarget(Vector2Int targetPos)
     {
+        LegendPanel.SetActive(true);
         foreach (var img in _nodeImages.Values)
         {
             img.transform.DOKill();

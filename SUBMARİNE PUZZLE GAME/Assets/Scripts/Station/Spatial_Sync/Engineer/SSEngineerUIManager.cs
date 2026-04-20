@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class EngineerUIManager : MonoBehaviour
+public class SSEngineerUIManager : MonoBehaviour
 {
     [Header("UI")]
     public RectTransform nodeLayer;
@@ -18,6 +18,7 @@ public class EngineerUIManager : MonoBehaviour
     public float edgeThickness = 6f;
 
     public TextMeshProUGUI legendText;
+    public GameObject legendPanel;
 
 
     private List<GameObject> _spawnedNodes = new List<GameObject>();
@@ -31,7 +32,7 @@ public class EngineerUIManager : MonoBehaviour
     public void DrawCircuit(Dictionary<Vector2Int, List<Vector2Int>> graph, Vector2Int refPoint)
     {
         ClearUI();
-
+        legendPanel.SetActive(true);
         if (graph.Count == 0) return;
 
         Vector2 minGrid = new Vector2(float.MaxValue, float.MaxValue);

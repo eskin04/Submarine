@@ -6,7 +6,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private SpatialPatternDatabase patternDatabase;
-    [SerializeField] private EngineerUIManager engineerUIManager;
+    [SerializeField] private SSEngineerUIManager engineerUIManager;
     [SerializeField] private SSTechnicianUIManager sSTechnicianUIManager;
     [SerializeField] private StationController stationController;
     private SpatialSyncCore _coreLogic;
@@ -62,10 +62,9 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     private void ResetStation()
     {
         if (!isServer) return;
-        CurrentStep.value = 0;
         _visitedNodes.Clear();
-        // ClearGridObserversRpc();
-        _currentPos = new Vector2Int(RefWorldX.value, RefWorldY.value);
+        ClearGridObserversRpc();
+
     }
 
     [ObserversRpc]
@@ -201,7 +200,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         }
         else
         {
-            ChangeStationStateServerRpc(0);
+            ChangeStationStateServerRpc(1);
             WrongStepObserversRpc();
         }
     }

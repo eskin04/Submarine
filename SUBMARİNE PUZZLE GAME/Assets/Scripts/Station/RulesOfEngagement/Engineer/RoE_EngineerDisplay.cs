@@ -11,8 +11,14 @@ public class RoE_EngineerDisplay : MonoBehaviour
     public RoE_StationManager stationManager;
     public TextMeshProUGUI ruleText;
     public TextMeshProUGUI targetCodeText;
+    public GameObject bgPanel;
 
     private string currentDisplayedCode = "";
+
+    void Start()
+    {
+        SetDisplayActive(false);
+    }
 
     public void StartDisplaySequence(List<int> symbolIndices, string codeName)
     {
@@ -71,6 +77,14 @@ public class RoE_EngineerDisplay : MonoBehaviour
         if (ruleText != null)
         {
             ruleText.text = description;
+        }
+    }
+
+    public void SetDisplayActive(bool isActive)
+    {
+        if (bgPanel != null)
+        {
+            bgPanel.SetActive(isActive);
         }
     }
 }
