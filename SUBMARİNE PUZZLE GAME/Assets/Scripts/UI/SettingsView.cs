@@ -11,8 +11,13 @@ public class SettingsView : View
     public static Action quitGame;
     [SerializeField] Button resumeButton;
     [SerializeField] Button restartButton;
+    [SerializeField] Button audioButton;
+
     [SerializeField] Button quitButton;
     [SerializeField] Button stuckButton;
+    [SerializeField] Button backButton;
+    [SerializeField] private GameObject AudioView;
+    [SerializeField] private GameObject SettingView;
 
     void Start()
     {
@@ -20,6 +25,9 @@ public class SettingsView : View
         {
             restartButton.gameObject.SetActive(false);
         }
+        AudioView.SetActive(false);
+        SettingView.SetActive(true);
+
     }
     void OnEnable()
     {
@@ -27,6 +35,8 @@ public class SettingsView : View
         restartButton.onClick.AddListener(OnRestart);
         quitButton.onClick.AddListener(OnQuit);
         stuckButton.onClick.AddListener(OnStuck);
+        audioButton.onClick.AddListener(OnAudioView);
+        backButton.onClick.AddListener(OnBack);
 
     }
 
@@ -36,6 +46,8 @@ public class SettingsView : View
         restartButton.onClick.RemoveAllListeners();
         quitButton.onClick.RemoveAllListeners();
         stuckButton.onClick.RemoveAllListeners();
+        audioButton.onClick.RemoveAllListeners();
+        backButton.onClick.RemoveAllListeners();
     }
 
     private void OnResume()
@@ -67,6 +79,18 @@ public class SettingsView : View
         }
     }
 
+    private void OnAudioView()
+    {
+        AudioView.SetActive(true);
+        SettingView.SetActive(false);
+    }
+
+    private void OnBack()
+    {
+        AudioView.SetActive(false);
+        SettingView.SetActive(true);
+    }
+
 
     public override void OnHide()
     {
@@ -74,6 +98,7 @@ public class SettingsView : View
         Cursor.visible = false;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
+        OnBack();
     }
 
     public override void OnShow()

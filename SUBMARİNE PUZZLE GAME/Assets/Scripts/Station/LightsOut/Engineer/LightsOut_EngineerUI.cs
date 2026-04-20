@@ -23,7 +23,7 @@ public class LightsOut_EngineerUI : NetworkBehaviour
     {
         if (generatorMesh != null)
         {
-            rotationTween = generatorMesh.DORotate(rotationAmount, rotationDuration, RotateMode.LocalAxisAdd)
+            rotationTween = generatorMesh.DORotate(rotationAmount, rotationDuration, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
                 .SetLoops(-1, LoopType.Incremental);
         }
