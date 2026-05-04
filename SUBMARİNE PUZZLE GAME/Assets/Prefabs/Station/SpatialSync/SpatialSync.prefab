@@ -3348,6 +3348,13 @@ MonoBehaviour:
   edgeThickness: 6
   legendText: {fileID: 3262168540969765047}
   legendPanel: {fileID: 6875076044387542663}
+  coordinateLayer: {fileID: 3228652034174311390}
+  radarLineThickness: 1
+  radarColor: {r: 0.31607684, g: 0.3886792, b: 0.33422744, a: 1}
+  gridMaxAlpha: 0.5
+  gridFadeInTime: 0.5
+  gridVisibleTime: 1.5
+  gridWaitTime: 10
 --- !u!1 &3130041716105336388
 GameObject:
   m_ObjectHideFlags: 0
@@ -7319,6 +7326,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3228652034174311390}
   - {fileID: 787152099030051515}
   - {fileID: 6046645439239565641}
   m_Father: {fileID: 6776909567661334623}
@@ -7493,6 +7501,41 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &7717571439357906930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3228652034174311390}
+  m_Layer: 0
+  m_Name: CoordinateLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3228652034174311390
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7717571439357906930}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.063014984}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 476973790487527097}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0.036499023}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7783160932557390335

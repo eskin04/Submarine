@@ -29,7 +29,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     private Vector2Int _currentPos;
     private List<Vector2Int> _visitedNodes = new List<Vector2Int>();
 
-
     private void Awake()
     {
         _coreLogic = new SpatialSyncCore();
@@ -52,7 +51,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     {
         switch (state)
         {
-            case 0: ResetStation(); break;
             case 1: GenerateNewPuzzle(); break;
             case 2: Debug.Log("Çözüldü!"); break;
             case 3: Debug.Log("Başarısız! Işıklar Kırmızı."); break;
@@ -64,7 +62,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         if (!isServer) return;
         _visitedNodes.Clear();
         ClearGridObserversRpc();
-
+        GenerateNewPuzzle();
     }
 
     [ObserversRpc]
@@ -74,6 +72,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         {
             engineerUIManager.ClearUI();
         }
+
     }
 
     private void GenerateNewPuzzle()
@@ -148,7 +147,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
             if (engineerUIManager != null)
             {
                 Vector2Int refP = new Vector2Int(rx, ry);
-
                 engineerUIManager.DrawCircuit(_activeGraph, refP);
             }
             if (sSTechnicianUIManager != null)
@@ -163,7 +161,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void SubmitCoordinateServerRpc(ushort inputX, ushort inputY)
     {
-        if (CurrentState.value != 1 && CurrentState.value != 0) return;
+        if (CurrentState.value != 1) return;
 
         Vector2Int inputPos = new Vector2Int(inputX, inputY);
         Vector2Int referencePos = new Vector2Int(RefWorldX.value, RefWorldY.value);
@@ -182,13 +180,14 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         {
             isCorrect = _coreLogic.ValidateCircuitInput(_activeGraph, _currentPos, inputPos, target, CurrentStep.value, _visitedNodes);
         }
+
         if (isCorrect)
         {
             Vector2Int previousPos = _currentPos;
 
             CurrentStep.value++;
             _currentPos = inputPos;
-            _visitedNodes.Add(inputPos);
+            if (!_visitedNodes.Contains(inputPos)) _visitedNodes.Add(inputPos);
 
             CorrectStepObserversRpc((ushort)previousPos.x, (ushort)previousPos.y, (ushort)inputPos.x, (ushort)inputPos.y, (ushort)CurrentStep.value);
 
@@ -200,8 +199,11 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         }
         else
         {
-            ChangeStationStateServerRpc(1);
             WrongStepObserversRpc();
+
+            ResetStation();
+
+            CurrentState.value = 1;
         }
     }
 
@@ -210,7 +212,6 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     {
         Vector2Int prev = new Vector2Int(prevX, prevY);
         Vector2Int next = new Vector2Int(nextX, nextY);
-
 
         if (sSTechnicianUIManager != null)
         {
@@ -222,26 +223,27 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     [ObserversRpc]
     private void WrongStepObserversRpc()
     {
-        sSTechnicianUIManager.UpdateInputText("Fail!");
-        sSTechnicianUIManager.SetTarget(new Vector2Int(TargetWorldX.value, TargetWorldY.value));
-        stationController.ReportRepairMistake();
+        if (sSTechnicianUIManager != null)
+        {
+            sSTechnicianUIManager.UpdateInputText("Fail!");
+        }
+        if (stationController != null)
+        {
+            stationController.ReportRepairMistake();
+        }
+
         OnPuzzleReset?.Invoke();
-        // İleride buraya eklenebilecekler:
-        // 1. Fmod ile "BZZZTT" hata sesi.
-        // 2. Denizaltının o odasındaki kırmızı alarm ışıklarının yanıp sönmesi.
-        // 3. Teknisyen UI'ının tamamen kırmızı renge dönmesi.
     }
 
     [ObserversRpc]
     private void PuzzleSolvedObserversRpc()
     {
-        stationController.SetReparied();
-        // İleride buraya eklenebilecekler:
-        // 1. Fmod ile "Sistem Aktif" onay sesi.
-        // 2. Teknisyenin ekranındaki tüm yolların yeşile dönmesi.
+        if (stationController != null)
+        {
+            stationController.SetReparied();
+        }
     }
 
-    // Test
     [ContextMenu("Test Generate Puzzle")]
     private void TestGeneratePuzzle()
     {

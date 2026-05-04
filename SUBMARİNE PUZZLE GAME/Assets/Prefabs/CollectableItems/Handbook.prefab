@@ -732,6 +732,7 @@ GameObject:
   - component: {fileID: 5068525534114907326}
   - component: {fileID: 2536212591168441669}
   - component: {fileID: 6906011045975038120}
+  - component: {fileID: -6022167946655771719}
   m_Layer: 7
   m_Name: Handbook
   m_TagString: Untagged
@@ -774,9 +775,9 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8811113067314086387}
-        m_TargetAssemblyTypeName: ItemLoot, Assembly-CSharp
-        m_MethodName: LootItem
+      - m_Target: {fileID: -6022167946655771719}
+        m_TargetAssemblyTypeName: ModuleInteraction, Assembly-CSharp
+        m_MethodName: Interact
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -888,8 +889,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.3749552, y: 1.951945, z: 0.24613619}
-  m_Center: {x: -0.014715195, y: -0.009338707, z: -0.07537961}
+  m_Size: {x: 3.3750439, y: 2.2145011, z: 0.24613619}
+  m_Center: {x: -0.89039207, y: -0.009338781, z: -0.07537961}
 --- !u!114 &6906011045975038120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,6 +935,24 @@ MonoBehaviour:
       Data3: -1388017015
       Data4: 2048880777
     Path: event:/SFX/Handbook/BookClose
+--- !u!114 &-6022167946655771719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667190870702925776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62869c94553ab94c83f9ba9c62aa1f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
+  animDuration: 0.5
+  animEase: 4
+  initialPositionOffset: {x: 0, y: 0, z: 1}
+  initialRotationOffset: {x: 0, y: 0, z: 0}
+  isUnlockCursor: 1
+  isMoveable: 0
 --- !u!1 &8802816607932940106
 GameObject:
   m_ObjectHideFlags: 0
