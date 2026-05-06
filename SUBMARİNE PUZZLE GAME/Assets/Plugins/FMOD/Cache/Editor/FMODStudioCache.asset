@@ -178,10 +178,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639136823972550637
+  lastModified: 639123047433233453
   FileSizes:
   - Name: Desktop
-    Value: 2888
+    Value: 2792
   Exists: 1
 --- !u!114 &-5144793765178326867
 MonoBehaviour:
@@ -311,33 +311,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 4692
---- !u!114 &-4295670135293486570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/VoiceChat/RadioStart
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/SFX/VoiceChat/RadioStart
-  Guid:
-    Data1: 310162631
-    Data2: 1074966296
-    Data3: -1384030024
-    Data4: -2089836408
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 0
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 1056
 --- !u!114 &-4187371527243161283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,38 +326,11 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639136823972653153
+  lastModified: 639123047433280765
   FileSizes:
   - Name: Desktop
     Value: 506
   Exists: 1
---- !u!114 &-3854571168593044228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/VoiceChat/RadioEnd
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/SFX/VoiceChat/RadioEnd
-  Guid:
-    Data1: 1784854883
-    Data2: 1135852837
-    Data3: 903020941
-    Data4: 179517757
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 0
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 360
 --- !u!114 &-3786474130373117914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,15 +696,13 @@ MonoBehaviour:
   - {fileID: 8146130566771494721}
   - {fileID: -5144793765178326867}
   - {fileID: 5718116725265424962}
-  - {fileID: -3854571168593044228}
-  - {fileID: -4295670135293486570}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639136823974483220
+  cacheTime: 639123047442287133
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -824,10 +768,6 @@ MonoBehaviour:
     index: 30
   - key: event:/SFX/OverrideProtocol/Correct
     index: 31
-  - key: event:/SFX/VoiceChat/RadioEnd
-    index: 32
-  - key: event:/SFX/VoiceChat/RadioStart
-    index: 33
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1018,7 +958,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639136823972529622
+  lastModified: 639123047433218149
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1119,10 +1059,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639136823974483220
+  lastModified: 639123047442287133
   FileSizes:
   - Name: Desktop
-    Value: 1690592
+    Value: 1672160
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:
@@ -1193,7 +1133,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Ambiance.bank
   Name: Ambiance
   StudioPath: bank:/Ambiance
-  lastModified: 639136823972415210
+  lastModified: 639123047433166267
   FileSizes:
   - Name: Desktop
     Value: 4863872
