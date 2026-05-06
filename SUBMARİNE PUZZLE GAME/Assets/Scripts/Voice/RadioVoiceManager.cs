@@ -3,18 +3,17 @@ using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Vivox;
 using System.Threading.Tasks;
+using FMODUnity;
 
 public class RadioVoiceManager : MonoBehaviour
 {
     public static RadioVoiceManager Instance { get; private set; }
+
     [Header("Telsiz Ayarları")]
     public KeyCode pushToTalkKey = KeyCode.Q;
-
-    [Header("Ses Efektleri")]
-    public AudioSource radioSFXSource;
-    public AudioClip connectClip;
-    public AudioClip disconnectClip;
-
+    public AudioEventChannelSO _channel;
+    public EventReference connectEvent;
+    public EventReference disconnectEvent;
     private bool isLoggedIn = false;
 
     void Awake()
@@ -26,9 +25,8 @@ public class RadioVoiceManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        StartLobbyVoice();
     }
-
-
 
     public async void StartLobbyVoice(string channelName = "GlobalOpsRadio")
     {
@@ -53,7 +51,6 @@ public class RadioVoiceManager : MonoBehaviour
 
             await VivoxService.Instance.LoginAsync(options);
 
-
             JoinRadioChannel(channelName);
         }
         catch (System.Exception e)
@@ -64,20 +61,16 @@ public class RadioVoiceManager : MonoBehaviour
 
     private async void JoinRadioChannel(string channelName)
     {
-
         VivoxService.Instance.MuteInputDevice();
 
         await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.AudioOnly);
         isLoggedIn = VivoxService.Instance.IsLoggedIn;
-
     }
-
 
     void Update()
     {
         if (isLoggedIn)
         {
-
             if (Input.GetKeyDown(pushToTalkKey))
             {
                 StartTransmission();
@@ -85,38 +78,39 @@ public class RadioVoiceManager : MonoBehaviour
 
             if (Input.GetKeyUp(pushToTalkKey))
             {
-
                 StopTransmission();
-
             }
         }
     }
 
-
-
-
     void StartTransmission()
     {
-        if (radioSFXSource != null && connectClip != null)
+        if (!connectEvent.IsNull)
         {
-            radioSFXSource.PlayOneShot(connectClip);
+            PlaySound(connectEvent);
         }
 
         VivoxService.Instance.UnmuteInputDevice();
-
     }
 
     void StopTransmission()
     {
-        if (radioSFXSource != null && disconnectClip != null)
+        if (!disconnectEvent.IsNull)
         {
-            radioSFXSource.PlayOneShot(disconnectClip);
+            PlaySound(disconnectEvent);
         }
 
         VivoxService.Instance.MuteInputDevice();
     }
 
-
+    private void PlaySound(EventReference sound)
+    {
+        if (_channel != null && !sound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(sound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
+    }
 
     void OnApplicationQuit()
     {
