@@ -25,7 +25,6 @@ public class RadioVoiceManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        StartLobbyVoice();
     }
 
     public async void StartLobbyVoice(string channelName = "GlobalOpsRadio")
