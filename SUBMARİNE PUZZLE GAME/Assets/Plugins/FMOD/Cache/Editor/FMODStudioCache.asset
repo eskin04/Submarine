@@ -136,6 +136,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &-6529367586247166553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceChat/RadioStart
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceChat/RadioStart
+  Guid:
+    Data1: 310162631
+    Data2: 1074966296
+    Data3: -1384030024
+    Data4: -2089836408
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 1056
 --- !u!114 &-5807905966633014312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,10 +205,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639123047433233453
+  lastModified: 639136823972550637
   FileSizes:
   - Name: Desktop
-    Value: 2792
+    Value: 2888
   Exists: 1
 --- !u!114 &-5144793765178326867
 MonoBehaviour:
@@ -326,7 +353,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639123047433280765
+  lastModified: 639136823972653153
   FileSizes:
   - Name: Desktop
     Value: 506
@@ -696,13 +723,15 @@ MonoBehaviour:
   - {fileID: 8146130566771494721}
   - {fileID: -5144793765178326867}
   - {fileID: 5718116725265424962}
+  - {fileID: 2720456325146348911}
+  - {fileID: -6529367586247166553}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639123047442287133
+  cacheTime: 639136823974483220
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -768,6 +797,10 @@ MonoBehaviour:
     index: 30
   - key: event:/SFX/OverrideProtocol/Correct
     index: 31
+  - key: event:/SFX/VoiceChat/RadioEnd
+    index: 32
+  - key: event:/SFX/VoiceChat/RadioStart
+    index: 33
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -958,11 +991,38 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639123047433218149
+  lastModified: 639136823972529622
   FileSizes:
   - Name: Desktop
     Value: 2272
   Exists: 1
+--- !u!114 &2720456325146348911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceChat/RadioEnd
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceChat/RadioEnd
+  Guid:
+    Data1: 1784854883
+    Data2: 1135852837
+    Data3: 903020941
+    Data4: 179517757
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 360
 --- !u!114 &3316582532417768414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1059,10 +1119,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639123047442287133
+  lastModified: 639136823974483220
   FileSizes:
   - Name: Desktop
-    Value: 1672160
+    Value: 1690592
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:
@@ -1133,7 +1193,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Ambiance.bank
   Name: Ambiance
   StudioPath: bank:/Ambiance
-  lastModified: 639123047433166267
+  lastModified: 639136823972415210
   FileSizes:
   - Name: Desktop
     Value: 4863872

@@ -26,6 +26,7 @@ public class InventoryManager : NetworkBehaviour
     private IInteractable currentFocusedInteractable;
     private ItemSway itemSwayScript;
     private bool isHeldItemHidden = false;
+    public static InventoryManager LocalPlayer { get; private set; }
 
     [Serializable]
     private class InventoryItemContainer
@@ -47,6 +48,10 @@ public class InventoryManager : NetworkBehaviour
         if (playerInventory.HandPosition)
         {
             itemSwayScript = playerInventory.HandPosition.GetComponent<ItemSway>();
+        }
+        if (isOwner)
+        {
+            LocalPlayer = this;
         }
 
 
@@ -152,6 +157,26 @@ public class InventoryManager : NetworkBehaviour
 
 
         if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
+    }
+
+    public GameObject GetCurrentHeldObject()
+    {
+        if (currentSlotIndex == -1) return null;
+        return containers[currentSlotIndex].PhysicalObject;
+    }
+
+    [ServerRpc(runLocally: true)]
+    public void ExtractCurrentHeldItem()
+    {
+        if (currentSlotIndex == -1) return;
+
+        GameObject extractedObj = containers[currentSlotIndex].PhysicalObject;
+
+
+        RemoveCurrentItem();
+        SetItemSettings(extractedObj, false);
+        ObserversDropRpc(extractedObj);
+
     }
 
     // =================================================================================================

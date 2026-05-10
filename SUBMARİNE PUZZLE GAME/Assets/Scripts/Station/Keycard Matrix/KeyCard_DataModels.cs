@@ -1,9 +1,8 @@
 using System;
 
-// Temel Özellikler
-public enum CardColor { Red, White, Green, Blue }
-public enum CardType { Chip, PhosphorX, Scratched, DuctTaped }
-public enum CardDetail { BrokenEdge, PostIt, HoleInMiddle, Rusty }
+public enum CardColor { Red, Blue, Green, Yellow }
+public enum CardType { Crack1, Crack2, Crack3, Crack4 }
+public enum CardDetail { bandedge, barcoded, chipped, QRcoded }
 
 public enum PropertyCategory { Color, Type, Detail }
 public enum RelativeDirection { Left, Right }
@@ -18,7 +17,6 @@ public enum ConditionTemplateType
     ExactGlobalTraitCount    // Sistemde tam olarak [Count] tane [Trait]
 }
 
-// Ağda senkronize edilecek Koşul Verisi
 [Serializable]
 public struct ConditionData
 {

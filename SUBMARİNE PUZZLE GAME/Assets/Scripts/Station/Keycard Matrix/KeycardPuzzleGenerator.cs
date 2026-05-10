@@ -24,13 +24,9 @@ public class KeycardPuzzleGenerator
         while (!isPuzzlePerfect && attempts < maxAttempts)
         {
             attempts++;
-
             finalCards = CreateSixUniqueCards();
 
-            for (int i = 0; i < 4; i++)
-            {
-                targetSolution[i] = finalCards[i];
-            }
+            for (int i = 0; i < 4; i++) targetSolution[i] = finalCards[i];
 
             AssignConditions(finalCards, targetSolution);
 
@@ -52,7 +48,7 @@ public class KeycardPuzzleGenerator
             if (validCount == 1)
             {
                 isPuzzlePerfect = true;
-                Debug.Log($"[Keycard İstasyonu] Mükemmel bulmaca {attempts}. denemede oluşturuldu.");
+                Debug.Log($"[Keycard İstasyonu] Mükemmel bulmaca {attempts}. denemede oluşturuldu. (İşaretçi Zinciri Başarılı)");
             }
         }
 
@@ -114,106 +110,122 @@ public class KeycardPuzzleGenerator
 
     private void AssignConditions(CardData[] allCards, CardData[] targetSolution)
     {
+        int[][] validCycles = new int[][]
+        {
+            new int[] { 1, 2, 3, 0 },
+            new int[] { 1, 3, 0, 2 },
+            new int[] { 2, 0, 3, 1 },
+            new int[] { 2, 3, 1, 0 },
+            new int[] { 3, 0, 1, 2 },
+            new int[] { 3, 2, 0, 1 }
+        };
+
+        int[] selectedChain = validCycles[Random.Range(0, validCycles.Length)];
+
+        List<ConditionTemplateType> usedTemplates = new List<ConditionTemplateType>();
+
         for (int i = 0; i < 4; i++)
         {
-            allCards[i].Condition = GenerateValidConditionFor(targetSolution, targetSolution[i], i);
+            int targetSocketToDescribe = selectedChain[i];
+            allCards[i].Condition = GenerateDiverseCondition(targetSolution, allCards[i], i, targetSocketToDescribe, usedTemplates);
         }
 
         for (int i = 4; i < 6; i++)
         {
-            int fakeIndex = Random.Range(0, 4);
-            allCards[i].Condition = GenerateValidConditionFor(allCards, allCards[i], fakeIndex);
+            int fakeMyIndex = Random.Range(0, 4);
+            int fakeTargetIndex = Random.Range(0, 4);
+            allCards[i].Condition = GenerateDiverseCondition(allCards, allCards[i], fakeMyIndex, fakeTargetIndex, new List<ConditionTemplateType>());
 
             if (Random.value > 0.5f) allCards[i].Condition.IsPositive = !allCards[i].Condition.IsPositive;
+
+            if (Random.value > 0.7f)
+            {
+                allCards[i].Condition.TemplateType = ConditionTemplateType.ForbiddenSockets;
+                allCards[i].Condition.IsPositive = false;
+                allCards[i].Condition.TargetSocket1 = Random.Range(0, 4);
+                allCards[i].Condition.TargetSocket2 = (allCards[i].Condition.TargetSocket1 + 1) % 4;
+            }
         }
     }
 
-    private ConditionData GenerateValidConditionFor(CardData[] solutionSequence, CardData card, int mySocketIndex)
+    private ConditionData GenerateDiverseCondition(CardData[] solutionSequence, CardData myCard, int mySocketIndex, int targetSocketIndex, List<ConditionTemplateType> usedTemplates)
     {
         ConditionData cond = new ConditionData();
         cond.IsPositive = true;
+        CardData targetCard = solutionSequence[targetSocketIndex];
 
-        ConditionTemplateType randomTemplate = (ConditionTemplateType)Random.Range(0, 6);
+        List<ConditionTemplateType> available = new List<ConditionTemplateType>();
 
-        switch (randomTemplate)
+        available.Add(ConditionTemplateType.SpecificSocketTrait);
+        available.Add(ConditionTemplateType.ExactGlobalTraitCount);
+        available.Add(ConditionTemplateType.GlobalTraitPresence);
+
+        if (Mathf.Abs(mySocketIndex - targetSocketIndex) == 1)
+        {
+            available.Add(ConditionTemplateType.RelativeDirectionTrait);
+
+            if (myCard.Color == targetCard.Color || myCard.Type == targetCard.Type || myCard.Detail == targetCard.Detail)
+                available.Add(ConditionTemplateType.RelativeSharedCategory);
+        }
+
+        List<ConditionTemplateType> filtered = available.Where(t => !usedTemplates.Contains(t)).ToList();
+
+        if (filtered.Count == 0) filtered = available;
+
+        ConditionTemplateType selection = filtered[Random.Range(0, filtered.Count)];
+        usedTemplates.Add(selection);
+
+        cond.TemplateType = selection;
+        cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+
+        bool makeNegative = (Random.value > 0.7f) &&
+                            selection != ConditionTemplateType.RelativeSharedCategory &&
+                            selection != ConditionTemplateType.ExactGlobalTraitCount;
+
+        switch (selection)
         {
             case ConditionTemplateType.SpecificSocketTrait:
-                cond.TemplateType = ConditionTemplateType.SpecificSocketTrait;
-                cond.TargetSocket1 = Random.Range(0, 4);
-                cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
-
-                CardData targetCard1 = solutionSequence[cond.TargetSocket1];
-                SetConditionTraits(ref cond, targetCard1);
-                break;
-
-            case ConditionTemplateType.GlobalTraitPresence:
-                cond.TemplateType = ConditionTemplateType.GlobalTraitPresence;
-                CardData targetCard2 = solutionSequence[Random.Range(0, 4)];
-                cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
-                SetConditionTraits(ref cond, targetCard2);
+                cond.TargetSocket1 = targetSocketIndex;
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                else SetConditionTraits(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeDirectionTrait:
-                cond.TemplateType = ConditionTemplateType.RelativeDirectionTrait;
-                if (mySocketIndex == 0) cond.Direction = RelativeDirection.Right;
-                else if (mySocketIndex == 3) cond.Direction = RelativeDirection.Left;
-                else cond.Direction = (RelativeDirection)Random.Range(0, 2);
-
-                int neighborIndex = cond.Direction == RelativeDirection.Left ? mySocketIndex - 1 : mySocketIndex + 1;
-                cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
-                SetConditionTraits(ref cond, solutionSequence[neighborIndex]);
-                break;
-
-            case ConditionTemplateType.ForbiddenSockets:
-                cond.TemplateType = ConditionTemplateType.ForbiddenSockets;
-                cond.IsPositive = false;
-                List<int> availableSockets = new List<int> { 0, 1, 2, 3 };
-                availableSockets.Remove(mySocketIndex);
-
-                cond.TargetSocket1 = availableSockets[Random.Range(0, availableSockets.Count)];
-                availableSockets.Remove(cond.TargetSocket1);
-                cond.TargetSocket2 = availableSockets[Random.Range(0, availableSockets.Count)];
+                cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                else SetConditionTraits(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeSharedCategory:
-                if (mySocketIndex == 0) cond.Direction = RelativeDirection.Right;
-                else if (mySocketIndex == 3) cond.Direction = RelativeDirection.Left;
-                else cond.Direction = (RelativeDirection)Random.Range(0, 2);
-
-                int neighborIdx = cond.Direction == RelativeDirection.Left ? mySocketIndex - 1 : mySocketIndex + 1;
-                CardData neighbor = solutionSequence[neighborIdx];
-
-                List<PropertyCategory> sharedCategories = new List<PropertyCategory>();
-                if (card.Color == neighbor.Color) sharedCategories.Add(PropertyCategory.Color);
-                if (card.Type == neighbor.Type) sharedCategories.Add(PropertyCategory.Type);
-                if (card.Detail == neighbor.Detail) sharedCategories.Add(PropertyCategory.Detail);
-
-                if (sharedCategories.Count > 0)
-                {
-                    cond.TemplateType = ConditionTemplateType.RelativeSharedCategory;
-                    cond.TargetCategory = sharedCategories[Random.Range(0, sharedCategories.Count)];
-                }
-                else
-                {
-                    cond.TemplateType = ConditionTemplateType.SpecificSocketTrait;
-                    cond.TargetSocket1 = mySocketIndex;
-                    cond.TargetCategory = PropertyCategory.Color;
-                    cond.TargetColor = card.Color;
-                }
+                cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
+                List<PropertyCategory> shared = new List<PropertyCategory>();
+                if (myCard.Color == targetCard.Color) shared.Add(PropertyCategory.Color);
+                if (myCard.Type == targetCard.Type) shared.Add(PropertyCategory.Type);
+                if (myCard.Detail == targetCard.Detail) shared.Add(PropertyCategory.Detail);
+                cond.TargetCategory = shared[Random.Range(0, shared.Count)];
                 break;
 
             case ConditionTemplateType.ExactGlobalTraitCount:
-                cond.TemplateType = ConditionTemplateType.ExactGlobalTraitCount;
-                CardData randomTarget = solutionSequence[Random.Range(0, 4)];
-                cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
-                SetConditionTraits(ref cond, randomTarget);
+                SetConditionTraits(ref cond, targetCard);
+                cond.TargetCount = solutionSequence.Count(c => CheckTrait(c, cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail));
+                break;
 
-                int count = solutionSequence.Count(c => CheckTrait(c, cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail));
-                cond.TargetCount = count;
+            case ConditionTemplateType.GlobalTraitPresence:
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                else SetConditionTraits(ref cond, targetCard);
                 break;
         }
 
         return cond;
+    }
+
+    private void SetNegativeTrait(ref ConditionData cond, CardData targetCard)
+    {
+        cond.IsPositive = false;
+
+        cond.TargetColor = (CardColor)((((int)targetCard.Color) + Random.Range(1, 4)) % 4);
+        cond.TargetType = (CardType)((((int)targetCard.Type) + Random.Range(1, 4)) % 4);
+        cond.TargetDetail = (CardDetail)((((int)targetCard.Detail) + Random.Range(1, 4)) % 4);
     }
 
     private void SetConditionTraits(ref ConditionData cond, CardData sourceCard)
@@ -223,15 +235,12 @@ public class KeycardPuzzleGenerator
         cond.TargetDetail = sourceCard.Detail;
     }
 
-
     public bool EvaluatePermutation(CardData[] systemCards)
     {
         for (int i = 0; i < systemCards.Length; i++)
         {
             if (!DoesConditionMatch(systemCards[i], i, systemCards))
-            {
                 return false;
-            }
         }
         return true;
     }
@@ -245,9 +254,7 @@ public class KeycardPuzzleGenerator
         {
             case ConditionTemplateType.SpecificSocketTrait:
                 if (cond.TargetSocket1 >= 0 && cond.TargetSocket1 < systemCards.Length)
-                {
                     conditionMet = CheckTrait(systemCards[cond.TargetSocket1], cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail);
-                }
                 break;
 
             case ConditionTemplateType.GlobalTraitPresence:
@@ -257,9 +264,7 @@ public class KeycardPuzzleGenerator
             case ConditionTemplateType.RelativeDirectionTrait:
                 int targetIndex = cond.Direction == RelativeDirection.Left ? currentIndex - 1 : currentIndex + 1;
                 if (targetIndex >= 0 && targetIndex < systemCards.Length)
-                {
                     conditionMet = CheckTrait(systemCards[targetIndex], cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail);
-                }
                 break;
 
             case ConditionTemplateType.ForbiddenSockets:
@@ -269,9 +274,7 @@ public class KeycardPuzzleGenerator
             case ConditionTemplateType.RelativeSharedCategory:
                 int relIndex = cond.Direction == RelativeDirection.Left ? currentIndex - 1 : currentIndex + 1;
                 if (relIndex >= 0 && relIndex < systemCards.Length)
-                {
                     conditionMet = ShareSameTrait(card, systemCards[relIndex], cond.TargetCategory);
-                }
                 break;
 
             case ConditionTemplateType.ExactGlobalTraitCount:

@@ -62,4 +62,6 @@ public class Interactable : MonoBehaviour, IInteractable
         if (outline != null)
             outline.enabled = false;
     }
+
+    public void SetDisplayName(string newName) => displayName = newName;
 }
