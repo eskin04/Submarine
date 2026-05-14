@@ -30,7 +30,8 @@ public class SSEngineerUIManager : MonoBehaviour
     public float gridMaxAlpha = 0.5f;
     public float gridFadeInTime = 0.5f;
     public float gridVisibleTime = 1.5f;
-    public float gridWaitTime = 10f;
+    public float maxgridWaitTime = 8f;
+    public float mingridWaitTime = 5f;
 
     private CanvasGroup _radarCanvasGroup;
 
@@ -97,6 +98,7 @@ public class SSEngineerUIManager : MonoBehaviour
         }
 
         Sequence radarSeq = DOTween.Sequence();
+        float gridWaitTime = Random.Range(mingridWaitTime, maxgridWaitTime);
         radarSeq.AppendInterval(gridWaitTime);
         radarSeq.Append(_radarCanvasGroup.DOFade(gridMaxAlpha, gridFadeInTime).SetEase(Ease.InOutSine));
         radarSeq.AppendInterval(gridVisibleTime);

@@ -379,7 +379,6 @@ public class InventoryManager : NetworkBehaviour
 
             else
             {
-                // --- BOŞLUĞA BAKIYORUZ ---
                 if (playerInventory.DropPosition)
                 {
                     finalPos = playerInventory.DropPosition.position;
@@ -403,7 +402,7 @@ public class InventoryManager : NetworkBehaviour
         if (!container.IsEmpty)
         {
             float rndX = UnityEngine.Random.Range(-range, range);
-            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(0, rndX, .005f));
+            Vector3 worldPos = liftTransform.TransformPoint(new Vector3(rndX, .5f, 0f));
 
             DropServerRpc(container.PhysicalObject, liftTransform.gameObject, worldPos, Quaternion.identity);
         }

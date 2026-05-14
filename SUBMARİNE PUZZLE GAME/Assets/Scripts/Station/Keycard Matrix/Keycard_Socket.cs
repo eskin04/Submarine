@@ -1,7 +1,7 @@
 using UnityEngine;
 using PurrNet;
 
-public enum SocketType { Dispenser, Technician, Engineer }
+public enum SocketType { Dispenser, Technician, Engineer, Tester }
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(Collider))]
@@ -78,6 +78,8 @@ public class Keycard_Socket : NetworkBehaviour
             stationManager.EngineerRemoveCardRPC();
         else if (type == SocketType.Technician && stationManager != null)
             stationManager.TechnicianRemoveCardRPC(socketIndex);
+        else if (type == SocketType.Tester && stationManager != null)
+            stationManager.TesterRemoveCardRPC(socketIndex);
 
         RpcClearSocket();
     }
@@ -92,6 +94,8 @@ public class Keycard_Socket : NetworkBehaviour
             stationManager.EngineerInsertCardRPC(cardID);
         else if (type == SocketType.Technician && stationManager != null)
             stationManager.TechnicianInsertCardRPC(cardID, socketIndex);
+        else if (type == SocketType.Tester && stationManager != null)
+            stationManager.TesterInsertCardRPC(cardID, socketIndex);
     }
 
     [ObserversRpc]

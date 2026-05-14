@@ -5,29 +5,26 @@ using FMODUnity;
 
 public class ModernHandbook : MonoBehaviour
 {
-    [Header("Sabit Sayfalar (Arka Plan)")]
     public Image leftPageStatic;
     public Image rightPageStatic;
 
-    [Header("Dönen Menteşe Sistemi")]
-    [Tooltip("Pivot noktası X:0, Y:0.5 olmalı")]
     public RectTransform pageHinge;
-    public Image hingeFront; // Sağdan sola dönerken görünen yüz
-    public Image hingeBack;  // 90 dereceyi geçince görünen arka yüz
+    public Image hingeFront;
+    public Image hingeBack;
 
-    [Header("İçerik")]
+    [Header("Content")]
     public Sprite[] bookPages;
-    public Sprite emptyPageBackground; // Sayfa kalmadığında görünecek boş zemin
+    public Sprite emptyPageBackground;
 
-    [Header("Ayarlar")]
+    [Header("Settings")]
     public float flipDuration = 0.5f;
-    public Ease flipEase = Ease.InOutQuad; // DOTween yumuşatma eğrisi
+    public Ease flipEase = Ease.InOutQuad;
 
     [Header("Audio Settings")]
     [SerializeField] private AudioEventChannelSO _channel;
     [SerializeField] private EventReference _scrollSound;
 
-    private int currentPageIndex = 0; // Sol sayfanın indeksi (0, 2, 4...)
+    private int currentPageIndex = 0;
     private bool isFlipping = false;
 
     void Start()
@@ -38,21 +35,19 @@ public class ModernHandbook : MonoBehaviour
 
     void Update()
     {
-        // Sayfa çevriliyorsa yeni girdi alma
         if (isFlipping) return;
 
-        // Mouse tekerleği girdisi
         float scroll = Input.mouseScrollDelta.y;
 
 
 
-        if (scroll > 0 && currentPageIndex < bookPages.Length - 2)
+        if (scroll < 0 && currentPageIndex < bookPages.Length - 2)
         {
-            FlipRightToLeft(); // İleri (Aşağı kaydırma)
+            FlipRightToLeft();
         }
-        else if (scroll < 0 && currentPageIndex > 0)
+        else if (scroll > 0 && currentPageIndex > 0)
         {
-            FlipLeftToRight(); // Geri (Yukarı kaydırma)
+            FlipLeftToRight();
         }
     }
 

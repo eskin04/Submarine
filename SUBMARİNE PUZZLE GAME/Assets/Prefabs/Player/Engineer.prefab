@@ -705,8 +705,8 @@ MonoBehaviour:
   headLight: {fileID: 7179952941191609010}
   operateKey: 102
   maxBattery: 100
-  drainRate: 2
-  rechargeRate: 0
+  drainRate: 1
+  rechargeRate: 0.25
   rechargeDelay: 2.5
   flickerThreshold: 30
   minFlickerInterval: 4

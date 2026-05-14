@@ -13,6 +13,7 @@ public class Keycard_StationManager : NetworkBehaviour
     public SyncVar<bool> isRoundActive = new SyncVar<bool>(false);
     public int[] technicianSockets = new int[4] { -1, -1, -1, -1 };
     public int engineerSocket = -1;
+    public int[] testerSockets = new int[2] { -1, -1 };
     public bool isButtonCoverOpen = false;
 
     [Header("Dispensers")]
@@ -22,6 +23,7 @@ public class Keycard_StationManager : NetworkBehaviour
     [Header("References")]
     public Keycard_EngineerUI engineerUI;
     public StationController stationController;
+    public Keycard_TesterModule testerModule;
 
 
     public void StartNewRound()
@@ -37,6 +39,8 @@ public class Keycard_StationManager : NetworkBehaviour
         correctSolutionSequence.Clear();
 
         for (int i = 0; i < 4; i++) technicianSockets[i] = -1;
+        testerSockets[0] = -1;
+        testerSockets[1] = -1;
         engineerSocket = -1;
         isButtonCoverOpen = false;
 
@@ -134,6 +138,62 @@ public class Keycard_StationManager : NetworkBehaviour
         engineerSocket = -1;
 
         RpcUpdateEngineerSocket(-1, new ConditionData());
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void TesterInsertCardRPC(int cardID, int socketIndex)
+    {
+        if (!isRoundActive.value || socketIndex < 0 || socketIndex > 1) return;
+
+
+        testerSockets[socketIndex] = cardID;
+        EvaluateTesterModule();
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    public void TesterRemoveCardRPC(int socketIndex)
+    {
+        if (!isRoundActive.value || socketIndex < 0 || socketIndex > 1) return;
+
+        testerSockets[socketIndex] = -1;
+        EvaluateTesterModule();
+    }
+
+    private void EvaluateTesterModule()
+    {
+        int card1 = testerSockets[0];
+        int card2 = testerSockets[1];
+
+        if (card1 == -1 || card2 == -1)
+        {
+            RpcUpdateTesterLight(0);
+            return;
+        }
+
+        int index1 = correctSolutionSequence.IndexOf(card1);
+        int index2 = correctSolutionSequence.IndexOf(card2);
+
+        if (index1 == -1 || index2 == -1)
+        {
+            RpcUpdateTesterLight(1);
+        }
+        else if (Mathf.Abs(index1 - index2) == 1)
+        {
+            RpcUpdateTesterLight(2);
+        }
+        else
+        {
+            RpcUpdateTesterLight(1);
+        }
+    }
+
+    [ObserversRpc]
+    private void RpcUpdateTesterLight(int status)
+    {
+        if (testerModule != null)
+        {
+            testerModule.UpdateLightState(status);
+        }
     }
 
     [ObserversRpc]
