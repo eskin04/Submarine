@@ -1,11 +1,18 @@
 using UnityEngine;
 using PurrLobby;
 using UnityEngine.SceneManagement;
+using PurrNet;
 
 public class GameLoader : MonoBehaviour
 {
     [SerializeField] private LobbyManager lobbyManager;
     [SerializeField] private LevelData[] allLevels;
+
+
+
+    [PurrScene] public string ContractScene;
+
+    [SerializeField] private bool showContractOnlyOnce = true;
 
     private void OnEnable()
     {
@@ -38,6 +45,19 @@ public class GameLoader : MonoBehaviour
         {
 
             lobbyManager.SetLobbyStarted();
+
+            if (levelToLoadID == 1)
+            {
+                bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
+
+                if (!showContractOnlyOnce || !hasSignedContract)
+                {
+                    Debug.Log($"[GameLoader] Herkes hazır! Level 1 ilk kez oynanıyor, {ContractScene} yükleniyor...");
+
+                    SceneManager.LoadSceneAsync(ContractScene);
+                    return;
+                }
+            }
 
             Debug.Log($"[GameLoader] Herkes hazır! Görev {dataToLoad.levelID} yükleniyor...");
 

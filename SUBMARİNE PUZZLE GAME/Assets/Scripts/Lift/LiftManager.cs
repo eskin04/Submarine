@@ -87,7 +87,7 @@ public class LiftManager : NetworkBehaviour
 
         float targetY = targetFloorIndex == 0 ? liftDownPosition : liftUpPosition;
 
-        lift.transform.DOLocalMoveY(targetY, liftSpeed).SetEase(Ease.InOutSine).OnComplete(() =>
+        lift.transform.DOLocalMoveY(targetY, liftSpeed).SetEase(Ease.InOutSine).SetDelay(0.3f).OnComplete(() =>
         {
             currentFloorIndex = targetFloorIndex;
             liftDoors[currentFloorIndex].ToggleDoor(true);

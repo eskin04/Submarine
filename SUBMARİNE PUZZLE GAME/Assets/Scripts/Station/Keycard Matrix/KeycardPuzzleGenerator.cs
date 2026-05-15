@@ -163,20 +163,39 @@ public class KeycardPuzzleGenerator
         if (Mathf.Abs(mySocketIndex - targetSocketIndex) == 1)
         {
             available.Add(ConditionTemplateType.RelativeDirectionTrait);
-
             if (myCard.Color == targetCard.Color || myCard.Type == targetCard.Type || myCard.Detail == targetCard.Detail)
                 available.Add(ConditionTemplateType.RelativeSharedCategory);
         }
 
         List<ConditionTemplateType> filtered = available.Where(t => !usedTemplates.Contains(t)).ToList();
-
         if (filtered.Count == 0) filtered = available;
 
         ConditionTemplateType selection = filtered[Random.Range(0, filtered.Count)];
         usedTemplates.Add(selection);
 
         cond.TemplateType = selection;
-        cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+
+        List<PropertyCategory> diffCategories = new List<PropertyCategory>();
+        if (myCard.Color != targetCard.Color) diffCategories.Add(PropertyCategory.Color);
+        if (myCard.Type != targetCard.Type) diffCategories.Add(PropertyCategory.Type);
+        if (myCard.Detail != targetCard.Detail) diffCategories.Add(PropertyCategory.Detail);
+
+        if (selection == ConditionTemplateType.GlobalTraitPresence || selection == ConditionTemplateType.ExactGlobalTraitCount)
+        {
+            cond.TargetCategory = diffCategories[Random.Range(0, diffCategories.Count)];
+        }
+        else if (selection == ConditionTemplateType.RelativeSharedCategory)
+        {
+            List<PropertyCategory> shared = new List<PropertyCategory>();
+            if (myCard.Color == targetCard.Color) shared.Add(PropertyCategory.Color);
+            if (myCard.Type == targetCard.Type) shared.Add(PropertyCategory.Type);
+            if (myCard.Detail == targetCard.Detail) shared.Add(PropertyCategory.Detail);
+            cond.TargetCategory = shared[Random.Range(0, shared.Count)];
+        }
+        else
+        {
+            cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+        }
 
         bool makeNegative = (Random.value > 0.7f) &&
                             selection != ConditionTemplateType.RelativeSharedCategory &&
@@ -186,23 +205,18 @@ public class KeycardPuzzleGenerator
         {
             case ConditionTemplateType.SpecificSocketTrait:
                 cond.TargetSocket1 = targetSocketIndex;
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
                 else SetConditionTraits(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeDirectionTrait:
                 cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
                 else SetConditionTraits(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeSharedCategory:
                 cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
-                List<PropertyCategory> shared = new List<PropertyCategory>();
-                if (myCard.Color == targetCard.Color) shared.Add(PropertyCategory.Color);
-                if (myCard.Type == targetCard.Type) shared.Add(PropertyCategory.Type);
-                if (myCard.Detail == targetCard.Detail) shared.Add(PropertyCategory.Detail);
-                cond.TargetCategory = shared[Random.Range(0, shared.Count)];
                 break;
 
             case ConditionTemplateType.ExactGlobalTraitCount:
@@ -211,7 +225,7 @@ public class KeycardPuzzleGenerator
                 break;
 
             case ConditionTemplateType.GlobalTraitPresence:
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard);
+                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
                 else SetConditionTraits(ref cond, targetCard);
                 break;
         }
@@ -219,13 +233,21 @@ public class KeycardPuzzleGenerator
         return cond;
     }
 
-    private void SetNegativeTrait(ref ConditionData cond, CardData targetCard)
+    private void SetNegativeTrait(ref ConditionData cond, CardData targetCard, CardData myCard)
     {
         cond.IsPositive = false;
 
-        cond.TargetColor = (CardColor)((((int)targetCard.Color) + Random.Range(1, 4)) % 4);
-        cond.TargetType = (CardType)((((int)targetCard.Type) + Random.Range(1, 4)) % 4);
-        cond.TargetDetail = (CardDetail)((((int)targetCard.Detail) + Random.Range(1, 4)) % 4);
+        int c = (int)targetCard.Color;
+        while (c == (int)targetCard.Color || c == (int)myCard.Color) c = Random.Range(0, 4);
+        cond.TargetColor = (CardColor)c;
+
+        int t = (int)targetCard.Type;
+        while (t == (int)targetCard.Type || t == (int)myCard.Type) t = Random.Range(0, 4);
+        cond.TargetType = (CardType)t;
+
+        int d = (int)targetCard.Detail;
+        while (d == (int)targetCard.Detail || d == (int)myCard.Detail) d = Random.Range(0, 4);
+        cond.TargetDetail = (CardDetail)d;
     }
 
     private void SetConditionTraits(ref ConditionData cond, CardData sourceCard)

@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameEndState : StateNode<ushort>
 {
+    [PurrScene] public string NextScene;
 
 
     public override void Enter(ushort isWin, bool asServer)
@@ -28,13 +29,9 @@ public class GameEndState : StateNode<ushort>
         HideGameEndView();
         if (isWin == 1)
         {
-            int totalScenes = SceneManager.sceneCountInBuildSettings;
-            int nextSceneIndex = (SceneManager.GetActiveScene().buildIndex + 1) % totalScenes;
-            if (nextSceneIndex == 0)
-            {
-                nextSceneIndex = 1;
-            }
-            networkManager.sceneModule.LoadSceneAsync(nextSceneIndex);
+
+
+            networkManager.sceneModule.LoadSceneAsync(NextScene);
         }
         else
         {

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using PurrNet;
 using System.Linq;
+using System.Collections;
 
 public class Keycard_StationManager : NetworkBehaviour
 {
@@ -15,6 +16,7 @@ public class Keycard_StationManager : NetworkBehaviour
     public int engineerSocket = -1;
     public int[] testerSockets = new int[2] { -1, -1 };
     public bool isButtonCoverOpen = false;
+    public float progressDuration = 2.0f;
 
     [Header("Dispensers")]
     public Keycard_Dispenser technicianDispenser;
@@ -24,6 +26,8 @@ public class Keycard_StationManager : NetworkBehaviour
     public Keycard_EngineerUI engineerUI;
     public StationController stationController;
     public Keycard_TesterModule testerModule;
+
+    private Coroutine activeTesterRoutine;
 
 
     public void StartNewRound()
@@ -164,11 +168,30 @@ public class Keycard_StationManager : NetworkBehaviour
         int card1 = testerSockets[0];
         int card2 = testerSockets[1];
 
+        if (activeTesterRoutine != null)
+        {
+            StopCoroutine(activeTesterRoutine);
+            activeTesterRoutine = null;
+            RpcSetTesterProgress(false, 0f);
+        }
+
         if (card1 == -1 || card2 == -1)
         {
             RpcUpdateTesterLight(0);
             return;
         }
+
+        activeTesterRoutine = StartCoroutine(TesterProcessRoutine(card1, card2));
+    }
+
+    private IEnumerator TesterProcessRoutine(int card1, int card2)
+    {
+        RpcUpdateTesterLight(4);
+        RpcSetTesterProgress(true, progressDuration);
+
+        yield return new WaitForSeconds(progressDuration);
+
+        RpcSetTesterProgress(false, 0f);
 
         int index1 = correctSolutionSequence.IndexOf(card1);
         int index2 = correctSolutionSequence.IndexOf(card2);
@@ -185,6 +208,8 @@ public class Keycard_StationManager : NetworkBehaviour
         {
             RpcUpdateTesterLight(1);
         }
+
+        activeTesterRoutine = null;
     }
 
     [ObserversRpc]
@@ -194,6 +219,12 @@ public class Keycard_StationManager : NetworkBehaviour
         {
             testerModule.UpdateLightState(status);
         }
+    }
+
+    [ObserversRpc]
+    private void RpcSetTesterProgress(bool isActive, float duration)
+    {
+        if (testerModule != null) testerModule.SetProgressUI(isActive, duration);
     }
 
     [ObserversRpc]
