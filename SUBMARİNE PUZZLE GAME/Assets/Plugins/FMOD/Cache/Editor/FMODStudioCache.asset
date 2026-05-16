@@ -205,11 +205,38 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639136823972550637
+  lastModified: 639145234232064958
   FileSizes:
   - Name: Desktop
-    Value: 2888
+    Value: 3052
   Exists: 1
+--- !u!114 &-5392470625108604890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/ContractUISound/PlayersReady
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/ContractUISound/PlayersReady
+  Guid:
+    Data1: -1226325639
+    Data2: 1153937784
+    Data3: 1703082888
+    Data4: 131960839
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 3300
 --- !u!114 &-5144793765178326867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,6 +338,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 20651
+--- !u!114 &-4588130873502241488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/ContractUISound/SignContract
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/ContractUISound/SignContract
+  Guid:
+    Data1: 526428519
+    Data2: 1311495189
+    Data3: 387732893
+    Data4: 959489875
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 408
 --- !u!114 &-4578937136234424020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,13 +779,16 @@ MonoBehaviour:
   - {fileID: 5718116725265424962}
   - {fileID: 5241093317501285540}
   - {fileID: -6851280131630790744}
+  - {fileID: -4588130873502241488}
+  - {fileID: -5392470625108604890}
+  - {fileID: 5036724193732238750}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639136823974483220
+  cacheTime: 639145234234622933
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -801,6 +858,12 @@ MonoBehaviour:
     index: 32
   - key: event:/SFX/VoiceChat/RadioStart
     index: 33
+  - key: event:/SFX/ContractUISound/SignContract
+    index: 34
+  - key: event:/SFX/ContractUISound/PlayersReady
+    index: 35
+  - key: event:/SFX/ContractUISound/PageTurn
+    index: 36
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -991,7 +1054,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639136823972529622
+  lastModified: 639145234232054168
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1092,10 +1155,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639136823974483220
+  lastModified: 639145234234622933
   FileSizes:
   - Name: Desktop
-    Value: 1690592
+    Value: 1737472
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:
@@ -1198,6 +1261,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 624
+--- !u!114 &5036724193732238750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/ContractUISound/PageTurn
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/ContractUISound/PageTurn
+  Guid:
+    Data1: 1650390975
+    Data2: 1293016582
+    Data3: 1744867756
+    Data4: 1191190187
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 912
 --- !u!114 &5098008000765588720
 MonoBehaviour:
   m_ObjectHideFlags: 0

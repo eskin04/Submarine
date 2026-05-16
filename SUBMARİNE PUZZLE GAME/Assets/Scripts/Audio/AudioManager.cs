@@ -15,7 +15,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private FMODEmitter _emitterPrefab;
     [SerializeField] private int _initialPoolSize = 10;
 
-    // Emitter Havuzu
     private Queue<FMODEmitter> _emitterPool = new Queue<FMODEmitter>();
 
     private void Awake()

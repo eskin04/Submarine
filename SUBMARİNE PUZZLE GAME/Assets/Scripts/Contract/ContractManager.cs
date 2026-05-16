@@ -4,7 +4,7 @@ using PurrNet;
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using TMPro; // TextMeshPro için
+using TMPro;
 
 public class ContractManager : NetworkBehaviour
 {
@@ -23,10 +23,12 @@ public class ContractManager : NetworkBehaviour
     public float fadeDuration = 0.4f;
     public float scaleEffectAmount = 0.95f;
 
-    [Header("Events")]
-    public UnityEvent OnPageTurned;
-    public UnityEvent OnContractSigned; // Checkbox tiklendiğinde (Mühür sesi vb.)
-    public UnityEvent OnAllPlayersReady; // Herkes onayladığında (Alarm sesi, kırmızı ışık vb.)
+    [Header("Audio")]
+
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference pageTurnSound;
+    public FMODUnity.EventReference contractSignSound;
+    public FMODUnity.EventReference allReadySound;
 
     private int currentPageIndex = 0;
     private bool isFading = false;
@@ -71,26 +73,29 @@ public class ContractManager : NetworkBehaviour
         }
     }
 
+    private void PlaySound(FMODUnity.EventReference sound)
+    {
+        if (_channel != null && !sound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(sound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
+    }
+
     private void FadeTransition(int fromIndex, int toIndex)
     {
         isFading = true;
-        OnPageTurned?.Invoke(); // Sayfa çevrilme sesini tetikle (FMOD)
-
-        // Eski sayfayı etkileşime kapat
+        PlaySound(pageTurnSound);
         contractPages[fromIndex].blocksRaycasts = false;
         contractPages[fromIndex].interactable = false;
 
-        // Yeni sayfayı etkileşime aç
         contractPages[toIndex].blocksRaycasts = true;
         contractPages[toIndex].interactable = true;
 
-        // -- CROSSFADE (Eşzamanlı Geçiş) --
 
-        // Eski sayfayı karart ve hafifçe küçült
         contractPages[fromIndex].DOFade(0f, fadeDuration).SetEase(Ease.OutQuad);
         contractPages[fromIndex].transform.DOScale(scaleEffectAmount, fadeDuration).SetEase(Ease.OutQuad);
 
-        // Yeni sayfayı aydınlat ve normal boyutuna getir
         contractPages[toIndex].DOFade(1f, fadeDuration).SetEase(Ease.InQuad);
         contractPages[toIndex].transform.DOScale(1f, fadeDuration).SetEase(Ease.InQuad).OnComplete(() =>
         {
@@ -130,13 +135,12 @@ public class ContractManager : NetworkBehaviour
         }
     }
 
-    // --- Ağ (Network) Kısmı ---
 
     private void OnAcceptToggled(bool isReady)
     {
         if (isReady)
         {
-            OnContractSigned?.Invoke(); // Mühür/Kaşe sesini tetikle
+            PlaySound(contractSignSound);
         }
 
         SetPlayerReadyServerRpc(isReady);
@@ -152,17 +156,14 @@ public class ContractManager : NetworkBehaviour
 
         int totalPlayers = NetworkManager.main.playerCount;
 
-        // Tüm client'ların UI'ını güncelle
         UpdateStatusTextRpc(readyPlayers.Count, totalPlayers);
 
         if (readyPlayers.Count >= totalPlayers && totalPlayers > 0)
         {
-            // Herkes hazırsa yükleme sekansını başlat
             StartLevelSequenceRpc();
         }
     }
 
-    // Sunucudan tüm oyunculara giden UI güncelleme komutu
     [ObserversRpc]
     private void UpdateStatusTextRpc(int readyCount, int totalCount)
     {
@@ -172,25 +173,21 @@ public class ContractManager : NetworkBehaviour
         }
     }
 
-    // Herkes hazır olduğunda tüm client'larda çalışacak sekans
     [ObserversRpc]
     private void StartLevelSequenceRpc()
     {
         if (statusText != null)
         {
             statusText.text = "CONTRACT SIGNED. MISSION STARTING...";
-            statusText.color = Color.green; // Rengi yeşile veya uyarı kırmızısına çevirebilirsin
+            statusText.color = Color.green;
         }
 
-        // Düğmeleri ve checkbox'ı kilitliyoruz ki geri dönülmesin
         acceptToggle.interactable = false;
         prevButton.interactable = false;
         nextButton.interactable = false;
 
-        OnAllPlayersReady?.Invoke(); // Siren sesi, ekran titremesi vb. tetiklenebilir
+        PlaySound(allReadySound);
 
-        // Eğer sadece Server/Host'un sahneyi yüklemesi gerekiyorsa (PurrNet mantığına göre)
-        // Sadece yetkili olan kişi gecikmeli olarak sahneyi yükler.
         if (isServer)
         {
             DOVirtual.DelayedCall(delayBeforeLoad, () =>
@@ -202,7 +199,6 @@ public class ContractManager : NetworkBehaviour
         }
         else
         {
-            // Sadece client isek, kendi lokalimizde PlayerPrefs'i kaydedelim
             PlayerPrefs.SetInt("ContractSigned", 1);
             PlayerPrefs.Save();
         }
