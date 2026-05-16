@@ -48,7 +48,8 @@ public class GameLoader : MonoBehaviour
 
             if (levelToLoadID == 1)
             {
-                bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
+                // bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
+                bool hasSignedContract = false;
 
                 if (!showContractOnlyOnce || !hasSignedContract)
                 {
