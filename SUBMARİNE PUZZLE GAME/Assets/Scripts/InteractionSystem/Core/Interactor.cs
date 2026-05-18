@@ -9,6 +9,7 @@ public class Interactor : MonoBehaviour
     public static RaycastHit? CurrentLookHit { get; private set; }
     public static Action<IInteractable> OnInteractableChanged;
     public static Action<IInteractable> OnInteract;
+    public LayerMask ignoreLayers;
     private IInteractable currentInteractable;
     private List<KeyCode> interactKeys = new List<KeyCode>();
 
@@ -45,7 +46,8 @@ public class Interactor : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactionRange))
+
+        if (Physics.Raycast(ray, out hit, interactionRange, ~ignoreLayers))
         {
             CurrentLookHit = hit;
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();

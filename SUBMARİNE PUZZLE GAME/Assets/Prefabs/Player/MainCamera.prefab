@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3423339459287810223}
   - component: {fileID: 7916606003455406950}
   - component: {fileID: 5384037146406624487}
-  - component: {fileID: 8749254741453791631}
+  - component: {fileID: 7827059290017047038}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -201,6 +201,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactor
   interactionRange: 3.5
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &3508419941885557654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioListener
   nonRigidbodyVelocity: 0
   attenuationObject: {fileID: 9005220659476430823}
---- !u!81 &8749254741453791631
+--- !u!81 &7827059290017047038
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
