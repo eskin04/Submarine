@@ -58,6 +58,17 @@ public class StationController : NetworkBehaviour
         stationState.onChanged -= OnStateChanged;
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (isServer && stationState.value == StationState.Broken)
+            {
+                SetReparied();
+            }
+        }
+    }
+
 
 
     private void OnStateChanged(StationState newState)
