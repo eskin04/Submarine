@@ -1177,7 +1177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6958622013579334968, guid: 2b056c24e7ef80f408b723d11ce60e4e, type: 3}
       propertyPath: stationType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8988591586819169758, guid: 2b056c24e7ef80f408b723d11ce60e4e, type: 3}
       propertyPath: m_Name
@@ -3034,7 +3034,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7631858871547278781, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6385863359267013288, guid: ee04730a424ec3f42a2a373b6cbfff7c, type: 3}
@@ -5088,6 +5089,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170051374909468288, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
+      propertyPath: stationType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6873144442070088629, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
       propertyPath: m_Name
       value: SpatialSync
