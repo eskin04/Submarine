@@ -1177,7 +1177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6958622013579334968, guid: 2b056c24e7ef80f408b723d11ce60e4e, type: 3}
       propertyPath: stationType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8988591586819169758, guid: 2b056c24e7ef80f408b723d11ce60e4e, type: 3}
       propertyPath: m_Name
@@ -2808,6 +2808,10 @@ PrefabInstance:
     - target: {fileID: 22226644884943568, guid: 7fd934ea1fec15c42af6b444d879ed6c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682712632454135536, guid: 7fd934ea1fec15c42af6b444d879ed6c, type: 3}
+      propertyPath: stationType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1907081432695416720, guid: 7fd934ea1fec15c42af6b444d879ed6c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5091,7 +5095,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 170051374909468288, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
       propertyPath: stationType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6873144442070088629, guid: 29fdb4c91cc5c6a4ea13f148cc67a082, type: 3}
       propertyPath: m_Name
