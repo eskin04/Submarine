@@ -11,7 +11,7 @@ public class Inversion_TechnicianModule : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             pipes[i].SetLetter(assignedLetters[i]);
-            pipes[i].SetLight(0); // Işıkları kapat
+            pipes[i].SetLight(0);
 
 
         }
@@ -19,7 +19,7 @@ public class Inversion_TechnicianModule : MonoBehaviour
 
     public void ResetPipeLights()
     {
-        Invoke(nameof(ResetPipeLightsDelayed), 0.5f);
+        Invoke(nameof(ResetPipeLightsDelayed), 3f);
     }
 
     private void ResetPipeLightsDelayed()

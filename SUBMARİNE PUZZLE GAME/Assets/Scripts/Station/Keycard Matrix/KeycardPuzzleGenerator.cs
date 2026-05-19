@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
 public class KeycardPuzzleGenerator
 {
     private List<int[]> allPermutations;
@@ -30,6 +29,11 @@ public class KeycardPuzzleGenerator
 
             AssignConditions(finalCards, targetSolution);
 
+            if (!EvaluatePermutation(targetSolution))
+            {
+                continue;
+            }
+
             int validCount = 0;
             foreach (var permutationIndices in allPermutations)
             {
@@ -42,13 +46,14 @@ public class KeycardPuzzleGenerator
                 if (EvaluatePermutation(testSequence))
                 {
                     validCount++;
+                    if (validCount > 1) break;
                 }
             }
 
             if (validCount == 1)
             {
                 isPuzzlePerfect = true;
-                Debug.Log($"[Keycard İstasyonu] Mükemmel bulmaca {attempts}. denemede oluşturuldu. (İşaretçi Zinciri Başarılı)");
+                Debug.Log($"<color=green>[Keycard İstasyonu] MÜKEMMEL bulmaca {attempts}. denemede oluşturuldu!</color>");
             }
         }
 
@@ -88,7 +93,6 @@ public class KeycardPuzzleGenerator
         {
             CardData newCard = new CardData();
             bool isUnique = false;
-
             while (!isUnique)
             {
                 newCard.CardID = i + 1;
@@ -121,140 +125,202 @@ public class KeycardPuzzleGenerator
         };
 
         int[] selectedChain = validCycles[Random.Range(0, validCycles.Length)];
-
         List<ConditionTemplateType> usedTemplates = new List<ConditionTemplateType>();
 
         for (int i = 0; i < 4; i++)
         {
             int targetSocketToDescribe = selectedChain[i];
-            allCards[i].Condition = GenerateDiverseCondition(targetSolution, allCards[i], i, targetSocketToDescribe, usedTemplates);
+            allCards[i].Condition = GenerateTruthfulCondition(targetSolution, allCards[i], i, targetSocketToDescribe, usedTemplates);
         }
 
         for (int i = 4; i < 6; i++)
         {
-            int fakeMyIndex = Random.Range(0, 4);
-            int fakeTargetIndex = Random.Range(0, 4);
-            allCards[i].Condition = GenerateDiverseCondition(allCards, allCards[i], fakeMyIndex, fakeTargetIndex, new List<ConditionTemplateType>());
+            ConditionData fakeCond = new ConditionData();
+            fakeCond.TemplateType = (ConditionTemplateType)Random.Range(0, 6);
+            fakeCond.IsPositive = Random.value > 0.5f;
+            fakeCond.TargetSocket1 = Random.Range(0, 4);
+            fakeCond.TargetSocket2 = (fakeCond.TargetSocket1 + 1) % 4;
+            fakeCond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+            fakeCond.TargetColor = (CardColor)Random.Range(0, 4);
+            fakeCond.TargetType = (CardType)Random.Range(0, 4);
+            fakeCond.TargetDetail = (CardDetail)Random.Range(0, 4);
+            fakeCond.TargetCount = Random.Range(1, 4);
+            fakeCond.Direction = Random.value > 0.5f ? RelativeDirection.Left : RelativeDirection.Right;
 
-            if (Random.value > 0.5f) allCards[i].Condition.IsPositive = !allCards[i].Condition.IsPositive;
-
-            if (Random.value > 0.7f)
-            {
-                allCards[i].Condition.TemplateType = ConditionTemplateType.ForbiddenSockets;
-                allCards[i].Condition.IsPositive = false;
-                allCards[i].Condition.TargetSocket1 = Random.Range(0, 4);
-                allCards[i].Condition.TargetSocket2 = (allCards[i].Condition.TargetSocket1 + 1) % 4;
-            }
+            allCards[i].Condition = fakeCond;
         }
     }
 
-    private ConditionData GenerateDiverseCondition(CardData[] solutionSequence, CardData myCard, int mySocketIndex, int targetSocketIndex, List<ConditionTemplateType> usedTemplates)
+    private ConditionData GenerateTruthfulCondition(CardData[] solution, CardData myCard, int myIndex, int targetIndex, List<ConditionTemplateType> usedTemplates)
     {
         ConditionData cond = new ConditionData();
         cond.IsPositive = true;
-        CardData targetCard = solutionSequence[targetSocketIndex];
+        CardData targetCard = solution[targetIndex];
 
-        List<ConditionTemplateType> available = new List<ConditionTemplateType>();
+        List<ConditionTemplateType> available = new List<ConditionTemplateType> { ConditionTemplateType.SpecificSocketTrait };
 
-        available.Add(ConditionTemplateType.SpecificSocketTrait);
-        available.Add(ConditionTemplateType.ExactGlobalTraitCount);
-        available.Add(ConditionTemplateType.GlobalTraitPresence);
-
-        if (Mathf.Abs(mySocketIndex - targetSocketIndex) == 1)
+        if (Mathf.Abs(myIndex - targetIndex) == 1)
         {
             available.Add(ConditionTemplateType.RelativeDirectionTrait);
             if (myCard.Color == targetCard.Color || myCard.Type == targetCard.Type || myCard.Detail == targetCard.Detail)
                 available.Add(ConditionTemplateType.RelativeSharedCategory);
         }
 
+        available.Add(ConditionTemplateType.ExactGlobalTraitCount);
+        available.Add(ConditionTemplateType.GlobalTraitPresence);
+
         List<ConditionTemplateType> filtered = available.Where(t => !usedTemplates.Contains(t)).ToList();
         if (filtered.Count == 0) filtered = available;
 
         ConditionTemplateType selection = filtered[Random.Range(0, filtered.Count)];
         usedTemplates.Add(selection);
-
         cond.TemplateType = selection;
 
-        List<PropertyCategory> diffCategories = new List<PropertyCategory>();
-        if (myCard.Color != targetCard.Color) diffCategories.Add(PropertyCategory.Color);
-        if (myCard.Type != targetCard.Type) diffCategories.Add(PropertyCategory.Type);
-        if (myCard.Detail != targetCard.Detail) diffCategories.Add(PropertyCategory.Detail);
-
-        if (selection == ConditionTemplateType.GlobalTraitPresence || selection == ConditionTemplateType.ExactGlobalTraitCount)
-        {
-            cond.TargetCategory = diffCategories[Random.Range(0, diffCategories.Count)];
-        }
-        else if (selection == ConditionTemplateType.RelativeSharedCategory)
-        {
-            List<PropertyCategory> shared = new List<PropertyCategory>();
-            if (myCard.Color == targetCard.Color) shared.Add(PropertyCategory.Color);
-            if (myCard.Type == targetCard.Type) shared.Add(PropertyCategory.Type);
-            if (myCard.Detail == targetCard.Detail) shared.Add(PropertyCategory.Detail);
-            cond.TargetCategory = shared[Random.Range(0, shared.Count)];
-        }
-        else
-        {
-            cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
-        }
-
-        bool makeNegative = (Random.value > 0.7f) &&
-                            selection != ConditionTemplateType.RelativeSharedCategory &&
-                            selection != ConditionTemplateType.ExactGlobalTraitCount;
+        bool wantsNegative = Random.value > 0.7f;
 
         switch (selection)
         {
             case ConditionTemplateType.SpecificSocketTrait:
-                cond.TargetSocket1 = targetSocketIndex;
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
-                else SetConditionTraits(ref cond, targetCard);
+                cond.TargetSocket1 = targetIndex;
+                if (wantsNegative) SetRandomFalseTrait(ref cond, targetCard);
+                else SetRandomTrueTrait(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeDirectionTrait:
-                cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
-                else SetConditionTraits(ref cond, targetCard);
+                cond.Direction = (targetIndex > myIndex) ? RelativeDirection.Right : RelativeDirection.Left;
+                if (wantsNegative) SetRandomFalseTrait(ref cond, targetCard);
+                else SetRandomTrueTrait(ref cond, targetCard);
                 break;
 
             case ConditionTemplateType.RelativeSharedCategory:
-                cond.Direction = (targetSocketIndex > mySocketIndex) ? RelativeDirection.Right : RelativeDirection.Left;
+                cond.Direction = (targetIndex > myIndex) ? RelativeDirection.Right : RelativeDirection.Left;
+                List<PropertyCategory> shared = new List<PropertyCategory>();
+                if (myCard.Color == targetCard.Color) shared.Add(PropertyCategory.Color);
+                if (myCard.Type == targetCard.Type) shared.Add(PropertyCategory.Type);
+                if (myCard.Detail == targetCard.Detail) shared.Add(PropertyCategory.Detail);
+                cond.TargetCategory = shared[Random.Range(0, shared.Count)];
                 break;
 
             case ConditionTemplateType.ExactGlobalTraitCount:
-                SetConditionTraits(ref cond, targetCard);
-                cond.TargetCount = solutionSequence.Count(c => CheckTrait(c, cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail));
+                if (SetTrueTraitDifferentFromMe(ref cond, targetCard, myCard))
+                {
+                    cond.TargetCount = solution.Count(c => CheckTrait(c, cond.TargetCategory, cond.TargetColor, cond.TargetType, cond.TargetDetail));
+                }
+                else
+                {
+                    cond.TemplateType = ConditionTemplateType.SpecificSocketTrait;
+                    cond.TargetSocket1 = targetIndex;
+                    SetRandomTrueTrait(ref cond, targetCard);
+                }
                 break;
 
             case ConditionTemplateType.GlobalTraitPresence:
-                if (makeNegative) SetNegativeTrait(ref cond, targetCard, myCard);
-                else SetConditionTraits(ref cond, targetCard);
+                if (wantsNegative)
+                {
+                    if (!SetRandomAbsolutelyFalseTrait(ref cond, solution))
+                    {
+                        cond.IsPositive = true;
+                        SetTrueTraitDifferentFromMe(ref cond, targetCard, myCard);
+                    }
+                }
+                else
+                {
+                    if (!SetTrueTraitDifferentFromMe(ref cond, targetCard, myCard))
+                    {
+                        cond.TemplateType = ConditionTemplateType.SpecificSocketTrait;
+                        cond.TargetSocket1 = targetIndex;
+                        SetRandomTrueTrait(ref cond, targetCard);
+                    }
+                }
                 break;
         }
 
         return cond;
     }
 
-    private void SetNegativeTrait(ref ConditionData cond, CardData targetCard, CardData myCard)
+    private void SetRandomTrueTrait(ref ConditionData cond, CardData source)
     {
-        cond.IsPositive = false;
-
-        int c = (int)targetCard.Color;
-        while (c == (int)targetCard.Color || c == (int)myCard.Color) c = Random.Range(0, 4);
-        cond.TargetColor = (CardColor)c;
-
-        int t = (int)targetCard.Type;
-        while (t == (int)targetCard.Type || t == (int)myCard.Type) t = Random.Range(0, 4);
-        cond.TargetType = (CardType)t;
-
-        int d = (int)targetCard.Detail;
-        while (d == (int)targetCard.Detail || d == (int)myCard.Detail) d = Random.Range(0, 4);
-        cond.TargetDetail = (CardDetail)d;
+        cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+        cond.TargetColor = source.Color;
+        cond.TargetType = source.Type;
+        cond.TargetDetail = source.Detail;
     }
 
-    private void SetConditionTraits(ref ConditionData cond, CardData sourceCard)
+    private void SetRandomFalseTrait(ref ConditionData cond, CardData source)
     {
-        cond.TargetColor = sourceCard.Color;
-        cond.TargetType = sourceCard.Type;
-        cond.TargetDetail = sourceCard.Detail;
+        cond.IsPositive = false;
+        cond.TargetCategory = (PropertyCategory)Random.Range(0, 3);
+        cond.TargetColor = source.Color;
+        cond.TargetType = source.Type;
+        cond.TargetDetail = source.Detail;
+
+        if (cond.TargetCategory == PropertyCategory.Color)
+            cond.TargetColor = (CardColor)(((int)source.Color + Random.Range(1, 4)) % 4);
+        else if (cond.TargetCategory == PropertyCategory.Type)
+            cond.TargetType = (CardType)(((int)source.Type + Random.Range(1, 4)) % 4);
+        else if (cond.TargetCategory == PropertyCategory.Detail)
+            cond.TargetDetail = (CardDetail)(((int)source.Detail + Random.Range(1, 4)) % 4);
+    }
+
+    private bool SetTrueTraitDifferentFromMe(ref ConditionData cond, CardData targetCard, CardData myCard)
+    {
+        List<PropertyCategory> diffs = new List<PropertyCategory>();
+        if (targetCard.Color != myCard.Color) diffs.Add(PropertyCategory.Color);
+        if (targetCard.Type != myCard.Type) diffs.Add(PropertyCategory.Type);
+        if (targetCard.Detail != myCard.Detail) diffs.Add(PropertyCategory.Detail);
+
+        if (diffs.Count == 0) return false;
+
+        cond.TargetCategory = diffs[Random.Range(0, diffs.Count)];
+        cond.TargetColor = targetCard.Color;
+        cond.TargetType = targetCard.Type;
+        cond.TargetDetail = targetCard.Detail;
+        return true;
+    }
+
+    private bool SetRandomAbsolutelyFalseTrait(ref ConditionData cond, CardData[] solution)
+    {
+        cond.IsPositive = false;
+        List<PropertyCategory> cats = new List<PropertyCategory> { PropertyCategory.Color, PropertyCategory.Type, PropertyCategory.Detail };
+        cats = cats.OrderBy(x => Random.value).ToList(); // Rastgele karıştır
+
+        foreach (var cat in cats)
+        {
+            if (cat == PropertyCategory.Color)
+            {
+                var used = solution.Select(c => c.Color).ToList();
+                for (int i = 0; i < 4; i++)
+                {
+                    if (!used.Contains((CardColor)i))
+                    {
+                        cond.TargetCategory = cat; cond.TargetColor = (CardColor)i; return true;
+                    }
+                }
+            }
+            if (cat == PropertyCategory.Type)
+            {
+                var used = solution.Select(c => c.Type).ToList();
+                for (int i = 0; i < 4; i++)
+                {
+                    if (!used.Contains((CardType)i))
+                    {
+                        cond.TargetCategory = cat; cond.TargetType = (CardType)i; return true;
+                    }
+                }
+            }
+            if (cat == PropertyCategory.Detail)
+            {
+                var used = solution.Select(c => c.Detail).ToList();
+                for (int i = 0; i < 4; i++)
+                {
+                    if (!used.Contains((CardDetail)i))
+                    {
+                        cond.TargetCategory = cat; cond.TargetDetail = (CardDetail)i; return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public bool EvaluatePermutation(CardData[] systemCards)

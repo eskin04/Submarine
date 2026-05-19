@@ -6,6 +6,8 @@ public class Inversion_TestButton : MonoBehaviour
 {
     [Header("References")]
     public Inversion_Relay_StationManager stationManager;
+    public Inversion_ValidationSwitch validationSwitch;
+
     public Transform buttonMesh;
 
     [Header("Animation Settings")]
@@ -34,11 +36,13 @@ public class Inversion_TestButton : MonoBehaviour
         PressAnim();
 
         stationManager.PressTestButtonRPC();
+        validationSwitch.SetDisplayName(true);
     }
 
     public void OnTestComplete()
     {
         interactable.SetInteractable(true);
+        validationSwitch.SetDisplayName(false);
     }
 
     private void PressAnim()

@@ -139,7 +139,6 @@ public class ConnectionStarter : MonoBehaviour
                 return;
             }
 
-
             if (_voiceManager != null)
             {
                 _voiceManager.StartLobbyVoice(steamLobbyID.ToString());

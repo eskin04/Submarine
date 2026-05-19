@@ -55,11 +55,22 @@ public class Inversion_EngineerModule : MonoBehaviour
 
     private string ScrambleString(string original, float intensity)
     {
-        char[] scrambled = original.ToCharArray();
+        int maxLengthVariation = Mathf.RoundToInt(intensity * 4f);
 
-        for (int i = 0; i < scrambled.Length; i++)
+        int randomOffset = Random.Range(-maxLengthVariation, maxLengthVariation + 1);
+        int targetLength = original.Length + randomOffset;
+
+        targetLength = Mathf.Max(2, targetLength);
+
+        char[] scrambled = new char[targetLength];
+
+        for (int i = 0; i < targetLength; i++)
         {
-            if (Random.value < intensity)
+            if (i < original.Length && Random.value >= intensity)
+            {
+                scrambled[i] = original[i];
+            }
+            else
             {
                 scrambled[i] = glitchCharacters[Random.Range(0, glitchCharacters.Length)];
             }

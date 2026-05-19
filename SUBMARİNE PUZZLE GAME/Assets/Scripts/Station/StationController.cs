@@ -58,6 +58,7 @@ public class StationController : NetworkBehaviour
         stationState.onChanged -= OnStateChanged;
     }
 
+#if UNITY_EDITOR
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
@@ -68,6 +69,7 @@ public class StationController : NetworkBehaviour
             }
         }
     }
+#endif
 
 
 

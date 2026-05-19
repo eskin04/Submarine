@@ -23,6 +23,14 @@ public class Inversion_ValidationSwitch : MonoBehaviour
 
     }
 
+    public void SetDisplayName(bool isTesting)
+    {
+        if (interactable != null)
+        {
+            interactable.SetDisplayName(isTesting ? "Wait For Testing" : "Pull to Validate");
+        }
+    }
+
     public void PullSwitch()
     {
         if (!stationManager.isRoundActive.value ||

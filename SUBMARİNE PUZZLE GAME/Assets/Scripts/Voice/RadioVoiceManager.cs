@@ -8,8 +8,8 @@ using FMODUnity;
 public class RadioVoiceManager : MonoBehaviour
 {
     public static RadioVoiceManager Instance { get; private set; }
+    public event System.Action<bool> OnRadioStateChanged;
 
-    [Header("Telsiz Ayarları")]
     public KeyCode pushToTalkKey = KeyCode.Q;
     public AudioEventChannelSO _channel;
     public EventReference connectEvent;
@@ -90,6 +90,7 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.UnmuteInputDevice();
+        OnRadioStateChanged?.Invoke(true);
     }
 
     void StopTransmission()
@@ -100,6 +101,7 @@ public class RadioVoiceManager : MonoBehaviour
         }
 
         VivoxService.Instance.MuteInputDevice();
+        OnRadioStateChanged?.Invoke(false);
     }
 
     private void PlaySound(EventReference sound)

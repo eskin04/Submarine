@@ -695,6 +695,7 @@ GameObject:
   - component: {fileID: 177303295663035641}
   - component: {fileID: 4249653420332214630}
   - component: {fileID: 357880640846289264}
+  - component: {fileID: 7071712691481321408}
   m_Layer: 0
   m_Name: Station_LightsOut
   m_TagString: Untagged
@@ -840,6 +841,20 @@ MonoBehaviour:
   engineerUI: {fileID: 5931046840075462551}
   lever: {fileID: 7886503976297416016}
   stationController: {fileID: 4249653420332214630}
+--- !u!114 &7071712691481321408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3625256876392611145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefe0bad8e575de459118b6e8e98da88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightsOut_LightingController
+  fadeDuration: 2
+  fadeEase: 7
 --- !u!1 &4082855412528471677
 GameObject:
   m_ObjectHideFlags: 0

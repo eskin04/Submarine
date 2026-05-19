@@ -23,8 +23,8 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0.106, g: 0.1135, b: 0.1295, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 0
-  m_AmbientMode: 3
+  m_AmbientIntensity: 0.3
+  m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: aeab33f69c199e54794f516d31450ec4, type: 2}
   m_HaloStrength: 0.5
@@ -5112,7 +5112,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1859849168575487422, guid: 7539d933f78258140ac8419566631eb8, type: 3}
       propertyPath: NextScene
-      value: PlayTestLevel1
+      value: PlayTestLevel7
       objectReference: {fileID: 0}
     - target: {fileID: 2971092966959176670, guid: 7539d933f78258140ac8419566631eb8, type: 3}
       propertyPath: m_LocalPosition.y

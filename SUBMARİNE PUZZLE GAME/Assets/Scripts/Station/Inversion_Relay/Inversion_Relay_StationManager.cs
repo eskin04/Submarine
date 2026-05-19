@@ -38,7 +38,7 @@ public class Inversion_Relay_StationManager : NetworkBehaviour
 
     private void GeneratePuzzle()
     {
-        currentPhase = UnityEngine.Random.value > 0.5f ? InversionPhase.Normal : InversionPhase.Inverted;
+        currentPhase = UnityEngine.Random.value > 0.6f ? InversionPhase.Normal : InversionPhase.Inverted;
 
         List<PipeLetter> availableLetters = new List<PipeLetter> { PipeLetter.A, PipeLetter.B, PipeLetter.D, PipeLetter.E };
         Shuffle(availableLetters);
@@ -50,11 +50,24 @@ public class Inversion_Relay_StationManager : NetworkBehaviour
         pipeAssignments[4] = availableLetters[3];
 
         List<EngineerRule> tempRules = new List<EngineerRule>();
-        Array valveStates = Enum.GetValues(typeof(ValveState));
-
         foreach (PipeLetter letter in Enum.GetValues(typeof(PipeLetter)))
         {
-            ValveState randomTarget = (ValveState)valveStates.GetValue(UnityEngine.Random.Range(0, valveStates.Length));
+            ValveState randomTarget;
+            float rand = UnityEngine.Random.value;
+
+            if (rand <= 0.35f)
+            {
+                randomTarget = ValveState.Fill;
+            }
+            else if (rand <= 0.70f)
+            {
+                randomTarget = ValveState.Empty;
+            }
+            else
+            {
+                randomTarget = ValveState.Neutral;
+            }
+
             tempRules.Add(new EngineerRule { Letter = letter, TargetState = randomTarget, IsCorrupted = false });
         }
 
