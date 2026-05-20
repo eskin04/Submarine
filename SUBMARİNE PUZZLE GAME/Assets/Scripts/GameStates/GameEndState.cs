@@ -26,6 +26,13 @@ public class GameEndState : StateNode<ushort>
         ShowGameEndView(isWin);
         yield return new WaitForSeconds(3f);
 
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+        }
+
+        yield return new WaitForSeconds(0.6f);
+
         HideGameEndView();
         if (isWin == 1)
         {

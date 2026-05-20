@@ -185,6 +185,11 @@ public class ContractManager : NetworkBehaviour
         acceptToggle.interactable = false;
         prevButton.interactable = false;
         nextButton.interactable = false;
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+        }
+
 
         PlaySound(allReadySound);
 

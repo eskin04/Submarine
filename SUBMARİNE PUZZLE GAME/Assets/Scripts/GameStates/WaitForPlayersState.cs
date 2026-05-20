@@ -16,29 +16,22 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
-        ShowLoadingView();
+        if (LoadingScreenManager.Instance != null && !LoadingScreenManager.Instance.IsShowing)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+        }
         while (networkManager.players.Count < minPlayersToStart)
         {
             yield return new WaitForSeconds(1f);
         }
 
-        yield return new WaitForSeconds(1f);
-
-        HideLoadingView();
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.HideLoadingScreen();
+        }
         machine.Next();
     }
-    [ObserversRpc]
-    private void ShowLoadingView()
-    {
-        InstanceHandler.GetInstance<GameViewManager>().ShowView<LoadingView>(hideOthers: false);
-    }
 
-    [ObserversRpc]
-    private void HideLoadingView()
-    {
-        InstanceHandler.GetInstance<GameViewManager>().HideView<LoadingView>();
-
-    }
 
     public override void Exit(bool asServer)
     {
