@@ -637,7 +637,7 @@ GameObject:
   - component: {fileID: 367878506934946306}
   - component: {fileID: 891733035009883364}
   - component: {fileID: 5821630057928547952}
-  - component: {fileID: 931805079764216621}
+  - component: {fileID: 544587294771380740}
   m_Layer: 5
   m_Name: LoadingScreenManager
   m_TagString: Untagged
@@ -728,7 +728,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &931805079764216621
+--- !u!114 &544587294771380740
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -875,7 +875,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9197299222964862387}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0

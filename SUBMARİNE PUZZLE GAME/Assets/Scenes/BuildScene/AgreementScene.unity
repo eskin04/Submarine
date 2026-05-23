@@ -241,7 +241,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1536312648}
+      - m_Target: {fileID: 1809913789}
         m_TargetAssemblyTypeName: ContractManager, Assembly-CSharp
         m_MethodName: NextPage
         m_Mode: 1
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1536312648}
+      - m_Target: {fileID: 1809913789}
         m_TargetAssemblyTypeName: ContractManager, Assembly-CSharp
         m_MethodName: PreviousPage
         m_Mode: 1
@@ -1543,7 +1543,6 @@ GameObject:
   - component: {fileID: 1536312651}
   - component: {fileID: 1536312650}
   - component: {fileID: 1536312649}
-  - component: {fileID: 1536312648}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1551,62 +1550,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1536312648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1536312647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe19cd6787d97a0438552d78f06228ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ContractManager
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  NextScene: PlayTestLevel1
-  delayBeforeLoad: 1.5
-  contractPages:
-  - {fileID: 406080491}
-  - {fileID: 1602717513}
-  - {fileID: 2061147915}
-  - {fileID: 972367804}
-  acceptToggle: {fileID: 1146632437}
-  nextButton: {fileID: 405353451}
-  prevButton: {fileID: 557636531}
-  statusText: {fileID: 1786188734}
-  fadeDuration: 0.65
-  scaleEffectAmount: 0.92
-  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
-  pageTurnSound:
-    Guid:
-      Data1: 1650390975
-      Data2: 1293016582
-      Data3: 1744867756
-      Data4: 1191190187
-    Path: event:/SFX/ContractUISound/PageTurn
-  contractSignSound:
-    Guid:
-      Data1: 526428519
-      Data2: 1311495189
-      Data3: 387732893
-      Data4: 959489875
-    Path: event:/SFX/ContractUISound/SignContract
-  allReadySound:
-    Guid:
-      Data1: -1226325639
-      Data2: 1153937784
-      Data3: 1703082888
-      Data4: 131960839
-    Path: event:/SFX/ContractUISound/PlayersReady
 --- !u!114 &1536312649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2145,6 +2088,94 @@ RectTransform:
   m_AnchoredPosition: {x: -277.73096, y: -95.42175}
   m_SizeDelta: {x: 555.4619, y: 190.8435}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1809913788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1809913790}
+  - component: {fileID: 1809913789}
+  m_Layer: 0
+  m_Name: ContractManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1809913789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809913788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe19cd6787d97a0438552d78f06228ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ContractManager
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  NextScene: PlayTestLevel1
+  delayBeforeLoad: 1.5
+  contractPages:
+  - {fileID: 406080491}
+  - {fileID: 1602717513}
+  - {fileID: 2061147915}
+  - {fileID: 972367804}
+  acceptToggle: {fileID: 1146632437}
+  nextButton: {fileID: 405353451}
+  prevButton: {fileID: 557636531}
+  statusText: {fileID: 1786188734}
+  fadeDuration: 0.65
+  scaleEffectAmount: 0.92
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  pageTurnSound:
+    Guid:
+      Data1: 1650390975
+      Data2: 1293016582
+      Data3: 1744867756
+      Data4: 1191190187
+    Path: event:/SFX/ContractUISound/PageTurn
+  contractSignSound:
+    Guid:
+      Data1: 526428519
+      Data2: 1311495189
+      Data3: 387732893
+      Data4: 959489875
+    Path: event:/SFX/ContractUISound/SignContract
+  allReadySound:
+    Guid:
+      Data1: -1226325639
+      Data2: 1153937784
+      Data3: 1703082888
+      Data4: 131960839
+    Path: event:/SFX/ContractUISound/PlayersReady
+--- !u!4 &1809913790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809913788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.16819, y: 1.15948, z: 1.06748}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2061147911
 GameObject:
   m_ObjectHideFlags: 0
@@ -2244,3 +2275,4 @@ SceneRoots:
   - {fileID: 1146313353}
   - {fileID: 1469468193}
   - {fileID: 947751866}
+  - {fileID: 1809913790}

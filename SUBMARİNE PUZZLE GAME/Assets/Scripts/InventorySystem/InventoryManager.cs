@@ -414,29 +414,33 @@ public class InventoryManager : NetworkBehaviour
         if (itemObj == null) return;
 
         itemObj.transform.SetParent(parentObj != null ? parentObj.transform : null);
-        itemObj.transform.position = pos;
-        itemObj.transform.rotation = rot;
-
-
-        var netObj = itemObj.GetComponent<NetworkTransform>();
-        if (netObj != null) netObj.RemoveOwnership();
-
-        SetItemSettings(itemObj, false);
-        if (isServer) ObserversDropRpc(itemObj);
-
-        var rb = itemObj.GetComponent<Rigidbody>();
-
-        if (parentObj == null && rb != null)
-        {
-            rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
-        }
-
 
         var itemLogic = itemObj.GetComponent<IInventoryItem>();
         itemLogic?.OnDrop();
 
-        if (isOwner) RemoveCurrentItem();
+        if (isOwner)
+        {
+            RemoveCurrentItem();
+        }
 
+        if (isServer)
+        {
+            itemObj.transform.position = pos;
+            itemObj.transform.rotation = rot;
+
+            var netObj = itemObj.GetComponent<NetworkTransform>();
+            if (netObj != null) netObj.RemoveOwnership();
+
+            SetItemSettings(itemObj, false);
+            ObserversDropRpc(itemObj);
+
+            var rb = itemObj.GetComponent<Rigidbody>();
+
+            if (parentObj == null && rb != null)
+            {
+                rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
+            }
+        }
     }
 
     [ObserversRpc]

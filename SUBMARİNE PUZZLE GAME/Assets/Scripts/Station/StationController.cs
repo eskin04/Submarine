@@ -58,10 +58,11 @@ public class StationController : NetworkBehaviour
         stationState.onChanged -= OnStateChanged;
     }
 
-#if UNITY_EDITOR
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        // input shift + K tuşuna basıldığında, eğer istasyon bozuk durumdaysa tamir edilmiş olarak değiştirsin (test amaçlı)
+        if (!isServer) return;
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.K))
         {
             if (isServer && stationState.value == StationState.Broken)
             {
@@ -69,7 +70,6 @@ public class StationController : NetworkBehaviour
             }
         }
     }
-#endif
 
 
 

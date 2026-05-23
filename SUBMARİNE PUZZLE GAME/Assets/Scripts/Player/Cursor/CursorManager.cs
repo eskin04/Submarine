@@ -20,6 +20,9 @@ public class CursorManager : MonoBehaviour
     public static Action OnInteractionEnded;
     public static Action<bool> OnHoverStateChanged;
 
+    public static Action<Texture2D, Vector2> OnSetCustomCursor;
+    public static Action OnClearCustomCursor;
+
     private void Awake()
     {
         InteractableLayer = interactableLayer;
@@ -31,6 +34,8 @@ public class CursorManager : MonoBehaviour
         OnInteractionStarted += HandleInteractionStarted;
         OnInteractionEnded += HandleInteractionEnded;
         OnHoverStateChanged += HandleHoverStateChanged;
+        OnSetCustomCursor += HandleSetCustomCursor;
+        OnClearCustomCursor += HandleClearCustomCursor;
     }
 
     private void OnDisable()
@@ -38,6 +43,8 @@ public class CursorManager : MonoBehaviour
         OnInteractionStarted -= HandleInteractionStarted;
         OnInteractionEnded -= HandleInteractionEnded;
         OnHoverStateChanged -= HandleHoverStateChanged;
+        OnSetCustomCursor -= HandleSetCustomCursor;
+        OnClearCustomCursor -= HandleClearCustomCursor;
     }
 
 
@@ -60,5 +67,15 @@ public class CursorManager : MonoBehaviour
         Texture2D tex = isHovering ? hoverCursor : defaultCursor;
         Vector2 hotspot = isHovering ? cursorHoverHotspot : cursorHotspot;
         Cursor.SetCursor(tex, hotspot, CursorMode.Auto);
+    }
+
+    private void HandleSetCustomCursor(Texture2D customCursor, Vector2 hotspot)
+    {
+        Cursor.SetCursor(customCursor, hotspot, CursorMode.Auto);
+    }
+
+    private void HandleClearCustomCursor()
+    {
+        Cursor.SetCursor(defaultCursor, cursorHotspot, CursorMode.Auto);
     }
 }

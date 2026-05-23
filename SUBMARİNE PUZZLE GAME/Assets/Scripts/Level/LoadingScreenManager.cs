@@ -48,6 +48,7 @@ public class LoadingScreenManager : NetworkBehaviour
             .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
+    [ObserversRpc]
     public void HideLoadingScreen()
     {
         progressSlider.DOKill();
