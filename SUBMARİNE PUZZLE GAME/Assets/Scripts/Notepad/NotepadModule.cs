@@ -2,6 +2,8 @@ using UnityEngine;
 using PurrNet;
 using DG.Tweening;
 using FMODUnity;
+using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(ModuleInteraction))]
@@ -27,6 +29,9 @@ public class NotepadModule : NetworkBehaviour
     [SerializeField] private Vector3 coverOpenRotation = new Vector3(0, 0, 120);
     [SerializeField] private Vector3 pageFlippedRotation = new Vector3(-180, 0, 0);
 
+    [Header("Tearing Settings")]
+    [SerializeField] private GameObject tornPagePrefab;
+
     [Header("Audio Settings")]
     [SerializeField] private AudioEventChannelSO audioChannel;
     [SerializeField] private EventReference openSound;
@@ -38,6 +43,7 @@ public class NotepadModule : NetworkBehaviour
     private bool isInteracting = false;
     private bool isAnimating = false;
     private bool isDrawingCursorActive = false;
+    private int remainingPages = 4;
 
     private Texture2D[] pageTextures;
     private Vector2 lastDrawPosition = -Vector2.one;
@@ -53,6 +59,132 @@ public class NotepadModule : NetworkBehaviour
 
         HandlePageScrolling();
         HandleDrawingAndCursor();
+        HandlePageTearing();
+    }
+
+    private void HandlePageTearing()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && remainingPages > 0)
+        {
+            if (pageMeshes[currentPageIndex].activeSelf == false) return;
+
+            isAnimating = true;
+            PlaySound(pageFlipSound);
+
+            // 1. HAYATİ OPTİMİZASYON: PNG yerine %50 kalite JPG kullanıyoruz. 
+            // Boyutu 27 KB'dan yaklaşık 2-3 KB'a düşürecektir.
+            Texture2D currentTex = pageTextures[currentPageIndex];
+            byte[] compressedData = currentTex.EncodeToJPG(50);
+
+            pageMeshes[currentPageIndex].SetActive(false);
+            remainingPages--;
+
+            // 2. PARÇALI GÖNDERİM: Veriyi tek seferde fırlatmak yerine Coroutine ile parçalayarak yolluyoruz
+            StartCoroutine(SendImageInChunksRoutine(compressedData, InventoryManager.LocalPlayer));
+
+            if (isDrawingCursorActive)
+            {
+                CursorManager.OnClearCustomCursor?.Invoke();
+                isDrawingCursorActive = false;
+            }
+
+            DOVirtual.DelayedCall(0.3f, () => isAnimating = false);
+        }
+    }
+
+    // =====================================================================
+    // CHUNKING (AĞ VERİSİNİ PARÇALAMA) SİSTEMİ - CLIENT TARAFI
+    // =====================================================================
+
+    private IEnumerator SendImageInChunksRoutine(byte[] imageData, InventoryManager targetInventory)
+    {
+        int chunkSize = 1000; // LiteNetLib'in çökme sınırı olan 1431'in altındaki en güvenli boyut
+        int totalChunks = Mathf.CeilToInt((float)imageData.Length / chunkSize);
+
+        // Bu resme özel benzersiz bir kimlik (ID) oluşturuyoruz ki ağda başka resimlerle karışmasın
+        string uniqueImageId = System.Guid.NewGuid().ToString();
+
+        // 1. Önce Server'a "Sana bir resim göndereceğim, hafızanda yer aç" diyoruz
+        PrepareImageServerRpc(uniqueImageId, imageData.Length, targetInventory);
+
+        yield return null; // Sunucunun hazırlanması için 1 frame (kare) bekle
+
+        // 2. Veriyi parçalara bölüp sırayla kargoluyoruz
+        for (int i = 0; i < totalChunks; i++)
+        {
+            int length = Mathf.Min(chunkSize, imageData.Length - i * chunkSize);
+            byte[] chunk = new byte[length];
+            System.Array.Copy(imageData, i * chunkSize, chunk, 0, length);
+
+            SendChunkServerRpc(uniqueImageId, chunk, i * chunkSize);
+
+            // ÇOK ÖNEMLİ: Ağı boğmamak ve diğer oyunculara lag sokmamak için her parçada 1 kare bekliyoruz
+            yield return null;
+        }
+    }
+
+    // =====================================================================
+    // SERVER TARAFI: PARÇALARI BİRLEŞTİRME VE EŞYAYI YARATMA
+    // =====================================================================
+
+    // Server üzerinde parçaları geçici olarak tutacağımız RAM (Hafıza) sözlükleri
+    private Dictionary<string, byte[]> incomingImages = new Dictionary<string, byte[]>();
+    private Dictionary<string, InventoryManager> imageOwners = new Dictionary<string, InventoryManager>();
+
+    [ServerRpc(requireOwnership: false)]
+    private void PrepareImageServerRpc(string imageId, int totalSize, InventoryManager targetInventory)
+    {
+        incomingImages[imageId] = new byte[totalSize];
+        imageOwners[imageId] = targetInventory;
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    private void SendChunkServerRpc(string imageId, byte[] chunk, int startIndex)
+    {
+        // Eğer resim kaydı yoksa iptal et
+        if (!incomingImages.ContainsKey(imageId)) return;
+
+        // Gelen 1000 byte'lık küçük kargoyu, ana resim dizisindeki doğru yerine yerleştir
+        System.Array.Copy(chunk, 0, incomingImages[imageId], startIndex, chunk.Length);
+
+        // Resmin tamamı (Tüm kargolar) ulaştı mı diye kontrol et
+        if (startIndex + chunk.Length >= incomingImages[imageId].Length)
+        {
+            // Veri tamamlandı! Paketleri teslim al ve hafızayı (Sözlükleri) temizle
+            byte[] completeImageData = incomingImages[imageId];
+            InventoryManager ownerInventory = imageOwners[imageId];
+
+            incomingImages.Remove(imageId);
+            imageOwners.Remove(imageId);
+
+            // Gerçek fiziksel eşyayı yaratmaya geç
+            SpawnTornPageWithImage(completeImageData, ownerInventory);
+        }
+    }
+
+    private void SpawnTornPageWithImage(byte[] completeData, InventoryManager targetInventory)
+    {
+        GameObject tornPage = Instantiate(tornPagePrefab, transform.position, transform.rotation);
+
+        var netObj = tornPage.GetComponent<NetworkTransform>();
+        if (netObj != null && targetInventory != null)
+            netObj.GiveOwnership(targetInventory.owner);
+
+        TornPageItem tornItem = tornPage.GetComponent<TornPageItem>();
+
+        // YENİ GÜNCELLEME: SyncVar yerine dağıtım fonksiyonumuzu çağırıyoruz
+        if (tornItem != null)
+        {
+            tornItem.SetImageDataAndDistribute(completeData);
+        }
+
+        if (targetInventory != null)
+        {
+            DOVirtual.DelayedCall(0.1f, () =>
+            {
+                if (tornPage != null) targetInventory.ForcePickupClientRpc(tornPage);
+            });
+        }
     }
 
     private void InitializeDrawingPages()
@@ -177,7 +309,7 @@ public class NotepadModule : NetworkBehaviour
         isInteracting = true;
         isAnimating = true;
 
-        PlaySound(openSound);
+        // PlaySound(openSound);
 
         DOVirtual.Vector3(Vector3.zero, coverOpenRotation, flipDuration, (v) =>
         {
@@ -201,7 +333,7 @@ public class NotepadModule : NetworkBehaviour
         }
 
 
-        PlaySound(closeSound);
+        // PlaySound(closeSound);
 
         DOVirtual.Vector3(coverOpenRotation, Vector3.zero, flipDuration, (v) =>
          {
@@ -219,7 +351,7 @@ public class NotepadModule : NetworkBehaviour
         if (scroll < 0 && currentPageIndex < pageMeshes.Length - 1)
         {
             isAnimating = true;
-            PlaySound(pageFlipSound);
+            // PlaySound(pageFlipSound);
 
             Transform pageToFlip = pageMeshes[currentPageIndex].transform;
             DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
@@ -234,7 +366,7 @@ public class NotepadModule : NetworkBehaviour
         else if (scroll > 0 && currentPageIndex > 0)
         {
             isAnimating = true;
-            PlaySound(pageFlipSound);
+            // PlaySound(pageFlipSound);
 
             currentPageIndex--;
             Transform pageToFlip = pageMeshes[currentPageIndex].transform;
