@@ -415,33 +415,37 @@ public class InventoryManager : NetworkBehaviour
     {
         if (itemObj == null) return;
 
+        // 1. GÖRSEL KOPMA: Obje her iki tarafta (Client ve Server) anında elden (parent'tan) ayrılır
         itemObj.transform.SetParent(parentObj != null ? parentObj.transform : null);
 
         var itemLogic = itemObj.GetComponent<IInventoryItem>();
         itemLogic?.OnDrop();
 
-        SetItemSettings(itemObj, false);
-
+        // Sadece objeyi atan oyuncunun envanter UI'ı anında temizlenir
         if (isOwner)
         {
             RemoveCurrentItem();
         }
 
+        // 2. FİZİK VE NETWORK: Pozisyon, Sahiplik ve Fırlatma kuvveti SADECE Server'da işlenir
         if (isServer)
         {
+            // Pozisyonu sadece server belirler ki client'ın lokal hareketiyle çakışma (jitter) olmasın
             itemObj.transform.position = pos;
             itemObj.transform.rotation = rot;
 
             var netObj = itemObj.GetComponent<NetworkTransform>();
-            if (netObj != null) netObj.RemoveOwnership();
+            if (netObj != null) netObj.RemoveOwnership(); // Host objenin network kontrolünü devralır
 
-            ObserversDropRpc(itemObj);
+            SetItemSettings(itemObj, false); // Host fizik özelliklerini (isKinematic = false) aktif eder
+            ObserversDropRpc(itemObj); // Tüm client'lara objenin fiziklerini açmalarını söyler
 
             var rb = itemObj.GetComponent<Rigidbody>();
 
+            // Eşya bir asansöre vb. bırakılmadıysa, normal fırlatma kuvvetini uygula
             if (parentObj == null && rb != null)
             {
-                rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
+                rb.AddForce((transform.forward + Vector3.up * 0.5f) * 2f, ForceMode.Impulse);
             }
         }
     }
@@ -494,7 +498,7 @@ public class InventoryManager : NetworkBehaviour
         return -1;
     }
 
-    private void RemoveCurrentItem()
+    public void RemoveCurrentItem()
     {
         if (currentSlotIndex != -1)
         {

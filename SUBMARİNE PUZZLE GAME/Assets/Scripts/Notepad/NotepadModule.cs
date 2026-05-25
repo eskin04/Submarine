@@ -69,7 +69,7 @@ public class NotepadModule : NetworkBehaviour
             if (pageMeshes[currentPageIndex].activeSelf == false) return;
 
             isAnimating = true;
-            PlaySound(pageFlipSound);
+            // PlaySound(pageFlipSound);
 
             // 1. HAYATİ OPTİMİZASYON: PNG yerine %50 kalite JPG kullanıyoruz. 
             // Boyutu 27 KB'dan yaklaşık 2-3 KB'a düşürecektir.
@@ -78,6 +78,16 @@ public class NotepadModule : NetworkBehaviour
 
             pageMeshes[currentPageIndex].SetActive(false);
             remainingPages--;
+
+            if (remainingPages > 0)
+            {
+                int nextActive = FindNextActivePage(currentPageIndex);
+                if (nextActive != -1)
+                {
+                    currentPageIndex = nextActive; // Alttaki sayfaya geç
+                }
+
+            }
 
             // 2. PARÇALI GÖNDERİM: Veriyi tek seferde fırlatmak yerine Coroutine ile parçalayarak yolluyoruz
             StartCoroutine(SendImageInChunksRoutine(compressedData, InventoryManager.LocalPlayer));
@@ -348,36 +358,71 @@ public class NotepadModule : NetworkBehaviour
         float scroll = Input.mouseScrollDelta.y;
         if (scroll == 0) return;
 
-        if (scroll < 0 && currentPageIndex < pageMeshes.Length - 1)
+        if (scroll < 0) // Fare tekerleği aşağı (İleri Sar)
         {
-            isAnimating = true;
-            // PlaySound(pageFlipSound);
+            int nextActive = FindNextActivePage(currentPageIndex);
 
-            Transform pageToFlip = pageMeshes[currentPageIndex].transform;
-            DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+            // Eğer ileride koparılmamış bir sayfa varsa çevir
+            if (nextActive != -1)
             {
-                pageToFlip.localEulerAngles = v;
-            })
-            .SetEase(Ease.InOutSine)
-            .OnComplete(() => isAnimating = false);
+                isAnimating = true;
+                // PlaySound(pageFlipSound);
 
-            currentPageIndex++;
+                Transform pageToFlip = pageMeshes[currentPageIndex].transform;
+
+                DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+                {
+                    pageToFlip.localEulerAngles = v;
+                })
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() => isAnimating = false);
+
+                // İndeksi bir sonraki geçerli sayfaya eşitle
+                currentPageIndex = nextActive;
+            }
         }
-        else if (scroll > 0 && currentPageIndex > 0)
+        else if (scroll > 0) // Fare tekerleği yukarı (Geri Sar)
         {
-            isAnimating = true;
-            // PlaySound(pageFlipSound);
+            int prevActive = FindPrevActivePage(currentPageIndex);
 
-            currentPageIndex--;
-            Transform pageToFlip = pageMeshes[currentPageIndex].transform;
-
-            DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+            // Eğer geride koparılmamış bir sayfa varsa geri getir
+            if (prevActive != -1)
             {
-                pageToFlip.localEulerAngles = v;
-            })
-            .SetEase(Ease.InOutSine)
-            .OnComplete(() => isAnimating = false);
+                isAnimating = true;
+                // PlaySound(pageFlipSound);
+
+                // İndeksi geri getirdiğimiz sayfaya eşitle
+                currentPageIndex = prevActive;
+                Transform pageToFlip = pageMeshes[currentPageIndex].transform;
+
+                DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+                {
+                    pageToFlip.localEulerAngles = v;
+                })
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() => isAnimating = false);
+            }
         }
+    }
+
+    // İleriye doğru tarayıp ilk koparılmamış sayfayı bulur
+    private int FindNextActivePage(int currentIndex)
+    {
+        for (int i = currentIndex + 1; i < pageMeshes.Length; i++)
+        {
+            if (pageMeshes[i].activeSelf) return i;
+        }
+        return -1; // Bulamazsa -1 döner
+    }
+
+    // Geriye doğru tarayıp ilk koparılmamış sayfayı bulur
+    private int FindPrevActivePage(int currentIndex)
+    {
+        for (int i = currentIndex - 1; i >= 0; i--)
+        {
+            if (pageMeshes[i].activeSelf) return i;
+        }
+        return -1;
     }
 
 
