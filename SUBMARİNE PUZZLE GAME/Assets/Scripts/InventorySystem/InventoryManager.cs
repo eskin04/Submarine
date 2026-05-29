@@ -522,17 +522,12 @@ public class InventoryManager : NetworkBehaviour
         itemLogic?.CanOperate(isVisible);
     }
 
-    // =================================================================================================
-    // EXTERNAL PICKUP (MODÜLLER İÇİN)
-    // =================================================================================================
 
     [ObserversRpc]
     public void ForcePickupClientRpc(GameObject networkedTornPage)
     {
-        // Eğer bu envanter bizim değilse veya obje ağda bulunamadıysa (null) iptal et
         if (!isOwner || networkedTornPage == null) return;
 
-        // Ağ onayı almış gerçek objeyi envanterimize alıyoruz[cite: 1, 2]
         TryForcePickup(networkedTornPage);
     }
 
@@ -540,16 +535,13 @@ public class InventoryManager : NetworkBehaviour
     {
         if (!isOwner || itemObj == null) return false;
 
-        // Soldan sağa ilk boş slotu bul[cite: 1, 2]
         int targetSlot = GetFirstEmptySlot();
 
-        // Envanterde boş yer yoksa işlemi iptal et ve eşyayı karakterin önünden yere at[cite: 1]
         if (targetSlot == -1)
         {
             Vector3 dropPos;
             Quaternion dropRot = itemObj.transform.rotation;
 
-            // Kendi DropCurrentItem mantığını kullanıyoruz[cite: 2]
             if (playerInventory != null && playerInventory.DropPosition != null)
             {
                 dropPos = playerInventory.DropPosition.position;
@@ -560,21 +552,18 @@ public class InventoryManager : NetworkBehaviour
                 dropPos = transform.position + transform.forward * 1.5f;
             }
 
-            // Eşyayı oyuncunun düşürme noktasına ışınla[cite: 2]
             itemObj.transform.position = dropPos;
             itemObj.transform.rotation = dropRot;
 
             var rb = itemObj.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                // DropCurrentItem'daki mevcut fırlatma kuvvetini uyguluyoruz[cite: 2]
                 rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
             }
 
             return false;
         }
 
-        // Yer varsa senin mevcut sistemini tetikleyerek eşyayı envantere al[cite: 2]
         PickupServerRpc(itemObj, targetSlot);
         return true;
     }

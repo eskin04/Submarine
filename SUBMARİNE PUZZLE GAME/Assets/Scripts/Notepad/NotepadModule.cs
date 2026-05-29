@@ -71,8 +71,6 @@ public class NotepadModule : NetworkBehaviour
             isAnimating = true;
             // PlaySound(pageFlipSound);
 
-            // 1. HAYATİ OPTİMİZASYON: PNG yerine %50 kalite JPG kullanıyoruz. 
-            // Boyutu 27 KB'dan yaklaşık 2-3 KB'a düşürecektir.
             Texture2D currentTex = pageTextures[currentPageIndex];
             byte[] compressedData = currentTex.EncodeToJPG(50);
 
@@ -84,12 +82,11 @@ public class NotepadModule : NetworkBehaviour
                 int nextActive = FindNextActivePage(currentPageIndex);
                 if (nextActive != -1)
                 {
-                    currentPageIndex = nextActive; // Alttaki sayfaya geç
+                    currentPageIndex = nextActive;
                 }
 
             }
 
-            // 2. PARÇALI GÖNDERİM: Veriyi tek seferde fırlatmak yerine Coroutine ile parçalayarak yolluyoruz
             StartCoroutine(SendImageInChunksRoutine(compressedData, InventoryManager.LocalPlayer));
 
             if (isDrawingCursorActive)
@@ -102,24 +99,17 @@ public class NotepadModule : NetworkBehaviour
         }
     }
 
-    // =====================================================================
-    // CHUNKING (AĞ VERİSİNİ PARÇALAMA) SİSTEMİ - CLIENT TARAFI
-    // =====================================================================
-
     private IEnumerator SendImageInChunksRoutine(byte[] imageData, InventoryManager targetInventory)
     {
-        int chunkSize = 1000; // LiteNetLib'in çökme sınırı olan 1431'in altındaki en güvenli boyut
+        int chunkSize = 1000;
         int totalChunks = Mathf.CeilToInt((float)imageData.Length / chunkSize);
 
-        // Bu resme özel benzersiz bir kimlik (ID) oluşturuyoruz ki ağda başka resimlerle karışmasın
         string uniqueImageId = System.Guid.NewGuid().ToString();
 
-        // 1. Önce Server'a "Sana bir resim göndereceğim, hafızanda yer aç" diyoruz
         PrepareImageServerRpc(uniqueImageId, imageData.Length, targetInventory);
 
-        yield return null; // Sunucunun hazırlanması için 1 frame (kare) bekle
+        yield return null;
 
-        // 2. Veriyi parçalara bölüp sırayla kargoluyoruz
         for (int i = 0; i < totalChunks; i++)
         {
             int length = Mathf.Min(chunkSize, imageData.Length - i * chunkSize);
@@ -128,16 +118,11 @@ public class NotepadModule : NetworkBehaviour
 
             SendChunkServerRpc(uniqueImageId, chunk, i * chunkSize);
 
-            // ÇOK ÖNEMLİ: Ağı boğmamak ve diğer oyunculara lag sokmamak için her parçada 1 kare bekliyoruz
             yield return null;
         }
     }
 
-    // =====================================================================
-    // SERVER TARAFI: PARÇALARI BİRLEŞTİRME VE EŞYAYI YARATMA
-    // =====================================================================
 
-    // Server üzerinde parçaları geçici olarak tutacağımız RAM (Hafıza) sözlükleri
     private Dictionary<string, byte[]> incomingImages = new Dictionary<string, byte[]>();
     private Dictionary<string, InventoryManager> imageOwners = new Dictionary<string, InventoryManager>();
 
@@ -151,23 +136,18 @@ public class NotepadModule : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     private void SendChunkServerRpc(string imageId, byte[] chunk, int startIndex)
     {
-        // Eğer resim kaydı yoksa iptal et
         if (!incomingImages.ContainsKey(imageId)) return;
 
-        // Gelen 1000 byte'lık küçük kargoyu, ana resim dizisindeki doğru yerine yerleştir
         System.Array.Copy(chunk, 0, incomingImages[imageId], startIndex, chunk.Length);
 
-        // Resmin tamamı (Tüm kargolar) ulaştı mı diye kontrol et
         if (startIndex + chunk.Length >= incomingImages[imageId].Length)
         {
-            // Veri tamamlandı! Paketleri teslim al ve hafızayı (Sözlükleri) temizle
             byte[] completeImageData = incomingImages[imageId];
             InventoryManager ownerInventory = imageOwners[imageId];
 
             incomingImages.Remove(imageId);
             imageOwners.Remove(imageId);
 
-            // Gerçek fiziksel eşyayı yaratmaya geç
             SpawnTornPageWithImage(completeImageData, ownerInventory);
         }
     }
@@ -182,7 +162,6 @@ public class NotepadModule : NetworkBehaviour
 
         TornPageItem tornItem = tornPage.GetComponent<TornPageItem>();
 
-        // YENİ GÜNCELLEME: SyncVar yerine dağıtım fonksiyonumuzu çağırıyoruz
         if (tornItem != null)
         {
             tornItem.SetImageDataAndDistribute(completeData);
@@ -358,11 +337,10 @@ public class NotepadModule : NetworkBehaviour
         float scroll = Input.mouseScrollDelta.y;
         if (scroll == 0) return;
 
-        if (scroll < 0) // Fare tekerleği aşağı (İleri Sar)
+        if (scroll < 0)
         {
             int nextActive = FindNextActivePage(currentPageIndex);
 
-            // Eğer ileride koparılmamış bir sayfa varsa çevir
             if (nextActive != -1)
             {
                 isAnimating = true;
@@ -377,21 +355,18 @@ public class NotepadModule : NetworkBehaviour
                 .SetEase(Ease.InOutSine)
                 .OnComplete(() => isAnimating = false);
 
-                // İndeksi bir sonraki geçerli sayfaya eşitle
                 currentPageIndex = nextActive;
             }
         }
-        else if (scroll > 0) // Fare tekerleği yukarı (Geri Sar)
+        else if (scroll > 0)
         {
             int prevActive = FindPrevActivePage(currentPageIndex);
 
-            // Eğer geride koparılmamış bir sayfa varsa geri getir
             if (prevActive != -1)
             {
                 isAnimating = true;
                 // PlaySound(pageFlipSound);
 
-                // İndeksi geri getirdiğimiz sayfaya eşitle
                 currentPageIndex = prevActive;
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
@@ -405,17 +380,15 @@ public class NotepadModule : NetworkBehaviour
         }
     }
 
-    // İleriye doğru tarayıp ilk koparılmamış sayfayı bulur
     private int FindNextActivePage(int currentIndex)
     {
         for (int i = currentIndex + 1; i < pageMeshes.Length; i++)
         {
             if (pageMeshes[i].activeSelf) return i;
         }
-        return -1; // Bulamazsa -1 döner
+        return -1;
     }
 
-    // Geriye doğru tarayıp ilk koparılmamış sayfayı bulur
     private int FindPrevActivePage(int currentIndex)
     {
         for (int i = currentIndex - 1; i >= 0; i--)
