@@ -23,6 +23,7 @@ public class ModuleInteraction : MonoBehaviour
     private Rigidbody rb;
     private Collider colliderObject;
     private IInteractable ınteractable;
+    private bool isInteracting = false;
 
     private bool isHoveringMesh = false;
     private Camera mainCam;
@@ -55,7 +56,7 @@ public class ModuleInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1))
+        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1) && isInteracting)
         {
             StopInteract();
         }
@@ -93,7 +94,10 @@ public class ModuleInteraction : MonoBehaviour
         {
 
             transform.parent = playerCameraTransform;
-            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase);
+            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase).OnComplete(() =>
+            {
+                isInteracting = true;
+            });
             transform.DOLocalRotate(initialRotationOffset, animDuration).SetEase(animEase);
 
         }
@@ -132,7 +136,10 @@ public class ModuleInteraction : MonoBehaviour
         if (isMoveable)
         {
             transform.parent = originalParent;
-            transform.DOMove(originalPosition, animDuration).SetEase(animEase);
+            transform.DOMove(originalPosition, animDuration).SetEase(animEase).OnComplete(() =>
+            {
+                isInteracting = false;
+            });
             transform.DORotateQuaternion(originalRotation, animDuration).SetEase(animEase);
         }
         else

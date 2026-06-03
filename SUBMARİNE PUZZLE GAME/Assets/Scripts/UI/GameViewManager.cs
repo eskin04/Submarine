@@ -54,12 +54,32 @@ public class GameViewManager : MonoBehaviour
 
     private void ShowViewInternal(View view)
     {
+        if (view == null)
+        {
+            Debug.LogError("ShowViewInternal hatası: View atanmamış!");
+            return;
+        }
+
+        if (view.canvasGroup == null)
+        {
+            Debug.LogError($"ShowViewInternal hatası: {view.gameObject.name} objesinde CanvasGroup referansı eksik!");
+            return;
+        }
+
         view.canvasGroup.DOFade(1f, 0.2f);
         view.OnShow();
     }
 
     private void HideViewInternal(View view)
     {
+        if (view == null) return;
+
+        if (view.canvasGroup == null)
+        {
+            Debug.LogError($"HideViewInternal hatası: {view.gameObject.name} objesinde CanvasGroup referansı eksik!");
+            return;
+        }
+
         view.canvasGroup.DOFade(0f, 0.2f);
         view.OnHide();
     }

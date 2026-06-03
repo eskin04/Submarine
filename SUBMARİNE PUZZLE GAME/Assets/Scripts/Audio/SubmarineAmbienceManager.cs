@@ -1,7 +1,8 @@
 using UnityEngine;
 using FMODUnity;
+using PurrNet;
 
-public class SubmarineAmbienceManager : MonoBehaviour
+public class SubmarineAmbienceManager : NetworkBehaviour
 {
     [Header("Audio Settings")]
     public EventReference submarineAmbience;
@@ -18,6 +19,7 @@ public class SubmarineAmbienceManager : MonoBehaviour
         MainGameState.startGame -= PlayAmbience;
     }
 
+    [ObserversRpc(runLocally: true)]
     private void PlayAmbience()
     {
         if (!submarineAmbience.IsNull)
@@ -30,7 +32,7 @@ public class SubmarineAmbienceManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         if (_ambienceEmitter != null)
         {

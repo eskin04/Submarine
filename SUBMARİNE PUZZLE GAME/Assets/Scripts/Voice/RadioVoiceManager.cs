@@ -64,6 +64,7 @@ public class RadioVoiceManager : MonoBehaviour
 
         await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.AudioOnly);
         isLoggedIn = VivoxService.Instance.IsLoggedIn;
+        Debug.Log($"<color=green>[Vivox]</color> Aktif Kanal Sayısı: {VivoxService.Instance.ActiveChannels.Count}");
     }
 
     void Update()
@@ -91,6 +92,7 @@ public class RadioVoiceManager : MonoBehaviour
 
         VivoxService.Instance.UnmuteInputDevice();
         OnRadioStateChanged?.Invoke(true);
+        Debug.Log($"<color=yellow>[Vivox]</color> Telsiz Tuşuna Basıldı! Mikrofon Sessizde mi?: {VivoxService.Instance.IsInputDeviceMuted}");
     }
 
     void StopTransmission()
