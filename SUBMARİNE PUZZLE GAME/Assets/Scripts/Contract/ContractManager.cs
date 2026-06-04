@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using PurrNet;
 using DG.Tweening;
 using System.Collections.Generic;
-using UnityEngine.Events;
 using TMPro;
 
 public class ContractManager : NetworkBehaviour
@@ -48,6 +47,7 @@ public class ContractManager : NetworkBehaviour
         acceptToggle.onValueChanged.AddListener(OnAcceptToggled);
 
         if (statusText != null) statusText.text = "Read the contract carefully and accept to start the mission.";
+        LoadingScreenManager.Instance?.HideLoadingScreen();
 
         UpdateButtons();
     }
@@ -185,22 +185,24 @@ public class ContractManager : NetworkBehaviour
         acceptToggle.interactable = false;
         prevButton.interactable = false;
         nextButton.interactable = false;
-        if (LoadingScreenManager.Instance != null)
-        {
-            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
-        }
+
 
 
         PlaySound(allReadySound);
 
         if (isServer)
         {
+            if (LoadingScreenManager.Instance != null)
+            {
+                LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+            }
             DOVirtual.DelayedCall(delayBeforeLoad, () =>
             {
                 PlayerPrefs.SetInt("ContractSigned", 1);
                 PlayerPrefs.Save();
                 networkManager.sceneModule.LoadSceneAsync(NextScene);
             });
+
         }
         else
         {

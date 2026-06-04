@@ -112,6 +112,19 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 1
+  modulePrompts:
+  - promptId: NotePadPage
+    keyText: Scroll
+    actionText: Turn Page
+    icon: {fileID: 0}
+  - promptId: NotePadTorn
+    keyText: E
+    actionText: Tear off Page
+    icon: {fileID: 0}
+  - promptId: NotePadDraw
+    keyText: Left Click
+    actionText: Draw
+    icon: {fileID: 0}
 --- !u!65 &4665168799871433590
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -163,10 +176,10 @@ MonoBehaviour:
   basePageMaterial: {fileID: 2100000, guid: 66b1aa39cb07e47449048d9eb20eb099, type: 2}
   textureResolution: 512
   defaultPageColor: {r: 1, g: 1, b: 1, a: 1}
-  brushSize: 5
+  brushSize: 4
   brushColor: {r: 0, g: 0, b: 0, a: 1}
-  brushCursor: {fileID: 2800000, guid: 124b8807dc6445a49a378147f443a422, type: 3}
-  brushHotspot: {x: 100, y: 900}
+  brushCursor: {fileID: 2800000, guid: f23e77e65dabb6240b3a96efe9e81909, type: 3}
+  brushHotspot: {x: 0, y: 56}
   changeCursorOnHover: 1
   flipDuration: 0.4
   coverOpenRotation: {x: 0, y: -340, z: 0}

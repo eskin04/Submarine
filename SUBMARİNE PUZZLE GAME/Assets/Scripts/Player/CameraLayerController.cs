@@ -1,59 +1,39 @@
 using UnityEngine;
-using Cinemachine;
+using System;
 
+[RequireComponent(typeof(Camera))]
 public class CameraLayerController : MonoBehaviour
 {
-    [Header("Camera Detection")]
-    public LayerMask interactCameraLayer;
+    public static Action OnInteractionStarted;
+    public static Action OnInteractionEnded;
+
     [Header("Layer Ignore Lists")]
     public LayerMask ignoreNormalCameraLayer;
-
     public LayerMask ignoreInteractCameraLayer;
 
     private Camera _mainCam;
-    private int _defaultMask;
     private int _hiddenMask;
     private int _interactCameraLayerMask;
-    private CinemachineBrain _brain;
-
-    private int _currentMask;
 
     void Awake()
     {
         _mainCam = GetComponent<Camera>();
-        _brain = GetComponent<CinemachineBrain>();
+        int defaultMask = _mainCam.cullingMask;
+        _hiddenMask = defaultMask & ~ignoreNormalCameraLayer.value;
+        _interactCameraLayerMask = defaultMask & ~ignoreInteractCameraLayer.value;
 
-        _defaultMask = _mainCam.cullingMask;
+        SetNormalCulling();
 
-        _hiddenMask = _defaultMask & ~ignoreNormalCameraLayer.value;
-
-        _interactCameraLayerMask = _defaultMask & ~ignoreInteractCameraLayer.value;
-
-        SetCullingMask(_hiddenMask);
+        OnInteractionStarted += SetInteractCulling;
+        OnInteractionEnded += SetNormalCulling;
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        if (_brain == null || _brain.ActiveVirtualCamera == null) return;
-
-        int activeCamLayerMask = 1 << _brain.ActiveVirtualCamera.VirtualCameraGameObject.layer;
-
-        if ((activeCamLayerMask & interactCameraLayer.value) != 0)
-        {
-            SetCullingMask(_interactCameraLayerMask);
-        }
-        else
-        {
-            SetCullingMask(_hiddenMask);
-        }
+        OnInteractionStarted -= SetInteractCulling;
+        OnInteractionEnded -= SetNormalCulling;
     }
 
-    private void SetCullingMask(int newMask)
-    {
-        if (_currentMask != newMask)
-        {
-            _currentMask = newMask;
-            _mainCam.cullingMask = _currentMask;
-        }
-    }
+    private void SetNormalCulling() => _mainCam.cullingMask = _hiddenMask;
+    private void SetInteractCulling() => _mainCam.cullingMask = _interactCameraLayerMask;
 }

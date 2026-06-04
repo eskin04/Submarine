@@ -195,11 +195,11 @@ public class LightsOut_StationManager : NetworkBehaviour
         if (incomingCable != null)
         {
             CableData existingCable = allCables.Find(c => c.currentPortIndex == targetPortIndex);
-
+            int incomingOriginalPort = incomingCable.currentPortIndex;
             if (existingCable != null && existingCable != incomingCable)
             {
-                existingCable.currentPortIndex = -1;
-                RpcUpdateCableState(existingCable.cableID, -1);
+                existingCable.currentPortIndex = incomingOriginalPort;
+                RpcUpdateCableState(existingCable.cableID, incomingOriginalPort);
             }
 
             incomingCable.currentPortIndex = targetPortIndex;

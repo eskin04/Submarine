@@ -213,6 +213,10 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
     public void OnEquip()
     {
         isEquippedLocally = true;
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.AddPrompt("page_place", "R", "Place Page");
+        }
     }
 
     public void OnUnequip()
@@ -220,6 +224,11 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         isEquippedLocally = false;
         isPlacementModeActive = false;
         if (hologramObj != null) hologramObj.SetActive(false);
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.RemovePrompt("page_place");
+
+        }
     }
 
     public void OnDrop()

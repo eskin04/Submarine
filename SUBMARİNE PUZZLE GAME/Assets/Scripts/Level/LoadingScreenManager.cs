@@ -16,6 +16,8 @@ public class LoadingScreenManager : NetworkBehaviour
     private bool isShowing = false;
 
     public bool IsShowing => isShowing;
+    private bool isGameStarted = false;
+    public bool IsGameStarted => isGameStarted;
 
 
     private void Awake()
@@ -31,8 +33,13 @@ public class LoadingScreenManager : NetworkBehaviour
         }
     }
 
+    public void SetGameStarted(bool started)
+    {
+        isGameStarted = started;
+    }
 
-    [ObserversRpc]
+
+    [ObserversRpc(runLocally: true)]
     public void ShowLoadingScreenRPC()
     {
         if (isShowing) return;
@@ -48,7 +55,7 @@ public class LoadingScreenManager : NetworkBehaviour
             .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
-    [ObserversRpc]
+    [ObserversRpc(runLocally: true)]
     public void HideLoadingScreen()
     {
         progressSlider.DOKill();

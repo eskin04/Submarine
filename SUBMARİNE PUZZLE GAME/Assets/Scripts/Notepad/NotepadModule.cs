@@ -69,7 +69,7 @@ public class NotepadModule : NetworkBehaviour
             if (pageMeshes[currentPageIndex].activeSelf == false) return;
 
             isAnimating = true;
-            // PlaySound(pageFlipSound);
+            PlaySound(pageFlipSound);
 
             Texture2D currentTex = pageTextures[currentPageIndex];
             byte[] compressedData = currentTex.EncodeToJPG(50);
@@ -298,7 +298,7 @@ public class NotepadModule : NetworkBehaviour
         isInteracting = true;
         isAnimating = true;
 
-        // PlaySound(openSound);
+        PlaySound(openSound);
 
         DOVirtual.Vector3(Vector3.zero, coverOpenRotation, flipDuration, (v) =>
         {
@@ -322,7 +322,7 @@ public class NotepadModule : NetworkBehaviour
         }
 
 
-        // PlaySound(closeSound);
+        PlaySound(closeSound);
 
         DOVirtual.Vector3(coverOpenRotation, Vector3.zero, flipDuration, (v) =>
          {
@@ -344,7 +344,7 @@ public class NotepadModule : NetworkBehaviour
             if (nextActive != -1)
             {
                 isAnimating = true;
-                // PlaySound(pageFlipSound);
+                PlaySound(pageFlipSound);
 
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
@@ -365,7 +365,7 @@ public class NotepadModule : NetworkBehaviour
             if (prevActive != -1)
             {
                 isAnimating = true;
-                // PlaySound(pageFlipSound);
+                PlaySound(pageFlipSound);
 
                 currentPageIndex = prevActive;
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;

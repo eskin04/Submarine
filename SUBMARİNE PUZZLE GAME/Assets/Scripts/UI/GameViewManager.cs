@@ -25,6 +25,18 @@ public class GameViewManager : MonoBehaviour
         InstanceHandler.UnregisterInstance<GameViewManager>();
     }
 
+    public bool IsViewActive<T>() where T : View
+    {
+        foreach (var view in views)
+        {
+            if (view.GetType() == typeof(T))
+            {
+                return view.canvasGroup.alpha > 0f;
+            }
+        }
+        return false;
+    }
+
     public void ShowView<T>(bool hideOthers = true) where T : View
     {
         foreach (var view in views)
@@ -80,7 +92,7 @@ public class GameViewManager : MonoBehaviour
             return;
         }
 
-        view.canvasGroup.DOFade(0f, 0.2f);
+        view.canvasGroup.DOFade(0f, 0.5f);
         view.OnHide();
     }
 }

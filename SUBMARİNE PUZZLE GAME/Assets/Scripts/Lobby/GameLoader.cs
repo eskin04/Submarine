@@ -2,6 +2,7 @@ using UnityEngine;
 using PurrLobby;
 using UnityEngine.SceneManagement;
 using PurrNet;
+using System.Collections;
 
 public class GameLoader : MonoBehaviour
 {
@@ -44,27 +45,33 @@ public class GameLoader : MonoBehaviour
         if (dataToLoad != null)
         {
 
-            lobbyManager.SetLobbyStarted();
-
-            if (levelToLoadID == 1)
-            {
-                // bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
-                bool hasSignedContract = false;
-
-                if (!showContractOnlyOnce || !hasSignedContract)
-                {
-                    Debug.Log($"[GameLoader] Herkes hazır! Level 1 ilk kez oynanıyor, {ContractScene} yükleniyor...");
-
-                    SceneManager.LoadSceneAsync(ContractScene);
-                    return;
-                }
-            }
-
-            Debug.Log($"[GameLoader] Herkes hazır! Görev {dataToLoad.levelID} yükleniyor...");
-
-            SceneManager.LoadSceneAsync(dataToLoad.CurrentScene);
+            StartCoroutine(LoadLevelWithContract(dataToLoad));
 
         }
+    }
+
+    private IEnumerator LoadLevelWithContract(LevelData levelData)
+    {
+        lobbyManager.SetLobbyStarted();
+        LoadingScreenManager.Instance?.ShowLoadingScreenRPC();
+        yield return new WaitForSeconds(.6f);
+
+        if (levelData.levelID == 1)
+        {
+            // bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
+            bool hasSignedContract = false;
+
+            if (!showContractOnlyOnce || !hasSignedContract)
+            {
+                Debug.Log($"[GameLoader] Herkes hazır! Level 1 ilk kez oynanıyor, {ContractScene} yükleniyor...");
+
+                SceneManager.LoadSceneAsync(ContractScene);
+                yield break;
+            }
+        }
+
+
+        SceneManager.LoadSceneAsync(levelData.CurrentScene);
     }
 
     private LevelData GetLevelDataByID(int id)

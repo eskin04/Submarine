@@ -119,6 +119,8 @@ public class MainGameState : StateNode
             Destroy(RadioVoiceManager.Instance.gameObject);
         }
         await SceneManager.LoadSceneAsync(lobbyScene);
+
+        LoadingScreenManager.Instance?.SetGameStarted(false);
     }
 
 

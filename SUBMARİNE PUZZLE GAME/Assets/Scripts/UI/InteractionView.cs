@@ -15,7 +15,7 @@ public class InteractionView : View
         Interactor.OnInteractableChanged -= UpdateInteractionText;
     }
 
-    public void UpdateInteractionText(IInteractable ınteractable)
+    private void UpdateInteractionText(IInteractable ınteractable)
     {
         if (ınteractable == null)
         {

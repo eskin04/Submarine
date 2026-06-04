@@ -6,7 +6,6 @@ using PurrNet;
 public class PlayerSpawnView : View
 {
     [SerializeField] private TMP_Text roleText;
-    [SerializeField] private TMP_Text levelText;
 
     void Awake()
     {
@@ -32,15 +31,6 @@ public class PlayerSpawnView : View
         if (roleText != null)
         {
             roleText.text = "You Are " + role.ToString();
-        }
-    }
-
-    public void SetLevelText(int level)
-    {
-        if (levelText != null)
-        {
-            Debug.Log($"Setting Level Text: Level {level}");
-            levelText.text = "Level " + level.ToString();
         }
     }
 

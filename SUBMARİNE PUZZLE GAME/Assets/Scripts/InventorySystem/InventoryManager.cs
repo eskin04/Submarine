@@ -234,6 +234,8 @@ public class InventoryManager : NetworkBehaviour
             if (itemObj.GetComponent<Handbook>() == null)
             {
                 OnEquipChange?.Invoke(true);
+                if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+                    promptView.AddPrompt("page_drop", "G", "Drop Page");
             }
             else
             {
@@ -262,6 +264,8 @@ public class InventoryManager : NetworkBehaviour
             itemLogic?.OnUnequip();
 
             itemObj.SetActive(false);
+            if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+                promptView.RemovePrompt("page_drop");
         }
     }
 

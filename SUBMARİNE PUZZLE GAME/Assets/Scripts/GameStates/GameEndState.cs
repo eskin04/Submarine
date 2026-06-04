@@ -36,8 +36,6 @@ public class GameEndState : StateNode<ushort>
         HideGameEndView();
         if (isWin == 1)
         {
-
-
             networkManager.sceneModule.LoadSceneAsync(NextScene);
         }
         else

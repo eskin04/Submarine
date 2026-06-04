@@ -36,7 +36,6 @@ public class ItemInfoView : View
         {
             batteryBar.DOValue(fillAmount, 0.4f);
 
-            // Renk geçişini DOTween ile yumuşak bir şekilde yapıyoruz
             if (fillImage != null)
             {
                 fillImage.DOColor(batteryColorGradient.Evaluate(fillAmount), 0.4f);
