@@ -52,7 +52,7 @@ public class PlayerSpawningState : StateNode
     private IEnumerator SpawnView()
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<PlayerSpawnView>(hideOthers: false);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(5);
         InstanceHandler.GetInstance<GameViewManager>().HideView<PlayerSpawnView>();
     }
 

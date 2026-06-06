@@ -178,10 +178,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639145234232064958
+  lastModified: 639163447045857428
   FileSizes:
   - Name: Desktop
-    Value: 3052
+    Value: 3122
   Exists: 1
 --- !u!114 &-5510877157030363373
 MonoBehaviour:
@@ -755,13 +755,14 @@ MonoBehaviour:
   - {fileID: -5510877157030363373}
   - {fileID: 3861088205431521109}
   - {fileID: -2662692666984447828}
+  - {fileID: 964611538871919889}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639145234234622933
+  cacheTime: 639163471195329697
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -837,6 +838,8 @@ MonoBehaviour:
     index: 35
   - key: event:/SFX/VoiceChat/RadioStart
     index: 36
+  - key: event:/SFX/MagneticInterference/brokenStaticEvent
+    index: 37
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -945,6 +948,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 408
+--- !u!114 &964611538871919889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/MagneticInterference/brokenStaticEvent
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/MagneticInterference/brokenStaticEvent
+  Guid:
+    Data1: 359738984
+    Data2: 1095788114
+    Data3: -1461147239
+    Data4: 1630456656
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 100310
 --- !u!114 &1418983929500179241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1054,7 +1084,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639145234232054168
+  lastModified: 639163447045847359
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1182,10 +1212,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639145234234622933
+  lastModified: 639163471195329697
   FileSizes:
   - Name: Desktop
-    Value: 1737472
+    Value: 2784832
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:

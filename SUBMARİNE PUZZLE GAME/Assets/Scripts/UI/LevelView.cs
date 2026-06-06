@@ -34,7 +34,7 @@ public class LevelView : View
 
         float animationDuration = 2.5f;
         tweenSequence.Append(levelText.DOFade(1f, animationDuration).SetEase(Ease.InOutSine))
-                     .Join(levelText.rectTransform.DOAnchorPosY(-200f, animationDuration).SetEase(Ease.OutCubic))
+                     .Join(levelText.rectTransform.DOAnchorPosY(-300f, animationDuration).SetEase(Ease.OutCubic))
                      .Join(DOTween.To(() => levelText.characterSpacing, x => levelText.characterSpacing = x, 0f, animationDuration).SetEase(Ease.OutCubic))
                      .Join(levelText.rectTransform.DOScale(1f, animationDuration).SetEase(Ease.OutBack));
     }

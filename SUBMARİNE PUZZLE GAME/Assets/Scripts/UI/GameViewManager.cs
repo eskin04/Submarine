@@ -92,7 +92,7 @@ public class GameViewManager : MonoBehaviour
             return;
         }
 
-        view.canvasGroup.DOFade(0f, 0.5f);
+        view.canvasGroup.DOFade(0f, 0.2f);
         view.OnHide();
     }
 }
