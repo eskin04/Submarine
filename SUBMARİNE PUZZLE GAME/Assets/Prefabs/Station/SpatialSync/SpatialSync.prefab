@@ -3182,6 +3182,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 30, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &3508932039493521781
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3354,7 +3355,8 @@ MonoBehaviour:
   gridMaxAlpha: 0.5
   gridFadeInTime: 0.75
   gridVisibleTime: 0.75
-  gridWaitTime: 5
+  maxgridWaitTime: 8
+  mingridWaitTime: 5
 --- !u!1 &3130041716105336388
 GameObject:
   m_ObjectHideFlags: 0
@@ -6651,12 +6653,17 @@ MonoBehaviour:
   stationName: Spatial Sync
   stationType: 0
   stationTier: 0
-  mistakeWaterPenalty: 3
+  mistakeWaterPenalty: 10
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -8730,6 +8737,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 30, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &3075869860240137220
 BoxCollider:
   m_ObjectHideFlags: 0

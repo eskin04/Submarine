@@ -657,6 +657,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &2633808503455795598
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -870,6 +871,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 0
   isMoveable: 1
+  modulePrompts: []
 --- !u!65 &8016073572115307387
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1681,12 +1683,17 @@ MonoBehaviour:
   stationName: Rules of Engagement
   stationType: 0
   stationTier: 0
-  mistakeWaterPenalty: 10
+  mistakeWaterPenalty: 35
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 20
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -2942,6 +2949,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 0
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &7229217571893244028
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3227,6 +3235,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 0
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &7657674527783534690
 BoxCollider:
   m_ObjectHideFlags: 0

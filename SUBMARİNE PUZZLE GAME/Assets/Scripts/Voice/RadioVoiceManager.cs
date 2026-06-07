@@ -42,7 +42,7 @@ public class RadioVoiceManager : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating(nameof(MonitorIncomingTransmissions), 1f, 0.1f);
+        InvokeRepeating(nameof(MonitorIncomingTransmissions), 1f, 0.05f);
     }
 
     private void OnEnable()

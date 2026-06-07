@@ -12,6 +12,8 @@ public class RadioShaderLightIndicator : MonoBehaviour
 
     public float animationDuration = 0.25f;
 
+    private static readonly int LightSelectionProp = Shader.PropertyToID("_ColorIndex");
+
     private static readonly int IntensityProp = Shader.PropertyToID("_LightIntensity");
     private Material runtimeMaterial;
     private float currentIntensity = 0f;
@@ -50,6 +52,8 @@ public class RadioShaderLightIndicator : MonoBehaviour
         if (runtimeMaterial == null) return;
 
         float targetIntensity = isReceiving ? maxLightIntensity : 0f;
+        int colorIndex = isReceiving ? 1 : 0;
+        runtimeMaterial.SetFloat(LightSelectionProp, colorIndex);
 
         lightTween?.Kill();
 

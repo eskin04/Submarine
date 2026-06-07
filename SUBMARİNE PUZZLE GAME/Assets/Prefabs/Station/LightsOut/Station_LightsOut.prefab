@@ -169,6 +169,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!114 &3618247698385055660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -745,12 +746,17 @@ MonoBehaviour:
   stationName: BlackOut
   stationType: 1
   stationTier: 0
-  mistakeWaterPenalty: 3
+  mistakeWaterPenalty: 15
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 2.35
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -1154,6 +1160,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!114 &5931046840075462551
 MonoBehaviour:
   m_ObjectHideFlags: 0

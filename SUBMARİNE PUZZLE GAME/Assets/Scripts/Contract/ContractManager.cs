@@ -121,8 +121,11 @@ public class ContractManager : NetworkBehaviour
                     toggleCanvasGroup.alpha = 0f;
                     toggleCanvasGroup.DOFade(1f, fadeDuration);
                 }
+                if (currentPageIndex == contractPages.Length - 1)
+                {
+                    UpdateStatusTextRpc(readyPlayers.Count, NetworkManager.main.playerCount);
+                }
 
-                UpdateStatusTextRpc(readyPlayers.Count, NetworkManager.main.playerCount);
             }
         }
         else
