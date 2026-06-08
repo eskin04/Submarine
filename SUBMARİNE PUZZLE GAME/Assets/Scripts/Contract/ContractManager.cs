@@ -195,10 +195,7 @@ public class ContractManager : NetworkBehaviour
 
         if (isServer)
         {
-            if (LoadingScreenManager.Instance != null)
-            {
-                LoadingScreenManager.Instance.ShowLoadingScreenRPC();
-            }
+            RpcShowLoadingScreen();
             DOVirtual.DelayedCall(delayBeforeLoad, () =>
             {
                 PlayerPrefs.SetInt("ContractSigned", 1);
@@ -211,6 +208,16 @@ public class ContractManager : NetworkBehaviour
         {
             PlayerPrefs.SetInt("ContractSigned", 1);
             PlayerPrefs.Save();
+        }
+    }
+
+    [ObserversRpc]
+    private void RpcShowLoadingScreen()
+    {
+        // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı açar
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreen();
         }
     }
 }

@@ -16,20 +16,41 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
-        if (LoadingScreenManager.Instance != null && !LoadingScreenManager.Instance.IsShowing)
+        if (isServer)
         {
-            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+            RpcShowLoadingScreen();
         }
         while (networkManager.players.Count < minPlayersToStart)
         {
             yield return new WaitForSeconds(1f);
         }
 
-        if (LoadingScreenManager.Instance != null)
+        if (isServer)
         {
-            LoadingScreenManager.Instance.HideLoadingScreenRPC();
+            RpcHideLoadingScreen();
         }
         machine.Next();
+    }
+
+
+    [ObserversRpc]
+    private void RpcShowLoadingScreen()
+    {
+        // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı açar
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreen();
+        }
+    }
+
+    [ObserversRpc]
+    private void RpcHideLoadingScreen()
+    {
+        // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı kapatır
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.HideLoadingScreen();
+        }
     }
 
 

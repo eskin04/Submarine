@@ -1,24 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using PurrNet;
 using DG.Tweening;
 
-public class LoadingScreenManager : NetworkBehaviour
+public class LoadingScreenManager : MonoBehaviour // ARTIK SADECE MONOBEHAVIOUR
 {
     public static LoadingScreenManager Instance;
 
     [Header("UI References")]
+    public Canvas loadingCanvas;
     public CanvasGroup loadingCanvasGroup;
     public Slider progressSlider;
     public TextMeshProUGUI progressText;
 
-    private bool isShowing = false;
-
-    public bool IsShowing => isShowing;
-    private bool isGameStarted = false;
-    public bool IsGameStarted => isGameStarted;
-
+    public bool isShowing = false;
 
     private void Awake()
     {
@@ -26,6 +21,12 @@ public class LoadingScreenManager : NetworkBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            if (loadingCanvas != null)
+            {
+                loadingCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                loadingCanvas.sortingOrder = 999;
+            }
         }
         else
         {
@@ -33,16 +34,11 @@ public class LoadingScreenManager : NetworkBehaviour
         }
     }
 
-    public void SetGameStarted(bool started)
-    {
-        isGameStarted = started;
-    }
-
+    // RPC DEĞİL, Normal Metot
     public void ShowLoadingScreen()
     {
         if (isShowing) return;
         isShowing = true;
-        Debug.Log("IsShowing : " + IsShowing);
 
         loadingCanvasGroup.blocksRaycasts = true;
         progressSlider.value = 0f;
@@ -54,43 +50,11 @@ public class LoadingScreenManager : NetworkBehaviour
             .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
-
-    [ObserversRpc(runLocally: true)]
-    public void ShowLoadingScreenRPC()
-    {
-        if (isShowing) return;
-        isShowing = true;
-        Debug.Log("IsShowing : " + IsShowing);
-
-        loadingCanvasGroup.blocksRaycasts = true;
-        progressSlider.value = 0f;
-        UpdateProgressText(0f);
-
-        loadingCanvasGroup.DOFade(1f, 0.5f).SetUpdate(true);
-
-        progressSlider.DOValue(0.9f, 3f).SetEase(Ease.OutCubic).SetUpdate(true)
-            .OnUpdate(() => UpdateProgressText(progressSlider.value));
-    }
-
+    // RPC DEĞİL, Normal Metot
     public void HideLoadingScreen()
     {
-        progressSlider.DOKill();
+        if (!isShowing) return;
 
-        progressSlider.DOValue(1f, 0.5f).SetUpdate(true)
-            .OnUpdate(() => UpdateProgressText(progressSlider.value))
-            .OnComplete(() =>
-            {
-                loadingCanvasGroup.DOFade(0f, 0.5f).SetUpdate(true).OnComplete(() =>
-                {
-                    loadingCanvasGroup.blocksRaycasts = false;
-                    isShowing = false;
-                });
-            });
-    }
-
-    [ObserversRpc(runLocally: true)]
-    public void HideLoadingScreenRPC()
-    {
         progressSlider.DOKill();
 
         progressSlider.DOValue(1f, 0.5f).SetUpdate(true)

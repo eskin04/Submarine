@@ -26,10 +26,7 @@ public class GameEndState : StateNode<ushort>
         ShowGameEndView(isWin);
         yield return new WaitForSeconds(3f);
 
-        if (LoadingScreenManager.Instance != null)
-        {
-            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
-        }
+        RpcShowLoadingScreen();
 
         yield return new WaitForSeconds(0.6f);
 
@@ -60,6 +57,16 @@ public class GameEndState : StateNode<ushort>
     {
         InstanceHandler.GetInstance<GameViewManager>().HideView<GameEndView>();
 
+    }
+
+    [ObserversRpc]
+    private void RpcShowLoadingScreen()
+    {
+        // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı açar
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.ShowLoadingScreen();
+        }
     }
 
 

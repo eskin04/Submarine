@@ -26,25 +26,25 @@ public class PlayerSpawningState : StateNode
         // DeSpawnPlayers();
 
         SpawnPlayerSimple();
-        bool isGameStarted = LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsGameStarted;
-        if (!isGameStarted)
+        // bool isGameStarted = LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsGameStarted;
+        // if (!isGameStarted)
         {
-            LoadingScreenManager.Instance?.SetGameStarted(true);
-            SetView();
+            // LoadingScreenManager.Instance?.SetGameStarted(true);
         }
+        SetView();
         SetLevelView();
 
 
         machine.Next();
 
     }
-    [ObserversRpc]
+    [ObserversRpc(runLocally: true)]
     private void SetView()
     {
         machine.StartCoroutine(SpawnView());
     }
 
-    [ObserversRpc]
+    [ObserversRpc(runLocally: true)]
     private void SetLevelView()
     {
         machine.StartCoroutine(SetLevelViewCoroutine());
