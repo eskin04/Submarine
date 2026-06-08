@@ -105,7 +105,7 @@ public class MainGameState : StateNode
         }
         await SceneManager.LoadSceneAsync(lobbyScene);
 
-        LoadingScreenManager.Instance?.SetGameStarted(false);
+        // LoadingScreenManager.Instance?.SetGameStarted(false);
     }
 
 
