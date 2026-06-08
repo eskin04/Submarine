@@ -2,6 +2,8 @@ using UnityEngine;
 using PurrNet;
 using DG.Tweening;
 using FMODUnity;
+using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(ModuleInteraction))]
@@ -27,6 +29,9 @@ public class NotepadModule : NetworkBehaviour
     [SerializeField] private Vector3 coverOpenRotation = new Vector3(0, 0, 120);
     [SerializeField] private Vector3 pageFlippedRotation = new Vector3(-180, 0, 0);
 
+    [Header("Tearing Settings")]
+    [SerializeField] private GameObject tornPagePrefab;
+
     [Header("Audio Settings")]
     [SerializeField] private AudioEventChannelSO audioChannel;
     [SerializeField] private EventReference openSound;
@@ -38,6 +43,7 @@ public class NotepadModule : NetworkBehaviour
     private bool isInteracting = false;
     private bool isAnimating = false;
     private bool isDrawingCursorActive = false;
+    private int remainingPages = 4;
 
     private Texture2D[] pageTextures;
     private Vector2 lastDrawPosition = -Vector2.one;
@@ -53,6 +59,121 @@ public class NotepadModule : NetworkBehaviour
 
         HandlePageScrolling();
         HandleDrawingAndCursor();
+        HandlePageTearing();
+    }
+
+    private void HandlePageTearing()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && remainingPages > 0)
+        {
+            if (pageMeshes[currentPageIndex].activeSelf == false) return;
+
+            isAnimating = true;
+            PlaySound(pageFlipSound);
+
+            Texture2D currentTex = pageTextures[currentPageIndex];
+            byte[] compressedData = currentTex.EncodeToJPG(50);
+
+            pageMeshes[currentPageIndex].SetActive(false);
+            remainingPages--;
+
+            if (remainingPages > 0)
+            {
+                int nextActive = FindNextActivePage(currentPageIndex);
+                if (nextActive != -1)
+                {
+                    currentPageIndex = nextActive;
+                }
+
+            }
+
+            StartCoroutine(SendImageInChunksRoutine(compressedData, InventoryManager.LocalPlayer));
+
+            if (isDrawingCursorActive)
+            {
+                CursorManager.OnClearCustomCursor?.Invoke();
+                isDrawingCursorActive = false;
+            }
+
+            DOVirtual.DelayedCall(0.3f, () => isAnimating = false);
+        }
+    }
+
+    private IEnumerator SendImageInChunksRoutine(byte[] imageData, InventoryManager targetInventory)
+    {
+        int chunkSize = 1000;
+        int totalChunks = Mathf.CeilToInt((float)imageData.Length / chunkSize);
+
+        string uniqueImageId = System.Guid.NewGuid().ToString();
+
+        PrepareImageServerRpc(uniqueImageId, imageData.Length, targetInventory);
+
+        yield return null;
+
+        for (int i = 0; i < totalChunks; i++)
+        {
+            int length = Mathf.Min(chunkSize, imageData.Length - i * chunkSize);
+            byte[] chunk = new byte[length];
+            System.Array.Copy(imageData, i * chunkSize, chunk, 0, length);
+
+            SendChunkServerRpc(uniqueImageId, chunk, i * chunkSize);
+
+            yield return null;
+        }
+    }
+
+
+    private Dictionary<string, byte[]> incomingImages = new Dictionary<string, byte[]>();
+    private Dictionary<string, InventoryManager> imageOwners = new Dictionary<string, InventoryManager>();
+
+    [ServerRpc(requireOwnership: false)]
+    private void PrepareImageServerRpc(string imageId, int totalSize, InventoryManager targetInventory)
+    {
+        incomingImages[imageId] = new byte[totalSize];
+        imageOwners[imageId] = targetInventory;
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    private void SendChunkServerRpc(string imageId, byte[] chunk, int startIndex)
+    {
+        if (!incomingImages.ContainsKey(imageId)) return;
+
+        System.Array.Copy(chunk, 0, incomingImages[imageId], startIndex, chunk.Length);
+
+        if (startIndex + chunk.Length >= incomingImages[imageId].Length)
+        {
+            byte[] completeImageData = incomingImages[imageId];
+            InventoryManager ownerInventory = imageOwners[imageId];
+
+            incomingImages.Remove(imageId);
+            imageOwners.Remove(imageId);
+
+            SpawnTornPageWithImage(completeImageData, ownerInventory);
+        }
+    }
+
+    private void SpawnTornPageWithImage(byte[] completeData, InventoryManager targetInventory)
+    {
+        GameObject tornPage = Instantiate(tornPagePrefab, transform.position, transform.rotation);
+
+        var netObj = tornPage.GetComponent<NetworkTransform>();
+        if (netObj != null && targetInventory != null)
+            netObj.GiveOwnership(targetInventory.owner);
+
+        TornPageItem tornItem = tornPage.GetComponent<TornPageItem>();
+
+        if (tornItem != null)
+        {
+            tornItem.SetImageDataAndDistribute(completeData);
+        }
+
+        if (targetInventory != null)
+        {
+            DOVirtual.DelayedCall(0.1f, () =>
+            {
+                if (tornPage != null) targetInventory.ForcePickupClientRpc(tornPage);
+            });
+        }
     }
 
     private void InitializeDrawingPages()
@@ -216,36 +337,65 @@ public class NotepadModule : NetworkBehaviour
         float scroll = Input.mouseScrollDelta.y;
         if (scroll == 0) return;
 
-        if (scroll < 0 && currentPageIndex < pageMeshes.Length - 1)
+        if (scroll < 0)
         {
-            isAnimating = true;
-            PlaySound(pageFlipSound);
+            int nextActive = FindNextActivePage(currentPageIndex);
 
-            Transform pageToFlip = pageMeshes[currentPageIndex].transform;
-            DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+            if (nextActive != -1)
             {
-                pageToFlip.localEulerAngles = v;
-            })
-            .SetEase(Ease.InOutSine)
-            .OnComplete(() => isAnimating = false);
+                isAnimating = true;
+                PlaySound(pageFlipSound);
 
-            currentPageIndex++;
+                Transform pageToFlip = pageMeshes[currentPageIndex].transform;
+
+                DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+                {
+                    pageToFlip.localEulerAngles = v;
+                })
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() => isAnimating = false);
+
+                currentPageIndex = nextActive;
+            }
         }
-        else if (scroll > 0 && currentPageIndex > 0)
+        else if (scroll > 0)
         {
-            isAnimating = true;
-            PlaySound(pageFlipSound);
+            int prevActive = FindPrevActivePage(currentPageIndex);
 
-            currentPageIndex--;
-            Transform pageToFlip = pageMeshes[currentPageIndex].transform;
-
-            DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+            if (prevActive != -1)
             {
-                pageToFlip.localEulerAngles = v;
-            })
-            .SetEase(Ease.InOutSine)
-            .OnComplete(() => isAnimating = false);
+                isAnimating = true;
+                PlaySound(pageFlipSound);
+
+                currentPageIndex = prevActive;
+                Transform pageToFlip = pageMeshes[currentPageIndex].transform;
+
+                DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+                {
+                    pageToFlip.localEulerAngles = v;
+                })
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() => isAnimating = false);
+            }
         }
+    }
+
+    private int FindNextActivePage(int currentIndex)
+    {
+        for (int i = currentIndex + 1; i < pageMeshes.Length; i++)
+        {
+            if (pageMeshes[i].activeSelf) return i;
+        }
+        return -1;
+    }
+
+    private int FindPrevActivePage(int currentIndex)
+    {
+        for (int i = currentIndex - 1; i >= 0; i--)
+        {
+            if (pageMeshes[i].activeSelf) return i;
+        }
+        return -1;
     }
 
 

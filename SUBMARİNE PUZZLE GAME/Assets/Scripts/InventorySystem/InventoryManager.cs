@@ -234,6 +234,8 @@ public class InventoryManager : NetworkBehaviour
             if (itemObj.GetComponent<Handbook>() == null)
             {
                 OnEquipChange?.Invoke(true);
+                if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+                    promptView.AddPrompt("page_drop", "G", "Drop Page");
             }
             else
             {
@@ -262,6 +264,8 @@ public class InventoryManager : NetworkBehaviour
             itemLogic?.OnUnequip();
 
             itemObj.SetActive(false);
+            if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+                promptView.RemovePrompt("page_drop");
         }
     }
 
@@ -346,6 +350,8 @@ public class InventoryManager : NetworkBehaviour
     [ObserversRpc]
     private void ObserversPickupRpc(GameObject itemObj)
     {
+        if (itemObj == null) return;
+
         SetItemSettings(itemObj, true);
 
     }
@@ -413,32 +419,37 @@ public class InventoryManager : NetworkBehaviour
     {
         if (itemObj == null) return;
 
+        // 1. GÖRSEL KOPMA: Obje her iki tarafta (Client ve Server) anında elden (parent'tan) ayrılır
         itemObj.transform.SetParent(parentObj != null ? parentObj.transform : null);
 
         var itemLogic = itemObj.GetComponent<IInventoryItem>();
         itemLogic?.OnDrop();
 
+        // Sadece objeyi atan oyuncunun envanter UI'ı anında temizlenir
         if (isOwner)
         {
             RemoveCurrentItem();
         }
 
+        // 2. FİZİK VE NETWORK: Pozisyon, Sahiplik ve Fırlatma kuvveti SADECE Server'da işlenir
         if (isServer)
         {
+            // Pozisyonu sadece server belirler ki client'ın lokal hareketiyle çakışma (jitter) olmasın
             itemObj.transform.position = pos;
             itemObj.transform.rotation = rot;
 
             var netObj = itemObj.GetComponent<NetworkTransform>();
-            if (netObj != null) netObj.RemoveOwnership();
+            if (netObj != null) netObj.RemoveOwnership(); // Host objenin network kontrolünü devralır
 
-            SetItemSettings(itemObj, false);
-            ObserversDropRpc(itemObj);
+            SetItemSettings(itemObj, false); // Host fizik özelliklerini (isKinematic = false) aktif eder
+            ObserversDropRpc(itemObj); // Tüm client'lara objenin fiziklerini açmalarını söyler
 
             var rb = itemObj.GetComponent<Rigidbody>();
 
+            // Eşya bir asansöre vb. bırakılmadıysa, normal fırlatma kuvvetini uygula
             if (parentObj == null && rb != null)
             {
-                rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
+                rb.AddForce((transform.forward + Vector3.up * 0.5f) * 2f, ForceMode.Impulse);
             }
         }
     }
@@ -446,6 +457,7 @@ public class InventoryManager : NetworkBehaviour
     [ObserversRpc]
     private void ObserversDropRpc(GameObject itemObj)
     {
+        if (itemObj == null) return;
         SetItemSettings(itemObj, false);
     }
 
@@ -490,7 +502,7 @@ public class InventoryManager : NetworkBehaviour
         return -1;
     }
 
-    private void RemoveCurrentItem()
+    public void RemoveCurrentItem()
     {
         if (currentSlotIndex != -1)
         {
@@ -512,6 +524,52 @@ public class InventoryManager : NetworkBehaviour
 
         var itemLogic = container.PhysicalObject.GetComponent<IInventoryItem>();
         itemLogic?.CanOperate(isVisible);
+    }
+
+
+    [ObserversRpc]
+    public void ForcePickupClientRpc(GameObject networkedTornPage)
+    {
+        if (!isOwner || networkedTornPage == null) return;
+
+        TryForcePickup(networkedTornPage);
+    }
+
+    private bool TryForcePickup(GameObject itemObj)
+    {
+        if (!isOwner || itemObj == null) return false;
+
+        int targetSlot = GetFirstEmptySlot();
+
+        if (targetSlot == -1)
+        {
+            Vector3 dropPos;
+            Quaternion dropRot = itemObj.transform.rotation;
+
+            if (playerInventory != null && playerInventory.DropPosition != null)
+            {
+                dropPos = playerInventory.DropPosition.position;
+                dropRot = playerInventory.DropPosition.rotation;
+            }
+            else
+            {
+                dropPos = transform.position + transform.forward * 1.5f;
+            }
+
+            itemObj.transform.position = dropPos;
+            itemObj.transform.rotation = dropRot;
+
+            var rb = itemObj.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.AddForce((transform.forward + Vector3.up * 0.25f) * 3f, ForceMode.Impulse);
+            }
+
+            return false;
+        }
+
+        PickupServerRpc(itemObj, targetSlot);
+        return true;
     }
 
 

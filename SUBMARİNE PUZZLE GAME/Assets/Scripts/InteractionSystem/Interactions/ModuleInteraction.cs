@@ -2,6 +2,16 @@ using StarterAssets;
 using UnityEngine;
 using DG.Tweening;
 using PurrNet;
+using System.Collections.Generic;
+
+[System.Serializable]
+public struct ModulePromptData
+{
+    public string promptId;
+    public string keyText;
+    public string actionText;
+    public Sprite icon;
+}
 
 public class ModuleInteraction : MonoBehaviour
 {
@@ -11,6 +21,10 @@ public class ModuleInteraction : MonoBehaviour
     [SerializeField] private Vector3 initialRotationOffset = Vector3.zero;
     [SerializeField] private bool isUnlockCursor = true;
     [SerializeField] private bool isMoveable = false;
+    [Header("Prompt Settings")]
+
+    [SerializeField] private List<ModulePromptData> modulePrompts = new List<ModulePromptData>();
+    private const string DEFAULT_EXIT_PROMPT_ID = "module_default_exit";
 
 
     private FirstPersonController playerController;
@@ -23,6 +37,7 @@ public class ModuleInteraction : MonoBehaviour
     private Rigidbody rb;
     private Collider colliderObject;
     private IInteractable ınteractable;
+    private bool isInteracting = false;
 
     private bool isHoveringMesh = false;
     private Camera mainCam;
@@ -55,7 +70,7 @@ public class ModuleInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1))
+        if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1) && isInteracting)
         {
             StopInteract();
         }
@@ -74,6 +89,8 @@ public class ModuleInteraction : MonoBehaviour
             InstanceHandler.GetInstance<MainGameView>().SetInteractionVisibility(false);
             playerController.enabled = false;
             SetInteractPosition();
+            CameraLayerController.OnInteractionStarted?.Invoke();
+            ShowPrompts();
             if (rb != null) rb.isKinematic = true;
             if (colliderObject != null) colliderObject.enabled = false;
             if (isUnlockCursor)
@@ -93,7 +110,10 @@ public class ModuleInteraction : MonoBehaviour
         {
 
             transform.parent = playerCameraTransform;
-            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase);
+            transform.DOLocalMove(initialPositionOffset, animDuration).SetEase(animEase).OnComplete(() =>
+            {
+                isInteracting = true;
+            });
             transform.DOLocalRotate(initialRotationOffset, animDuration).SetEase(animEase);
 
         }
@@ -103,6 +123,7 @@ public class ModuleInteraction : MonoBehaviour
             playerInteractCameraTransform.localPosition = initialPositionOffset;
             playerInteractCameraTransform.localEulerAngles = initialRotationOffset;
             playerInteractCameraTransform.gameObject.SetActive(true);
+            isInteracting = true;
         }
     }
 
@@ -115,6 +136,8 @@ public class ModuleInteraction : MonoBehaviour
             ınteractable.StopInteract();
             playerController.enabled = true;
             SetCameraPositionBack();
+            CameraLayerController.OnInteractionEnded?.Invoke();
+            HidePrompts();
             if (rb != null) rb.isKinematic = false;
             if (colliderObject != null) colliderObject.enabled = true;
             if (isUnlockCursor)
@@ -132,13 +155,17 @@ public class ModuleInteraction : MonoBehaviour
         if (isMoveable)
         {
             transform.parent = originalParent;
-            transform.DOMove(originalPosition, animDuration).SetEase(animEase);
+            transform.DOMove(originalPosition, animDuration).SetEase(animEase).OnComplete(() =>
+            {
+                isInteracting = false;
+            });
             transform.DORotateQuaternion(originalRotation, animDuration).SetEase(animEase);
         }
         else
         {
             playerInteractCameraTransform.parent = playerOriginalParent;
             playerInteractCameraTransform.gameObject.SetActive(false);
+            isInteracting = false;
         }
     }
 
@@ -164,6 +191,27 @@ public class ModuleInteraction : MonoBehaviour
                 HighlightManager.Instance.SetHoveredObject(null);
                 isHoveringMesh = false;
             }
+        }
+    }
+
+    private void ShowPrompts()
+    {
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.AddPrompt(DEFAULT_EXIT_PROMPT_ID, "Right Click", "Exit", PromptGroup.Module);
+
+            foreach (var prompt in modulePrompts)
+            {
+                promptView.AddPrompt(prompt.promptId, prompt.keyText, prompt.actionText, PromptGroup.Module, prompt.icon);
+            }
+        }
+    }
+
+    private void HidePrompts()
+    {
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.RemovePromptsByGroup(PromptGroup.Module);
         }
     }
 

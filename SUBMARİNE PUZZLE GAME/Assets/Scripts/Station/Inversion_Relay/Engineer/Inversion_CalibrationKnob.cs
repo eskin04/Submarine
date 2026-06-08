@@ -50,7 +50,7 @@ public class Inversion_CalibrationKnob : MonoBehaviour
 
         if (gauge != null)
         {
-            gauge.ApplyPlayerInput(deltaAngle * inputForceMultiplier);
+            gauge.ApplyPlayerInput(-deltaAngle * inputForceMultiplier);
         }
     }
 }

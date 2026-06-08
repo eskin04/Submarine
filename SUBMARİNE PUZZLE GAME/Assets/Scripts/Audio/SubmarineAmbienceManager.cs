@@ -7,15 +7,9 @@ public class SubmarineAmbienceManager : MonoBehaviour
     public EventReference submarineAmbience;
 
     private FMODEmitter _ambienceEmitter;
-
-    void OnEnable()
+    private void Start()
     {
-        MainGameState.startGame += PlayAmbience;
-    }
-
-    void OnDisable()
-    {
-        MainGameState.startGame -= PlayAmbience;
+        PlayAmbience();
     }
 
     private void PlayAmbience()

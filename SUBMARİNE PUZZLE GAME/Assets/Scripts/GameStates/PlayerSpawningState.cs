@@ -23,10 +23,18 @@ public class PlayerSpawningState : StateNode
         base.Enter(asServer);
         if (!asServer) return;
 
-        DeSpawnPlayers();
+        // DeSpawnPlayers();
 
         SpawnPlayerSimple();
-        SetView();
+        bool isGameStarted = LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsGameStarted;
+        if (!isGameStarted)
+        {
+            LoadingScreenManager.Instance?.SetGameStarted(true);
+            SetView();
+        }
+        SetLevelView();
+
+
         machine.Next();
 
     }
@@ -35,12 +43,26 @@ public class PlayerSpawningState : StateNode
     {
         machine.StartCoroutine(SpawnView());
     }
+
+    [ObserversRpc]
+    private void SetLevelView()
+    {
+        machine.StartCoroutine(SetLevelViewCoroutine());
+    }
     private IEnumerator SpawnView()
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<PlayerSpawnView>(hideOthers: false);
-        yield return new WaitForSeconds(2);
-        InstanceHandler.GetInstance<GameViewManager>().ShowView<MainGameView>(hideOthers: true);
+        yield return new WaitForSeconds(5);
+        InstanceHandler.GetInstance<GameViewManager>().HideView<PlayerSpawnView>();
     }
+
+    private IEnumerator SetLevelViewCoroutine()
+    {
+        InstanceHandler.GetInstance<GameViewManager>()?.ShowView<LevelView>(hideOthers: false);
+        yield return new WaitForSeconds(5);
+        InstanceHandler.GetInstance<GameViewManager>()?.HideView<LevelView>();
+    }
+
 
     private void SpawnPlayerSimple()
     {

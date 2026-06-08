@@ -194,13 +194,14 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
             if (CurrentStep.value >= SpatialSyncCore.REQUIRED_CLICKS)
             {
                 ChangeStationStateServerRpc(2);
-                PuzzleSolvedObserversRpc();
+                stationController.SetReparied();
+
             }
         }
         else
         {
             WrongStepObserversRpc();
-
+            stationController.ReportRepairMistake();
             ResetStation();
 
             CurrentState.value = 1;
@@ -227,22 +228,12 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
         {
             sSTechnicianUIManager.UpdateInputText("Fail!");
         }
-        if (stationController != null)
-        {
-            stationController.ReportRepairMistake();
-        }
+
 
         OnPuzzleReset?.Invoke();
     }
 
-    [ObserversRpc]
-    private void PuzzleSolvedObserversRpc()
-    {
-        if (stationController != null)
-        {
-            stationController.SetReparied();
-        }
-    }
+
 
     [ContextMenu("Test Generate Puzzle")]
     private void TestGeneratePuzzle()

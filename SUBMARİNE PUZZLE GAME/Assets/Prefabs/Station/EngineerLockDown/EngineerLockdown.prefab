@@ -3234,6 +3234,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!114 &7179052871919991700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3943,6 +3944,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!114 &6613884846485702337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6128,12 +6130,17 @@ MonoBehaviour:
   stationName: Override Protocol
   stationType: 1
   stationTier: 0
-  mistakeWaterPenalty: 3
+  mistakeWaterPenalty: 10
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0.4
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0

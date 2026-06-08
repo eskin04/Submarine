@@ -155,6 +155,7 @@ public class Inversion_Relay_StationManager : NetworkBehaviour
 
     private IEnumerator TesterProcessRoutine()
     {
+        bool isAllCorrect = true;
         for (int i = 0; i < 5; i++)
         {
             yield return new WaitForSeconds(testDurationPerPipe);
@@ -168,13 +169,19 @@ public class Inversion_Relay_StationManager : NetworkBehaviour
             else
             {
                 RpcUpdateTestLight(i, false);
+                isAllCorrect = false;
+                RpcTestComplete();
+
                 break;
             }
         }
 
         isTesting.value = false;
         activeTesterRoutine = null;
-        RpcTestComplete();
+        if (isAllCorrect)
+        {
+            TriggerStationSuccess();
+        }
     }
 
     [ObserversRpc]
@@ -214,15 +221,20 @@ public class Inversion_Relay_StationManager : NetworkBehaviour
 
         if (isCorrectSequence)
         {
-            RpcStationResolved(true);
-            isRoundActive.value = false;
-            stationController.SetReparied();
+            TriggerStationSuccess();
         }
         else
         {
             RpcStationResolved(false);
             stationController.ReportRepairMistake();
         }
+    }
+
+    private void TriggerStationSuccess()
+    {
+        RpcStationResolved(true);
+        isRoundActive.value = false;
+        if (stationController != null) stationController.SetReparied();
     }
 
 

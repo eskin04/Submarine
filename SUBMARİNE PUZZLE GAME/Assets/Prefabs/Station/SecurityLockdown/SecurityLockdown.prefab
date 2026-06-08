@@ -3447,6 +3447,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &811757244232398825
 GameObject:
   m_ObjectHideFlags: 0
@@ -8273,6 +8274,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &1937242847020122846
 GameObject:
   m_ObjectHideFlags: 0
@@ -10835,6 +10837,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &3083272193819144082
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14787,6 +14790,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &3494737551842730399
 GameObject:
   m_ObjectHideFlags: 0
@@ -15117,12 +15121,17 @@ MonoBehaviour:
   stationName: Security LockDown
   stationType: 1
   stationTier: 0
-  mistakeWaterPenalty: 3
+  mistakeWaterPenalty: 20
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -22216,6 +22225,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &5479678699899994462
 GameObject:
   m_ObjectHideFlags: 0
@@ -24895,6 +24905,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &6350669936516536312
 GameObject:
   m_ObjectHideFlags: 0
@@ -27054,6 +27065,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &6894531443801567222
 GameObject:
   m_ObjectHideFlags: 0
@@ -32019,6 +32031,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &7768046381418162732
 GameObject:
   m_ObjectHideFlags: 0
@@ -36686,6 +36699,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 30, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &4208316529600706271
 BoxCollider:
   m_ObjectHideFlags: 0

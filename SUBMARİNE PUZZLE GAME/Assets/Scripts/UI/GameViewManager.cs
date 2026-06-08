@@ -25,6 +25,18 @@ public class GameViewManager : MonoBehaviour
         InstanceHandler.UnregisterInstance<GameViewManager>();
     }
 
+    public bool IsViewActive<T>() where T : View
+    {
+        foreach (var view in views)
+        {
+            if (view.GetType() == typeof(T))
+            {
+                return view.canvasGroup.alpha > 0f;
+            }
+        }
+        return false;
+    }
+
     public void ShowView<T>(bool hideOthers = true) where T : View
     {
         foreach (var view in views)
@@ -54,12 +66,32 @@ public class GameViewManager : MonoBehaviour
 
     private void ShowViewInternal(View view)
     {
+        if (view == null)
+        {
+            Debug.LogError("ShowViewInternal hatası: View atanmamış!");
+            return;
+        }
+
+        if (view.canvasGroup == null)
+        {
+            Debug.LogError($"ShowViewInternal hatası: {view.gameObject.name} objesinde CanvasGroup referansı eksik!");
+            return;
+        }
+
         view.canvasGroup.DOFade(1f, 0.2f);
         view.OnShow();
     }
 
     private void HideViewInternal(View view)
     {
+        if (view == null) return;
+
+        if (view.canvasGroup == null)
+        {
+            Debug.LogError($"HideViewInternal hatası: {view.gameObject.name} objesinde CanvasGroup referansı eksik!");
+            return;
+        }
+
         view.canvasGroup.DOFade(0f, 0.2f);
         view.OnHide();
     }

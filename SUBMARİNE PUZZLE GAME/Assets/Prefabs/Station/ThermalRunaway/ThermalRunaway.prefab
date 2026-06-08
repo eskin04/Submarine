@@ -222,12 +222,17 @@ MonoBehaviour:
   stationName: Thermal Runaway
   stationType: 0
   stationTier: 0
-  mistakeWaterPenalty: 3
+  mistakeWaterPenalty: 5
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -529,6 +534,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!65 &8245859846277072294
 BoxCollider:
   m_ObjectHideFlags: 0

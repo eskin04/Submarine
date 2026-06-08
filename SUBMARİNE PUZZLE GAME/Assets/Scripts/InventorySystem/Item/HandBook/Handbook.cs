@@ -12,6 +12,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     [SerializeField] private CanvasGroup bookGroup;
     [SerializeField] private Vector3 bookOpenPosition;
     [SerializeField] private Vector3 bookOpenRotation;
+    [SerializeField] private Sprite scrollIcon;
     private bool isEquipped = false;
     private bool isOperate = false;
     public bool IsOperate => isOperate;
@@ -50,6 +51,10 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     public void OnEquip()
     {
         isEquipped = true;
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.AddPrompt("handbook_open", "Mouse0", "Open Handbook");
+        }
 
     }
 
@@ -58,6 +63,10 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         isEquipped = false;
         isOperate = false;
         ToggleBookAnim();
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            promptView.RemovePrompt("handbook_open");
+        }
 
     }
 
@@ -88,6 +97,12 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             bookGroup.interactable = true;
             bookGroup.blocksRaycasts = true;
             if (invManager != null) invManager.IsScrollLocked = true;
+            if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+            {
+                promptView.AddPrompt("handbook_scroll", "Scroll", "Turn Page", PromptGroup.Item, scrollIcon);
+                promptView.RemovePrompt("handbook_open");
+                promptView.AddPrompt("handbook_close", "Mouse0", "Close Handbook");
+            }
 
         }
         else
@@ -101,7 +116,12 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             bookGroup.interactable = false;
             bookGroup.blocksRaycasts = false;
             if (invManager != null) invManager.IsScrollLocked = false;
-
+            if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+            {
+                promptView.RemovePrompt("handbook_scroll");
+                promptView.RemovePrompt("handbook_close");
+                promptView.AddPrompt("handbook_open", "Mouse0", "Open Handbook");
+            }
         }
     }
 

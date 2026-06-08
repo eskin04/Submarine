@@ -505,7 +505,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &582499045335490657
 Transform:
   m_ObjectHideFlags: 0
@@ -540,7 +540,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.18659492, y: 0.5428739, z: 0.1409392}
   m_Center: {x: 0.0023543977, y: -0.006452471, z: -0.025636084}
@@ -2166,6 +2166,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &2022390309668552703
 GameObject:
   m_ObjectHideFlags: 0
@@ -3355,6 +3356,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &3430496459524231781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3936,6 +3938,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &3830191839386382236
 GameObject:
   m_ObjectHideFlags: 0
@@ -6934,12 +6937,17 @@ MonoBehaviour:
   stationName: Inversion Relay
   stationType: 0
   stationTier: 0
-  mistakeWaterPenalty: 9
+  mistakeWaterPenalty: 30
+  waterPenaltyMultiplierPerMistake: 1.15
   timeoutWaterPenalty: 6
   mistakeStressPenalty: 10
   repairStressReward: 15
   timeoutStressPenalty: 20
   systemMessageDelay: 0
+  multiplierForNextMistake:
+    _value: 1
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   stationState:
     _value: 0
     _ownerAuth: 0
@@ -7146,6 +7154,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &6221467351569092239
 GameObject:
   m_ObjectHideFlags: 0
@@ -7528,6 +7537,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &6783343807842651782
 GameObject:
   m_ObjectHideFlags: 0
@@ -8944,6 +8954,7 @@ MonoBehaviour:
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
+  modulePrompts: []
 --- !u!1 &8487222980727849599
 GameObject:
   m_ObjectHideFlags: 0

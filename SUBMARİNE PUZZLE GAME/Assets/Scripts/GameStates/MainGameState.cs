@@ -88,18 +88,7 @@ public class MainGameState : StateNode
     private async void QuitGame()
     {
 
-
-
-        if (VivoxService.Instance != null && VivoxService.Instance.IsLoggedIn)
-        {
-            foreach (var channel in VivoxService.Instance.ActiveChannels)
-            {
-                await VivoxService.Instance.LeaveChannelAsync(channel.Key);
-            }
-
-            await VivoxService.Instance.LogoutAsync();
-        }
-
+        RadioVoiceManager.Instance?.LeaveVoiceChannel();
         if (networkManager.isServer)
         {
             networkManager.StopServer();
@@ -114,11 +103,9 @@ public class MainGameState : StateNode
         {
             Destroy(ConnectionStarter.Instance.gameObject);
         }
-        if (RadioVoiceManager.Instance != null)
-        {
-            Destroy(RadioVoiceManager.Instance.gameObject);
-        }
         await SceneManager.LoadSceneAsync(lobbyScene);
+
+        LoadingScreenManager.Instance?.SetGameStarted(false);
     }
 
 

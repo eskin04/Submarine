@@ -13,13 +13,15 @@ public class StationController : NetworkBehaviour
     public StationType stationType;
     public StationTier stationTier;
 
-    public float mistakeWaterPenalty = 3.0f;
+    public float mistakeWaterPenalty = 10.0f;
+    public float waterPenaltyMultiplierPerMistake = 1.15f;
     public float timeoutWaterPenalty = 6.0f;
 
     public float mistakeStressPenalty = 10.0f;
     public float repairStressReward = 15.0f;
     public float timeoutStressPenalty = 20.0f;
     public float systemMessageDelay = 0;
+    [SerializeField] private SyncVar<float> multiplierForNextMistake = new SyncVar<float>(1.0f);
 
     [SerializeField] private SyncVar<StationState> stationState = new SyncVar<StationState>(StationState.Default);
     [SerializeField] private UnityEvent onStart;
@@ -158,8 +160,9 @@ public class StationController : NetworkBehaviour
         if (stationState.value != StationState.Broken) return;
 
         stationState.value = StationState.Destroyed;
-        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty);
+        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty * multiplierForNextMistake.value);
         GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty);
+        multiplierForNextMistake.value *= waterPenaltyMultiplierPerMistake;
 
 
     }
@@ -197,8 +200,9 @@ public class StationController : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void ReportRepairMistake(float penaltyMultiplier = 1.0f)
     {
-        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty * penaltyMultiplier);
+        GlobalEvents.OnAddFloodPenalty?.Invoke(mistakeWaterPenalty * multiplierForNextMistake.value * penaltyMultiplier);
         GlobalEvents.OnAddStress?.Invoke(mistakeStressPenalty * penaltyMultiplier);
+        multiplierForNextMistake.value *= waterPenaltyMultiplierPerMistake;
 
     }
 

@@ -77,16 +77,7 @@ public class ConnectionStarter : MonoBehaviour
 
     private async void DisconnectAndReturnToMainMenu()
     {
-        if (Unity.Services.Vivox.VivoxService.Instance != null && Unity.Services.Vivox.VivoxService.Instance.IsLoggedIn)
-        {
-            foreach (var channel in Unity.Services.Vivox.VivoxService.Instance.ActiveChannels)
-            {
-                await Unity.Services.Vivox.VivoxService.Instance.LeaveChannelAsync(channel.Key);
-            }
-            await Unity.Services.Vivox.VivoxService.Instance.LogoutAsync();
-        }
-
-
+        RadioVoiceManager.Instance?.LeaveVoiceChannel();
 
         if (_networkManager.isServer)
         {
@@ -99,10 +90,6 @@ public class ConnectionStarter : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        if (RadioVoiceManager.Instance != null)
-        {
-            Destroy(RadioVoiceManager.Instance.gameObject);
-        }
 
         UnityEngine.SceneManagement.SceneManager.LoadScene(lobbyScene);
 
@@ -137,11 +124,6 @@ public class ConnectionStarter : MonoBehaviour
             {
                 PurrLogger.LogError($"Failed to parse Steam Lobby ID!", this);
                 return;
-            }
-
-            if (_voiceManager != null)
-            {
-                _voiceManager.StartLobbyVoice(steamLobbyID.ToString());
             }
 
             var lobbyOwner = SteamMatchmaking.GetLobbyOwner(new CSteamID(steamLobbyID));
