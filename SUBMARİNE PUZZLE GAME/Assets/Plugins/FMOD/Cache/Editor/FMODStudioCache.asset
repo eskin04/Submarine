@@ -1,5 +1,32 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8616542845758986548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/PowerRouting/SmallSwitch
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/PowerRouting/SmallSwitch
+  Guid:
+    Data1: -501686326
+    Data2: 1320885695
+    Data3: -1671108191
+    Data4: 1004891962
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-7901652010558012375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,10 +205,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639163447045857428
+  lastModified: 639165224415975928
   FileSizes:
   - Name: Desktop
-    Value: 3122
+    Value: 3188
   Exists: 1
 --- !u!114 &-5510877157030363373
 MonoBehaviour:
@@ -756,13 +783,14 @@ MonoBehaviour:
   - {fileID: 3861088205431521109}
   - {fileID: -2662692666984447828}
   - {fileID: 964611538871919889}
+  - {fileID: -8616542845758986548}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639163471195329697
+  cacheTime: 639165224415975928
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -840,6 +868,8 @@ MonoBehaviour:
     index: 36
   - key: event:/SFX/MagneticInterference/brokenStaticEvent
     index: 37
+  - key: event:/PowerRouting/SmallSwitch
+    index: 38
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1084,7 +1114,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639163447045847359
+  lastModified: 639165224415944668
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1212,10 +1242,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639163471195329697
+  lastModified: 639165218138377062
   FileSizes:
   - Name: Desktop
-    Value: 2784832
+    Value: 2793280
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:

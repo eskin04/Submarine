@@ -379,6 +379,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 3
   switchTransform: {fileID: 4019981560051045340}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -1283,6 +1291,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 3
   switchTransform: {fileID: 3067791887113728895}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -1359,6 +1375,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 0
   switchTransform: {fileID: 3479359144364411667}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -1435,6 +1459,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 1
   switchTransform: {fileID: 2856644533684511326}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -1552,14 +1584,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 996104195813702346}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.12, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -4.55, y: 4.58, z: 3.489}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1674654105120931883}
   m_Father: {fileID: 3170480891430375592}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1212790231268438055
 GameObject:
   m_ObjectHideFlags: 0
@@ -1850,6 +1882,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 2
   switchTransform: {fileID: 8854322596399379338}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -1877,15 +1917,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2321028682281701952}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.447, y: 2.12, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.941, y: 0.26, z: 3.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 821200834038378216}
   - {fileID: 6946627787738868116}
   m_Father: {fileID: 3170480891430375592}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &2323491667707419867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1959,6 +1999,14 @@ MonoBehaviour:
   switchIndex: 2
   switchColor: 0
   switchTransform: {fileID: 1501441533624032969}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -2035,6 +2083,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 2
   switchTransform: {fileID: 6401202412316545709}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -2111,6 +2167,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 0
   switchTransform: {fileID: 6675178594226981668}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -2142,7 +2206,7 @@ Transform:
   m_GameObject: {fileID: 2466711647972320149}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: -1.7750001, y: 0, z: 0.61100006}
+  m_LocalPosition: {x: 1.573, y: 0, z: -0.334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -2307,6 +2371,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 3
   switchTransform: {fileID: 2973422714254115971}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -2383,6 +2455,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 1
   switchTransform: {fileID: 2803330921203811694}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -2639,6 +2719,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 1
   switchTransform: {fileID: 1099140383695857691}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -3464,6 +3552,14 @@ MonoBehaviour:
   switchIndex: 3
   switchColor: 0
   switchTransform: {fileID: 609414352671226732}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -3576,6 +3672,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 3
   switchTransform: {fileID: 4619769815025785903}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -4240,7 +4344,7 @@ Transform:
   m_GameObject: {fileID: 5728920491089566647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.19, y: 0, z: 0.075}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4444,6 +4548,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 0
   switchTransform: {fileID: 5614314755018724172}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -5131,6 +5243,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 2
   switchTransform: {fileID: 9107233078351810874}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -5839,6 +5959,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 2
   switchTransform: {fileID: 1464472712379188972}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -5951,6 +6079,14 @@ MonoBehaviour:
   switchIndex: 1
   switchColor: 0
   switchTransform: {fileID: 5749715832721609870}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -6027,6 +6163,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 1
   switchTransform: {fileID: 8116528902915709092}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -7243,6 +7387,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 0
   switchTransform: {fileID: 6433285064033124635}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}
@@ -7319,6 +7471,14 @@ MonoBehaviour:
   switchIndex: 0
   switchColor: 0
   switchTransform: {fileID: 7380671204963684698}
+  _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
+  _switchClickSound:
+    Guid:
+      Data1: -501686326
+      Data2: 1320885695
+      Data3: -1671108191
+      Data4: 1004891962
+    Path: event:/PowerRouting/SmallSwitch
   _animDuration: 0.2
   _upRotation: {x: -10, y: 0, z: 90}
   _downRotation: {x: -160, y: 0, z: 90}

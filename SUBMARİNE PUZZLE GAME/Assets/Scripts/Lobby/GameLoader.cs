@@ -53,7 +53,7 @@ public class GameLoader : MonoBehaviour
     private IEnumerator LoadLevelWithContract(LevelData levelData)
     {
         lobbyManager.SetLobbyStarted();
-        LoadingScreenManager.Instance?.ShowLoadingScreenRPC();
+        LoadingScreenManager.Instance?.ShowLoadingScreen();
         yield return new WaitForSeconds(.6f);
 
         if (levelData.levelID == 1)

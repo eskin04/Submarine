@@ -38,9 +38,17 @@ public class LoadingScreenManager : NetworkBehaviour
         isGameStarted = started;
     }
 
+    public void ShowLoadingScreen()
+    {
+        if (isServer)
+        {
+            ShowLoadingScreenRPC();
+        }
+    }
+
 
     [ObserversRpc(runLocally: true)]
-    public void ShowLoadingScreenRPC()
+    private void ShowLoadingScreenRPC()
     {
         if (isShowing) return;
         isShowing = true;
@@ -55,8 +63,16 @@ public class LoadingScreenManager : NetworkBehaviour
             .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
-    [ObserversRpc(runLocally: true)]
     public void HideLoadingScreen()
+    {
+        if (isServer)
+        {
+            HideLoadingScreenRPC();
+        }
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void HideLoadingScreenRPC()
     {
         progressSlider.DOKill();
 

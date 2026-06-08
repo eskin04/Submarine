@@ -197,7 +197,7 @@ public class ContractManager : NetworkBehaviour
         {
             if (LoadingScreenManager.Instance != null)
             {
-                LoadingScreenManager.Instance.ShowLoadingScreenRPC();
+                LoadingScreenManager.Instance.ShowLoadingScreen();
             }
             DOVirtual.DelayedCall(delayBeforeLoad, () =>
             {

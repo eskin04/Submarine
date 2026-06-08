@@ -19,6 +19,11 @@ public class PowerRoutingSwitchClick : MonoBehaviour
 
     [Header("Animation Settings")]
     public Transform switchTransform;
+
+    [Header("Audio Settings")]
+    public AudioEventChannelSO _channel;
+    [SerializeField] private FMODUnity.EventReference _switchClickSound;
+
     [SerializeField] private float _animDuration = 0.2f;
     [SerializeField] private Vector3 _upRotation = new Vector3(-30f, 0, 0);
     [SerializeField] private Vector3 _downRotation = new Vector3(30f, 0, 0);
@@ -45,7 +50,8 @@ public class PowerRoutingSwitchClick : MonoBehaviour
         Vector3 targetRot = _isDown ? _downRotation : _upRotation;
 
         switchTransform.DOLocalRotate(targetRot, _animDuration).SetEase(Ease.OutBack);
-        // FMOD: RuntimeManager.PlayOneShot("event:/Station/Switch_Click", switchTransform.position);
+
+        PlaySwitchClickSound();
 
         if (switchType == PowerRoutingSwitchType.SmallSwitch)
         {
@@ -55,6 +61,15 @@ public class PowerRoutingSwitchClick : MonoBehaviour
         else if (switchType == PowerRoutingSwitchType.ColorSwitch)
         {
             _technicianVisuals.NotifyColorSwitchChanged(switchColor, switchIndex, _isDown);
+        }
+    }
+
+    private void PlaySwitchClickSound()
+    {
+        if (_channel != null && !_switchClickSound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(_switchClickSound, this.transform.position);
+            _channel.RaiseEvent(payload);
         }
     }
 }
