@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class LoadingScreenManager : MonoBehaviour // ARTIK SADECE MONOBEHAVIOUR
+public class LoadingScreenManager : MonoBehaviour
 {
     public static LoadingScreenManager Instance;
 
@@ -34,7 +34,6 @@ public class LoadingScreenManager : MonoBehaviour // ARTIK SADECE MONOBEHAVIOUR
         }
     }
 
-    // RPC DEĞİL, Normal Metot
     public void ShowLoadingScreen()
     {
         if (isShowing) return;
@@ -50,7 +49,6 @@ public class LoadingScreenManager : MonoBehaviour // ARTIK SADECE MONOBEHAVIOUR
             .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
-    // RPC DEĞİL, Normal Metot
     public void HideLoadingScreen()
     {
         if (!isShowing) return;

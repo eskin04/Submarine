@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic; // HashSet kullanmak için eklendi
+using System.Collections.Generic;
 using PurrNet.StateMachine;
 using UnityEngine;
 using PurrNet;
@@ -8,7 +8,6 @@ public class WaitForPlayersState : StateNode
 {
     [SerializeField] private int minPlayersToStart = 2;
 
-    // Sadece sunucuda (host) tutulacak olan "sahneyi yüklemiş hazır oyuncular" listesi
     private HashSet<PlayerID> readyPlayers = new HashSet<PlayerID>();
 
     public override void Enter(bool asServer)
@@ -17,7 +16,6 @@ public class WaitForPlayersState : StateNode
 
         if (asServer)
         {
-            // Host yeni sahneye girdiğinde listeyi sıfırlar ve kendini "hazır" olarak ekler
             readyPlayers.Clear();
             readyPlayers.Add(networkManager.localPlayer);
 
@@ -25,16 +23,13 @@ public class WaitForPlayersState : StateNode
         }
         else
         {
-            // Client sahneyi yükleyip bu metoda ulaştığında sunucuya "Ben de geldim" mesajı atar
             SendClientReadyServerRpc();
         }
     }
 
-    // RequireOwnership = false önemlidir, çünkü bu obje direkt client'a ait olmayabilir (Level Manager vb.)
     [ServerRpc(requireOwnership: false)]
     private void SendClientReadyServerRpc(RPCInfo info = default)
     {
-        // RPC'yi gönderen client'ın ID'sini hazır listesine ekle
         readyPlayers.Add(info.sender);
     }
 
@@ -45,10 +40,9 @@ public class WaitForPlayersState : StateNode
             RpcShowLoadingScreen();
         }
 
-        // Artık bağlantı sayısını değil, bu spesifik sahneye giriş yapmış hazır oyuncuları bekliyoruz
         while (readyPlayers.Count < minPlayersToStart)
         {
-            yield return new WaitForSeconds(0.5f); // Daha hızlı kontrol etmesi için 1 yerine 0.5 yapıldı
+            yield return new WaitForSeconds(0.5f);
         }
 
         if (isServer)
@@ -84,7 +78,7 @@ public class WaitForPlayersState : StateNode
         base.Exit(asServer);
         if (asServer)
         {
-            readyPlayers.Clear(); // Güvenlik amacıyla çıkışta listeyi temizliyoruz
+            readyPlayers.Clear();
         }
     }
 }

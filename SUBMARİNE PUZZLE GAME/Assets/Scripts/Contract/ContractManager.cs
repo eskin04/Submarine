@@ -214,7 +214,6 @@ public class ContractManager : NetworkBehaviour
     [ObserversRpc]
     private void RpcShowLoadingScreen()
     {
-        // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı açar
         if (LoadingScreenManager.Instance != null)
         {
             LoadingScreenManager.Instance.ShowLoadingScreen();
