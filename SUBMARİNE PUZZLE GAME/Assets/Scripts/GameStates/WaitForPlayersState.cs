@@ -18,7 +18,7 @@ public class WaitForPlayersState : StateNode
     {
         if (LoadingScreenManager.Instance != null && !LoadingScreenManager.Instance.IsShowing)
         {
-            LoadingScreenManager.Instance.ShowLoadingScreen();
+            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
         }
         while (networkManager.players.Count < minPlayersToStart)
         {
@@ -27,7 +27,7 @@ public class WaitForPlayersState : StateNode
 
         if (LoadingScreenManager.Instance != null)
         {
-            LoadingScreenManager.Instance.HideLoadingScreen();
+            LoadingScreenManager.Instance.HideLoadingScreenRPC();
         }
         machine.Next();
     }

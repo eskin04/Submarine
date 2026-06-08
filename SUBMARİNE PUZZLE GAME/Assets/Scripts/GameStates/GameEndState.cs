@@ -28,7 +28,7 @@ public class GameEndState : StateNode<ushort>
 
         if (LoadingScreenManager.Instance != null)
         {
-            LoadingScreenManager.Instance.ShowLoadingScreen();
+            LoadingScreenManager.Instance.ShowLoadingScreenRPC();
         }
 
         yield return new WaitForSeconds(0.6f);

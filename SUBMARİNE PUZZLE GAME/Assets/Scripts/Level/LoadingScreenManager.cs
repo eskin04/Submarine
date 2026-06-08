@@ -40,16 +40,23 @@ public class LoadingScreenManager : NetworkBehaviour
 
     public void ShowLoadingScreen()
     {
-        if (isServer)
-        {
-            ShowLoadingScreenRPC();
+        if (isShowing) return;
+        isShowing = true;
+        Debug.Log("IsShowing : " + IsShowing);
 
-        }
+        loadingCanvasGroup.blocksRaycasts = true;
+        progressSlider.value = 0f;
+        UpdateProgressText(0f);
+
+        loadingCanvasGroup.DOFade(1f, 0.5f).SetUpdate(true);
+
+        progressSlider.DOValue(0.9f, 3f).SetEase(Ease.OutCubic).SetUpdate(true)
+            .OnUpdate(() => UpdateProgressText(progressSlider.value));
     }
 
 
     [ObserversRpc(runLocally: true)]
-    private void ShowLoadingScreenRPC()
+    public void ShowLoadingScreenRPC()
     {
         if (isShowing) return;
         isShowing = true;
@@ -67,14 +74,22 @@ public class LoadingScreenManager : NetworkBehaviour
 
     public void HideLoadingScreen()
     {
-        if (isServer)
-        {
-            HideLoadingScreenRPC();
-        }
+        progressSlider.DOKill();
+
+        progressSlider.DOValue(1f, 0.5f).SetUpdate(true)
+            .OnUpdate(() => UpdateProgressText(progressSlider.value))
+            .OnComplete(() =>
+            {
+                loadingCanvasGroup.DOFade(0f, 0.5f).SetUpdate(true).OnComplete(() =>
+                {
+                    loadingCanvasGroup.blocksRaycasts = false;
+                    isShowing = false;
+                });
+            });
     }
 
     [ObserversRpc(runLocally: true)]
-    private void HideLoadingScreenRPC()
+    public void HideLoadingScreenRPC()
     {
         progressSlider.DOKill();
 
