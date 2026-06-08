@@ -43,6 +43,7 @@ public class LoadingScreenManager : NetworkBehaviour
         if (isServer)
         {
             ShowLoadingScreenRPC();
+            Debug.Log("IsShowing : " + IsShowing);
         }
     }
 
