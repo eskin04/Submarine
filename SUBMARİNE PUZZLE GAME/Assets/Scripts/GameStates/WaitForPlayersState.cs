@@ -16,19 +16,14 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
-        if (isServer)
-        {
-            RpcShowLoadingScreen();
-        }
+
+        RpcShowLoadingScreen();
         while (networkManager.players.Count < minPlayersToStart)
         {
             yield return new WaitForSeconds(1f);
         }
 
-        if (isServer)
-        {
-            RpcHideLoadingScreen();
-        }
+
         machine.Next();
     }
 
@@ -46,6 +41,7 @@ public class WaitForPlayersState : StateNode
     [ObserversRpc]
     private void RpcHideLoadingScreen()
     {
+        Debug.Log("RpcHideLoadingScreen called");
         // Ağ üzerinden bu emri alan herkes kendi lokalindeki UI'ı kapatır
         if (LoadingScreenManager.Instance != null)
         {
@@ -57,6 +53,8 @@ public class WaitForPlayersState : StateNode
     public override void Exit(bool asServer)
     {
         base.Exit(asServer);
+        RpcHideLoadingScreen();
+
     }
 
 }
