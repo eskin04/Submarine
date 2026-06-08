@@ -43,7 +43,7 @@ public class LoadingScreenManager : NetworkBehaviour
         if (isServer)
         {
             ShowLoadingScreenRPC();
-            Debug.Log("IsShowing : " + IsShowing);
+
         }
     }
 
@@ -53,6 +53,7 @@ public class LoadingScreenManager : NetworkBehaviour
     {
         if (isShowing) return;
         isShowing = true;
+        Debug.Log("IsShowing : " + IsShowing);
 
         loadingCanvasGroup.blocksRaycasts = true;
         progressSlider.value = 0f;
