@@ -1,32 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8616542845758986548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/PowerRouting/SmallSwitch
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/PowerRouting/SmallSwitch
-  Guid:
-    Data1: -501686326
-    Data2: 1320885695
-    Data3: -1671108191
-    Data4: 1004891962
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-7901652010558012375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,7 +178,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639165224415975928
+  lastModified: 639165571940534893
   FileSizes:
   - Name: Desktop
     Value: 3188
@@ -380,7 +353,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639136823972653153
+  lastModified: 639165571940778060
   FileSizes:
   - Name: Desktop
     Value: 506
@@ -783,14 +756,14 @@ MonoBehaviour:
   - {fileID: 3861088205431521109}
   - {fileID: -2662692666984447828}
   - {fileID: 964611538871919889}
-  - {fileID: -8616542845758986548}
+  - {fileID: 6115645512660762016}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639165224415975928
+  cacheTime: 639165571967116345
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -868,7 +841,7 @@ MonoBehaviour:
     index: 36
   - key: event:/SFX/MagneticInterference/brokenStaticEvent
     index: 37
-  - key: event:/PowerRouting/SmallSwitch
+  - key: event:/SFX/PowerRouting/SmallSwitch
     index: 38
 --- !u!114 &222821979863919972
 MonoBehaviour:
@@ -1114,7 +1087,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639165224415944668
+  lastModified: 639165571940493321
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1242,7 +1215,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639165218138377062
+  lastModified: 639165571967116345
   FileSizes:
   - Name: Desktop
     Value: 2793280
@@ -1316,7 +1289,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Ambiance.bank
   Name: Ambiance
   StudioPath: bank:/Ambiance
-  lastModified: 639136823972415210
+  lastModified: 639165571940408315
   FileSizes:
   - Name: Desktop
     Value: 4863872
@@ -1537,6 +1510,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 600
+--- !u!114 &6115645512660762016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/PowerRouting/SmallSwitch
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/PowerRouting/SmallSwitch
+  Guid:
+    Data1: -501686326
+    Data2: 1320885695
+    Data3: -1671108191
+    Data4: 1004891962
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &6735238438500502506
 MonoBehaviour:
   m_ObjectHideFlags: 0
