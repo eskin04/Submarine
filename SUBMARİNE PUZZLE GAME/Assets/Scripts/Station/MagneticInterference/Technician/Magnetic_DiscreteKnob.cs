@@ -30,6 +30,28 @@ public class Magnetic_DiscreteKnob : MonoBehaviour
     private Vector2 knobScreenPos;
     private bool isDragging = false;
 
+
+    public void InitializePosition(int startingValue)
+    {
+        // 1 tabanli degeri aci hesabina uydurmak icin 1 cikartiyoruz (Orenk: 1 degeri -> 0. adim)
+        int stepIndex = startingValue - 1;
+        if (type == KnobType.Phase)
+        {
+            stepIndex = startingValue;
+        }
+
+        currentLockedVisualAngle = stepIndex * visualStepAngle;
+
+        // Modeli anlik olarak baslangic acisina donduruyoruz
+        if (knobMesh != null)
+        {
+            knobMesh.localEulerAngles = new Vector3(0, 0, -currentLockedVisualAngle);
+        }
+
+        // Kalıntı gerilimleri temizle
+        accumulatedTension = 0f;
+    }
+
     private void OnMouseDown()
     {
         if (oscilloscope == null) return;
@@ -94,7 +116,7 @@ public class Magnetic_DiscreteKnob : MonoBehaviour
 
         // 2. Görsel açıyı kilitli değere ekle
         currentLockedVisualAngle += direction * visualStepAngle;
-
+        direction = -direction;
         // 3. Backend'e değişikliği bildir
         switch (type)
         {

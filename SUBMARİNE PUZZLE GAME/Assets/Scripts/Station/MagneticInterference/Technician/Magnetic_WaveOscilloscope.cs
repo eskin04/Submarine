@@ -1,30 +1,39 @@
 using UnityEngine;
-// using FMODUnity; // Sesler için eklenebilir
-// using DG.Tweening; // Knob animasyonları için eklenebilir
+using System.Collections;
+using TMPro;
+using DG.Tweening;
 
 public class Magnetic_WaveOscilloscope : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("Sahnede bulunan ana Manager objesini buraya sürükleyin.")]
     public Magnetic_StationManager stationManager;
-
-    [Tooltip("Shader'ın bulunduğu ekran (MeshRenderer).")]
     public Renderer oscilloscopeScreen;
-
     private Material screenMaterial;
 
+    [Header("Fiziksel Knob Referanslari")]
+    public Magnetic_DiscreteKnob amplitudeKnob;
+    public Magnetic_DiscreteKnob frequencyKnob;
+    public Magnetic_DiscreteKnob phaseKnob;
+
+    [Header("Symbol UI Elements")]
+    [Tooltip("Sembolün ve arka planının bulunduğu Canvas Group")]
+    public CanvasGroup symbolCanvasGroup;
+    [Tooltip("Sembolün yazdırılacağı Text objesi")]
+    public TextMeshProUGUI symbolText;
+    public float uiTransitionDuration = 0.5f;
+
     [Header("Local Player State")]
-    // Teknisyenin başlangıçtaki dalga değerleri
-    private int currentAmplitude = 1; // 1-6
-    private int currentFrequency = 1; // 1-6
-    private int currentPhase = 2;     // 1-3
+    private int currentAmplitude = 1;
+    private int currentFrequency = 1;
+    private int currentPhase = 1;
 
     private WaveConfig currentTargetWave;
-    private bool isWaveLocked = false; // Doğru dalga bulunduğunda knobları geçici kilitlemek için
-    private int maxUnlockedChannel = 0; // Teknisyenin çözebildiği en yüksek kanal
-    private int currentlyViewedChannel = 0; // Teknisyenin şu an fiziksel tuşlarla seçtiği kanal
+    private bool isWaveLocked = false;
 
-    // Shader Property ID'leri (String arama maliyetinden kurtulmak için)
+    // Kanal Gezinme State'leri
+    private int maxUnlockedChannel = 0;
+    private int currentlyViewedChannel = 0;
+
     private readonly int targetFreqID = Shader.PropertyToID("_TargetFrequency");
     private readonly int targetAmpID = Shader.PropertyToID("_TargetAmplitude");
     private readonly int targetPhaseID = Shader.PropertyToID("_TargetPhase");
@@ -35,17 +44,20 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
 
     private void Awake()
     {
-        // Çalışma anında materyalin bir kopyasını alıyoruz ki diğer objeler etkilenmesin
-        if (oscilloscopeScreen != null)
-        {
-            screenMaterial = oscilloscopeScreen.material;
+        if (oscilloscopeScreen != null) screenMaterial = oscilloscopeScreen.material;
+    }
 
+    private void Start()
+    {
+        if (stationManager != null && stationManager.isRoundActive.value)
+        {
+            HandlePuzzleGenerated();
+            ChangeViewedChannel(stationManager.techCurrentChannel.value);
         }
     }
 
     private void OnEnable()
     {
-        // Manager'daki eventlere abone oluyoruz
         if (stationManager != null)
         {
             stationManager.OnPuzzleGenerated += HandlePuzzleGenerated;
@@ -64,113 +76,117 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
 
     private void HandlePuzzleGenerated()
     {
-        isWaveLocked = false;
+        maxUnlockedChannel = 0;
 
-        // Başlangıç değerlerini sıfırla (1-1-1)
         currentAmplitude = 1;
         currentFrequency = 1;
-        currentPhase = 2;
-        UpdatePlayerShader();
+        currentPhase = 2; // PDF başlangıç kuralı 1-1-2
 
-        // CH1 verilerini yükle
-        LoadChannelTargetWave(0);
+        if (amplitudeKnob != null) amplitudeKnob.InitializePosition(currentAmplitude);
+        if (frequencyKnob != null) frequencyKnob.InitializePosition(currentFrequency);
+        if (phaseKnob != null) phaseKnob.InitializePosition(currentPhase);
+
+        ChangeViewedChannel(0); // CH1'i yükle ve sistemi başlat
     }
 
-    private void HandleChannelAdvanced(int newChannelIndex)
-    {
-        maxUnlockedChannel = newChannelIndex;
-
-        if (newChannelIndex < 3)
-        {
-            // Yeni kanal açıldığında otomatik olarak o kanalın görünümüne geç
-            ChangeViewedChannel(newChannelIndex);
-        }
-    }
+    // ==========================================
+    // KANAL GEZİNME VE GÖRSEL YÖNETİM
+    // ==========================================
 
     public void ChangeViewedChannel(int channelIndex)
     {
-        // Sadece kilidi açılmış kanallara veya aktif çözülen kanala bakılabilir
-        if (channelIndex > maxUnlockedChannel) return;
+        // Kilitli bir kanala (geleceğe) bakılamaz
+        if (channelIndex > maxUnlockedChannel)
+        {
+            // Hata Sesi çalınabilir (Bip!)
+            return;
+        }
 
         currentlyViewedChannel = channelIndex;
-        LoadChannelTargetWave(currentlyViewedChannel);
 
-        // Eğer dönüp bakılan kanal zaten çözülmüş bir kanalsa, knobları çevirmeyi engelle
-        isWaveLocked = (currentlyViewedChannel < maxUnlockedChannel);
+        if (currentlyViewedChannel < maxUnlockedChannel)
+        {
+            // Bu kanal zaten çözülmüş! Dalgayı kapat, sembolü göster. Knobları kilitle.
+            isWaveLocked = true;
+            ShowSymbolScreen(currentlyViewedChannel);
+        }
+        else
+        {
+            // Bu kanal şu an çözmeye çalıştığımız aktif kanal. Sembolü kapat, dalgayı göster.
+            isWaveLocked = false;
+            ShowWaveScreen(currentlyViewedChannel);
+        }
+    }
+
+    private void ShowSymbolScreen(int channelIndex)
+    {
+        ChannelData data = stationManager.GetChannelData(channelIndex);
+
+        if (symbolText != null)
+        {
+            // İleride kendi Alien veya özel fontunu atadığında bu string'i ona göre değiştirebilirsin
+            symbolText.text = $"S{data.symbolID}";
+        }
+
+        // Sembol ekranını yavaşça görünür yap (Arka planındaki siyah panel osiloskobu gizler)
+        if (symbolCanvasGroup != null) symbolCanvasGroup.DOFade(1f, uiTransitionDuration);
+    }
+
+    private void ShowWaveScreen(int channelIndex)
+    {
+        LoadChannelTargetWave(channelIndex);
+        UpdatePlayerShader();
+
+        // Sembolü gizle
+        if (symbolCanvasGroup != null) symbolCanvasGroup.alpha = 0f;
+
+
     }
 
     private void LoadChannelTargetWave(int channelIndex)
     {
         ChannelData data = stationManager.GetChannelData(channelIndex);
         currentTargetWave = data.targetWave;
-        Debug.Log($"Viewing Channel {channelIndex + 1}: Target Wave - Amp: {currentTargetWave.amplitude}, Freq: {currentTargetWave.frequency}, Phase: {currentTargetWave.phase}");
 
-        // Hedef dalgayı shader'a ilet (float olarak gönderilir)
         if (screenMaterial != null)
         {
             screenMaterial.SetFloat(targetAmpID, currentTargetWave.amplitude);
-            screenMaterial.SetFloat(targetFreqID, (currentTargetWave.frequency - 1) * 10f);
+            screenMaterial.SetFloat(targetFreqID, (currentTargetWave.frequency - 1f) * 10f);
             screenMaterial.SetFloat(targetPhaseID, currentTargetWave.phase);
         }
-
-        isWaveLocked = false;
     }
 
     // ==========================================
-    // ETKİLEŞİM METOTLARI (Fiziksel Knob'lardan Çağrılacak)
+    // ETKİLEŞİM VE BAŞARI KONTROLÜ
     // ==========================================
 
-    // Örneğin Knob'u sağa çevirince ChangeAmplitude(1), sola çevirince ChangeAmplitude(-1) çağrılır
     public void ChangeAmplitude(int amount)
     {
         if (isWaveLocked) return;
-
         currentAmplitude += amount;
-
-        // Sınırları aşarsa diğer taraftan başa sar (1 ile 6 arası)
-        if (currentAmplitude > 6) currentAmplitude = 1;
-        else if (currentAmplitude < 1) currentAmplitude = 6;
-
+        if (currentAmplitude > 6) currentAmplitude = 1; else if (currentAmplitude < 1) currentAmplitude = 6;
         OnKnobTurned();
     }
 
     public void ChangeFrequency(int amount)
     {
         if (isWaveLocked) return;
-
         currentFrequency += amount;
-
-        // Sınırları aşarsa diğer taraftan başa sar (1 ile 6 arası)
-        if (currentFrequency > 6) currentFrequency = 1;
-        else if (currentFrequency < 1) currentFrequency = 6;
-
+        if (currentFrequency > 6) currentFrequency = 1; else if (currentFrequency < 1) currentFrequency = 6;
         OnKnobTurned();
     }
 
     public void ChangePhase(int amount)
     {
         if (isWaveLocked) return;
-
         currentPhase += amount;
-
-        // Phase (Faz) sadece 1, 2 ve 3 değerlerini alıyor
-        if (currentPhase > 3) currentPhase = 1;
-        else if (currentPhase < 1) currentPhase = 3;
-
+        if (currentPhase > 3) currentPhase = 1; else if (currentPhase < 1) currentPhase = 3;
         OnKnobTurned();
     }
 
     private void OnKnobTurned()
     {
-        // 1. FMOD ile klik sesi çalınabilir
-        // RuntimeManager.PlayOneShot("event:/UI/Knob_Click");
-
-        // 2. DOTween ile Knob'un fiziksel dönüş animasyonu tetiklenebilir (Burada veya etkileşim scriptinde)
-
-        // 3. Shader güncellenir
         UpdatePlayerShader();
-
-        // 4. Doğru kombinasyon mu diye kontrol edilir
         CheckIfWaveMatches();
     }
 
@@ -179,7 +195,7 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
         if (screenMaterial != null)
         {
             screenMaterial.SetFloat(playerAmpID, currentAmplitude);
-            screenMaterial.SetFloat(playerFreqID, (currentFrequency - 1) * 10f);
+            screenMaterial.SetFloat(playerFreqID, (currentFrequency - 1f) * 10f);
             screenMaterial.SetFloat(playerPhaseID, currentPhase);
         }
     }
@@ -190,14 +206,42 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
             currentFrequency == currentTargetWave.frequency &&
             currentPhase == currentTargetWave.phase)
         {
-            // Dalga eşleşti! Artık knobları kilitleyip Server'a bildiriyoruz
+            // 1. Dalga eşleştiği an oyuncuyu kilitliyoruz
             isWaveLocked = true;
 
-            // FMOD ile başarı sinyali sesi çalınabilir
-            // RuntimeManager.PlayOneShot("event:/UI/Wave_Match");
+            // 2. Bekleme olmaksızın anında sembolü ekranda gösteriyoruz (Başarı hissiyatı)
+            ShowSymbolScreen(currentlyViewedChannel);
 
-            // PurrNet üzerinden ServerRpc çağrısı (Ağ trafiği sadece oyuncu doğruyu bulduğunda yaşanır)
+            // 3. Başarı sesi çalınabilir
+
+            // 4. Server'a bildir
             stationManager.SubmitWaveRPC(currentAmplitude, currentFrequency, currentPhase);
+        }
+    }
+
+    private void HandleChannelAdvanced(int newChannelIndex)
+    {
+        maxUnlockedChannel = newChannelIndex;
+
+        if (newChannelIndex < 3)
+        {
+            // Eğer oyuncu başarının ardından hala çözdüğü ekrana bakıyorsa, sembolü beynine 
+            // kazıması için 1.5 saniye verip sonra YENİ kanala otomatik geçiriyoruz.
+            if (currentlyViewedChannel == newChannelIndex - 1)
+            {
+                StartCoroutine(AutoSwitchToNextChannel(newChannelIndex));
+            }
+        }
+    }
+
+    private IEnumerator AutoSwitchToNextChannel(int newChannelIndex)
+    {
+        yield return new WaitForSeconds(3f);
+
+        // Eğer bu 1.5 saniyelik izleme süresinde oyuncu başka bir tuşa basmadıysa yeni kanala atla
+        if (currentlyViewedChannel == newChannelIndex - 1)
+        {
+            ChangeViewedChannel(newChannelIndex);
         }
     }
 }
