@@ -8,6 +8,10 @@ public class LightsOut_Cable : MonoBehaviour
     public int cableID;
     public WireColor myPhysicalColor;
 
+    public float portSnapRange = 0.25f;
+
+    public float homeSnapRange = 1.0f;
+
     [Header("References")]
     public LightsOut_TechnicianUI uiManager;
 
@@ -89,15 +93,26 @@ public class LightsOut_Cable : MonoBehaviour
 
     private void CheckDrop()
     {
+        Transform myHomeSlot = uiManager.startSlots[cableID];
+
+        float distToHome = Vector3.Distance(transform.position, myHomeSlot.position);
+
+        if (distToHome < homeSnapRange)
+        {
+            ResetPosition();
+            PlayWiringSound(false);
+            uiManager.OnCableDisconnected(this);
+            return;
+        }
+
         LightsOut_Port foundPort = null;
         float closestDist = float.MaxValue;
-        float snapRange = 0.5f;
 
         foreach (var port in uiManager.ports)
         {
             float dist = Vector3.Distance(transform.position, port.snapPoint.position);
 
-            if (dist < snapRange && dist < closestDist)
+            if (dist < portSnapRange && dist < closestDist)
             {
                 closestDist = dist;
                 foundPort = port;
@@ -108,13 +123,11 @@ public class LightsOut_Cable : MonoBehaviour
         {
             uiManager.OnCableDropped(this, foundPort);
             PlayWiringSound(true);
-
         }
         else
         {
             ResetPosition();
             PlayWiringSound(false);
-
             uiManager.OnCableDisconnected(this);
         }
     }

@@ -34,7 +34,7 @@ public class RadioShaderLightIndicator : MonoBehaviour
         {
             RadioVoiceManager.Instance.OnReceivingTransmission += HandleTransmissionState;
 
-            HandleTransmissionState(RadioVoiceManager.Instance.IsAnyoneElseTalking());
+            HandleTransmissionState(false);
         }
     }
 

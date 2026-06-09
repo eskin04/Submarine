@@ -20,13 +20,13 @@ public class RadioVoiceManager : MonoBehaviour
 
     public event System.Action<bool> OnRadioBrokenStateChanged;
 
-    private bool wasAnyoneElseTalking = false;
     public KeyCode pushToTalkKey = KeyCode.Q;
     public AudioEventChannelSO _channel;
     public EventReference connectEvent;
     public EventReference disconnectEvent;
     private bool isLoggedIn = false;
     private bool isConnectingToVivox = false;
+    private string currentChannelName = "";
 
     void Awake()
     {
@@ -40,10 +40,7 @@ public class RadioVoiceManager : MonoBehaviour
         vivoxAudioSource = GetComponent<AudioSource>();
     }
 
-    void Start()
-    {
-        InvokeRepeating(nameof(MonitorIncomingTransmissions), 1f, 0.05f);
-    }
+
 
     private void OnEnable()
     {
@@ -71,18 +68,7 @@ public class RadioVoiceManager : MonoBehaviour
         }
     }
 
-    private void MonitorIncomingTransmissions()
-    {
-        if (!isLoggedIn) return;
 
-        bool isTalkingNow = IsAnyoneElseTalking();
-
-        if (isTalkingNow != wasAnyoneElseTalking)
-        {
-            wasAnyoneElseTalking = isTalkingNow;
-            OnReceivingTransmission?.Invoke(isTalkingNow);
-        }
-    }
     public void SetRadioBrokenState(bool isBroken)
     {
         if (isRadioBroken == isBroken) return;
@@ -211,7 +197,11 @@ public class RadioVoiceManager : MonoBehaviour
         try
         {
             VivoxService.Instance.MuteInputDevice();
-            await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.AudioOnly);
+            await VivoxService.Instance.JoinGroupChannelAsync(channelName, ChatCapability.TextAndAudio);
+
+            currentChannelName = channelName;
+            VivoxService.Instance.ChannelMessageReceived -= OnSecretMessageReceived;
+            VivoxService.Instance.ChannelMessageReceived += OnSecretMessageReceived;
 
             isLoggedIn = VivoxService.Instance.IsLoggedIn;
             Debug.Log($"<color=green>[Vivox]</color> {channelName} frekansına başarıyla bağlanıldı.");
@@ -229,6 +219,20 @@ public class RadioVoiceManager : MonoBehaviour
             }
         }
     }
+
+    private void OnSecretMessageReceived(VivoxMessage message)
+    {
+        if (message.FromSelf) return;
+
+        if (message.MessageText == "Q_PRESSED")
+        {
+            OnReceivingTransmission?.Invoke(true);
+        }
+        else if (message.MessageText == "Q_RELEASED")
+        {
+            OnReceivingTransmission?.Invoke(false);
+        }
+    }
     public async void LeaveVoiceChannel()
     {
         if (isLoggedIn)
@@ -240,23 +244,6 @@ public class RadioVoiceManager : MonoBehaviour
         }
     }
 
-    public bool IsAnyoneElseTalking()
-    {
-        if (VivoxService.Instance == null || !VivoxService.Instance.IsLoggedIn) return false;
-
-        foreach (var channelParticipantsList in VivoxService.Instance.ActiveChannels.Values)
-        {
-            foreach (var participant in channelParticipantsList)
-            {
-                if (!participant.IsSelf && participant.SpeechDetected)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 
     void Update()
     {
@@ -277,6 +264,10 @@ public class RadioVoiceManager : MonoBehaviour
     void StartTransmission()
     {
         OnRadioStateChanged?.Invoke(true);
+        if (!string.IsNullOrEmpty(currentChannelName))
+        {
+            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_PRESSED");
+        }
         if (isRadioBroken)
         {
             if (_activeStaticEmitter != null)
@@ -303,6 +294,10 @@ public class RadioVoiceManager : MonoBehaviour
     void StopTransmission()
     {
         OnRadioStateChanged?.Invoke(false);
+        if (!string.IsNullOrEmpty(currentChannelName))
+        {
+            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_RELEASED");
+        }
 
         if (isRadioBroken)
         {
