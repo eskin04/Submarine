@@ -27,6 +27,7 @@ public class Magnetic_StationManager : NetworkBehaviour
     public event System.Action OnPuzzleGenerated;
     public event System.Action<int> OnTechChannelAdvanced;
     public event System.Action<int> OnEngChannelAdvanced;
+    public event System.Action<int[]> OnSymbolMappingReceived;
 
     public void StartNewRound()
     {
@@ -87,19 +88,20 @@ public class Magnetic_StationManager : NetworkBehaviour
         targetRadioFrequency.value = $"{x}{x}.{y}{z}{z}hz"; //[cite: 71, 74].
 
         // Tüm verileri Client'lara gönder
-        RpcSendPuzzleToClients(activeChannels[0], activeChannels[1], activeChannels[2]);
+        RpcSendPuzzleToClients(activeChannels[0], activeChannels[1], activeChannels[2], symbolValues);
     }
 
     [ObserversRpc]
-    private void RpcSendPuzzleToClients(ChannelData ch1, ChannelData ch2, ChannelData ch3)
+    private void RpcSendPuzzleToClients(ChannelData ch1, ChannelData ch2, ChannelData ch3, int[] mapping)
     {
         activeChannels[0] = ch1;
         activeChannels[1] = ch2;
         activeChannels[2] = ch3;
 
+        // UI'ları tetikle
         OnPuzzleGenerated?.Invoke();
+        OnSymbolMappingReceived?.Invoke(mapping); // Teknisyenin panosuna eşleşmeleri gönderir
     }
-
     // ==========================================
     // CLIENT -> SERVER RPC PROTOKOLLERİ
     // ==========================================

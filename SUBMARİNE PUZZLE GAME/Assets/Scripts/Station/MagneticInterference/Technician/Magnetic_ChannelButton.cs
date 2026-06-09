@@ -12,22 +12,56 @@ public class Magnetic_ChannelButton : MonoBehaviour
     public Magnetic_WaveOscilloscope oscilloscope;
     public Transform buttonMesh; // Hareket edecek model kısmı
 
+    private Vector3 originalLocalPos;
+    private bool isLocked = false;
+    private bool isActive = false;
+
+    private void Awake()
+    {
+        if (buttonMesh != null)
+            originalLocalPos = buttonMesh.localPosition;
+    }
+
+    // Osiloskop tarafından çağrılır. Butonun görünümünü ayarlar.
+    public void UpdateButtonState(bool active, bool locked)
+    {
+        isActive = active;
+        isLocked = locked;
+
+        if (buttonMesh != null)
+        {
+            buttonMesh.DOKill(); // Var olan animasyonları durdur
+
+            if (isActive)
+            {
+                // Buton aktifse fiziksel olarak aşağıda basılı kalır
+                buttonMesh.DOLocalMove(originalLocalPos + (Vector3.back * 0.02f), 0.2f);
+            }
+            else
+            {
+                // Normal durumdaysa eski yüksekliğine döner
+                buttonMesh.DOLocalMove(originalLocalPos, 0.2f);
+            }
+        }
+    }
+
     private void OnMouseDown()
     {
         if (oscilloscope == null) return;
 
-        // Fiziksel tuşa basılma animasyonu (Aşağı inip geri çıkar)
-        if (buttonMesh != null)
+        if (isLocked)
         {
-            buttonMesh.DOKill();
-            buttonMesh.localPosition = Vector3.zero; // Başlangıç noktasına eşitle
-            buttonMesh.DOPunchPosition(Vector3.down * 0.02f, 0.2f, 1, 0);
+
+            // Hata sesi için:
+            // RuntimeManager.PlayOneShot("event:/UI/Error_Buzzer");
+            return;
         }
 
-        // Tıklama Sesi Eklenebilir
+        if (isActive) return; // Zaten bu kanaldaysak tekrar basmayı yoksay
+
+        // Tıklama Sesi
         // RuntimeManager.PlayOneShot("event:/UI/Button_Press");
 
-        // Osiloskop'a kanal geçiş komutunu gönder
         oscilloscope.ChangeViewedChannel(channelIndex);
     }
 }
