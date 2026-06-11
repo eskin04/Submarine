@@ -76,6 +76,8 @@ public class RadioVoiceManager : MonoBehaviour
         isRadioBroken = isBroken;
         OnRadioBrokenStateChanged?.Invoke(isBroken);
 
+        if (!isLoggedIn) return;
+
         if (isRadioBroken)
         {
             if (vivoxAudioSource != null) vivoxAudioSource.volume = 0f;

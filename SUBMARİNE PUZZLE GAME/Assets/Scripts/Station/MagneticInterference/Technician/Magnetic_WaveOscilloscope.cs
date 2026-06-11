@@ -11,12 +11,11 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
     public Renderer oscilloscopeScreen;
     private Material screenMaterial;
 
-    [Header("Fiziksel Donanımlar")]
+    [Header("Controls")]
     public Magnetic_DiscreteKnob amplitudeKnob;
     public Magnetic_DiscreteKnob frequencyKnob;
     public Magnetic_DiscreteKnob phaseKnob;
 
-    [Tooltip("Sahnede bulunan 3 kanala ait fiziksel butonları sırasıyla (0, 1, 2) buraya ekleyin.")]
     public Magnetic_ChannelButton[] channelButtons;
 
     [Header("UI Elements")]
@@ -24,7 +23,6 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
     public Image symbolImage;
     public Magnetic_SymbolDatabase symbolDatabase;
 
-    [Tooltip("Ekranda 'CH-1' gibi bulunduğumuz kanalı yazdıracak Text objesi")]
     public TMP_Text channelNameText;
     public float uiTransitionDuration = 0.5f;
 
@@ -94,23 +92,18 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
     }
 
     // ==========================================
-    // KANAL GEZİNME VE GÖRSEL YÖNETİM
-    // ==========================================
 
     public void ChangeViewedChannel(int channelIndex)
     {
-        // Buton içindeki logic engelliyor ama güvenlik için tekrar kontrol
         if (channelIndex > maxUnlockedChannel) return;
 
         currentlyViewedChannel = channelIndex;
 
-        // 1. Text Güncellemesi (UI'da CH-1, CH-2 şeklinde yazdırma)
         if (channelNameText != null)
         {
             channelNameText.text = $"Channel {currentlyViewedChannel + 1}";
         }
 
-        // 2. Butonların Fiziksel/Görsel Durumlarını Güncelle
         for (int i = 0; i < channelButtons.Length; i++)
         {
             if (channelButtons[i] != null)
@@ -124,13 +117,11 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
         // 3. Ekran Gösterim Kararı
         if (currentlyViewedChannel < maxUnlockedChannel)
         {
-            // Eski çözülmüş kanal: Fade animasyonu OYNUYOR, sembol anında gösteriliyor.
             isWaveLocked = true;
             ShowSymbolScreen(currentlyViewedChannel, playFadeAnim: false);
         }
         else
         {
-            // Aktif çözülen kanal: Sembol gizlenir, dalga gösterilir.
             isWaveLocked = false;
             ShowWaveScreen(currentlyViewedChannel);
         }
@@ -151,13 +142,11 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
 
             if (playFadeAnim)
             {
-                // İlk çözüm anındaki yavaşça beliren zafer efekti
                 symbolCanvasGroup.DOFade(1f, uiTransitionDuration);
 
             }
             else
             {
-                // Geri dönüldüğünde anında ekranda belirme
                 symbolCanvasGroup.alpha = 1f;
             }
         }
@@ -168,7 +157,6 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
         LoadChannelTargetWave(channelIndex);
         UpdatePlayerShader();
 
-        // Sembolü anında (çat diye) gizliyoruz ki dalga hemen görünsün
         if (symbolCanvasGroup != null)
         {
             symbolCanvasGroup.DOKill();
@@ -189,8 +177,6 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // ETKİLEŞİM VE BAŞARI KONTROLÜ
     // ==========================================
 
     public void ChangeAmplitude(int amount)
@@ -241,7 +227,6 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
         {
             isWaveLocked = true;
 
-            // Dalga eşleşti: Fade animasyonu ile yavaşça göster (playFadeAnim: true)
             ShowSymbolScreen(currentlyViewedChannel, playFadeAnim: true);
 
             stationManager.SubmitWaveRPC(currentAmplitude, currentFrequency, currentPhase);
@@ -254,7 +239,6 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
 
         if (newChannelIndex < 3)
         {
-            // Yeni kanal açıldığında butonların kilitlerini arka planda hemen aç
             for (int i = 0; i < channelButtons.Length; i++)
             {
                 if (channelButtons[i] != null)

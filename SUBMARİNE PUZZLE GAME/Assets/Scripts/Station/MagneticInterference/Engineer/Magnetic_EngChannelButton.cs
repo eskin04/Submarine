@@ -2,11 +2,11 @@ using UnityEngine;
 using DG.Tweening;
 
 [RequireComponent(typeof(Collider))]
-public class Magnetic_ChannelButton : MonoBehaviour
+public class Magnetic_EngChannelButton : MonoBehaviour
 {
     public int channelIndex;
 
-    public Magnetic_WaveOscilloscope oscilloscope;
+    public Magnetic_EngineerUI engineerUI;
     public Transform buttonMesh;
 
     private Vector3 originalLocalPos;
@@ -27,9 +27,11 @@ public class Magnetic_ChannelButton : MonoBehaviour
         if (buttonMesh != null)
         {
             buttonMesh.DOKill();
+
             if (isActive)
             {
                 buttonMesh.DOLocalMove(originalLocalPos + (Vector3.back * 0.02f), 0.2f);
+
             }
             else
             {
@@ -40,19 +42,16 @@ public class Magnetic_ChannelButton : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (oscilloscope == null) return;
+        if (engineerUI == null) return;
 
         if (isLocked)
         {
 
-            // RuntimeManager.PlayOneShot("event:/UI/Error_Buzzer");
             return;
         }
 
         if (isActive) return;
 
-        // RuntimeManager.PlayOneShot("event:/UI/Button_Press");
-
-        oscilloscope.ChangeViewedChannel(channelIndex);
+        engineerUI.ChangeViewedChannel(channelIndex);
     }
 }

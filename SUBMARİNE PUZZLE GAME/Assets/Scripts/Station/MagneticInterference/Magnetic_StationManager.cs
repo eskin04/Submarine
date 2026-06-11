@@ -8,29 +8,27 @@ public class Magnetic_StationManager : NetworkBehaviour
     [Header("Live State (SyncVars)")]
     public SyncVar<bool> isRoundActive = new SyncVar<bool>(false);
 
-    // Kanalların ilerleme durumu (0 = CH1, 1 = CH2, 2 = CH3, 3 = Tamamlandı)
     public SyncVar<int> techCurrentChannel = new SyncVar<int>(0);
     public SyncVar<int> engCurrentChannel = new SyncVar<int>(0);
 
-    // Telsize girilmesi gereken final frekans (Örn: "44.757hz")
     public SyncVar<string> targetRadioFrequency = new SyncVar<string>("");
+    public SyncVar<string> radioFrequencyFormat = new SyncVar<string>("");
 
     [Header("Backend Data (Server Only)")]
-    // Sunucuda tutulan, 3 kanallık bulmaca verisi
     private ChannelData[] activeChannels = new ChannelData[3];
-    private int[] symbolValues = new int[10]; // 0-9 arası sembollerin sayısal karşılıkları
+    private int[] symbolValues = new int[10];
 
     [Header("References")]
-    public StationController stationController; // Ceza ve başarı durumları için ana controller
-
-    // Client'ların state değişimlerini dinlemesi için eventler (Frontend scriptleri bunlara abone olacak)
+    public StationController stationController;
     public event System.Action OnPuzzleGenerated;
     public event System.Action<int> OnTechChannelAdvanced;
     public event System.Action<int> OnEngChannelAdvanced;
     public event System.Action<int[]> OnSymbolMappingReceived;
+    public event System.Action<string> OnFrequencyFormatReceived;
 
     public void StartNewRound()
     {
+
         if (!isServer) return;
 
         GeneratePuzzle();
@@ -42,12 +40,10 @@ public class Magnetic_StationManager : NetworkBehaviour
 
     private void GeneratePuzzle()
     {
-        // 1. Sembol havuzundan 10 tane rastgele sembol seçilir ve rakamlara atanır[cite: 93, 94].
         List<int> digits = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         Shuffle(digits);
         for (int i = 0; i < 10; i++) symbolValues[i] = digits[i];
 
-        // 2. 1-1-2 hariç tüm dalga frekansları havuzu[cite: 95].
         List<WaveConfig> allPossibleWaves = new List<WaveConfig>();
         for (int a = 1; a <= 6; a++)
         {
@@ -62,14 +58,12 @@ public class Magnetic_StationManager : NetworkBehaviour
         }
         Shuffle(allPossibleWaves);
 
-        // 3. Kanallara atanacak 3 farklı sembol ID'sini seçiyoruz (0'dan 9'a kadar indeks)[cite: 109].
         List<int> poolForSymbols = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         Shuffle(poolForSymbols);
-        int s1_id = poolForSymbols[0]; int s1_val = symbolValues[s1_id]; // [cite: 110]
-        int s2_id = poolForSymbols[1]; int s2_val = symbolValues[s2_id]; // [cite: 111]
-        int s3_id = poolForSymbols[2]; int s3_val = symbolValues[s3_id]; // [cite: 112]
+        int s1_id = poolForSymbols[0]; int s1_val = symbolValues[s1_id];
+        int s2_id = poolForSymbols[1]; int s2_val = symbolValues[s2_id];
+        int s3_id = poolForSymbols[2]; int s3_val = symbolValues[s3_id];
 
-        // 4. Core Algoritmayı çağırarak X, Y, Z değişkenlerini ve formatlanmış Denklem verilerini üretiyoruz[cite: 96].
         EquationData eq1, eq2, eq3;
         int x, y, z;
 
@@ -79,31 +73,47 @@ public class Magnetic_StationManager : NetworkBehaviour
             out x, out y, out z
         );
 
-        // 5. Belirlenen semboller, denklemler ve dalgalar kanallara aktarılır[cite: 99].
         activeChannels[0] = new ChannelData { targetWave = allPossibleWaves[0], symbolID = s1_id, equation = eq1 };
         activeChannels[1] = new ChannelData { targetWave = allPossibleWaves[1], symbolID = s2_id, equation = eq2 };
         activeChannels[2] = new ChannelData { targetWave = allPossibleWaves[2], symbolID = s3_id, equation = eq3 };
 
-        // 6. X, Y, Z değişkenlerine göre radyoya girilmesi gereken final frekansı belirlenir[cite: 100].
-        targetRadioFrequency.value = $"{x}{x}.{y}{z}{z}hz"; //[cite: 71, 74].
+        string[] formatTemplates = new string[]
+         {
+            "XX.YZZ", "XY.ZZX", "ZY.XXY", "YZ.ZXX",
+            "ZX.YXY", "YX.ZYZ", "ZZ.XYY", "YY.ZXX",
+            "XZ.YYZ", "ZY.XZZ", "XY.YZZ", "ZX.XYZ",
+            "YZ.XYX", "ZY.YXX", "XX.ZYY"
+         };
 
-        // Tüm verileri Client'lara gönder
-        RpcSendPuzzleToClients(activeChannels[0], activeChannels[1], activeChannels[2], symbolValues);
+        string selectedFormat = formatTemplates[Random.Range(0, formatTemplates.Length)];
+
+        string formatString = selectedFormat + " hz";
+        radioFrequencyFormat.value = formatString;
+
+        string finalFreq = selectedFormat.Replace("X", x.ToString())
+                                         .Replace("Y", y.ToString())
+                                         .Replace("Z", z.ToString());
+
+        targetRadioFrequency.value = finalFreq + "hz";
+
+        RpcSendPuzzleToClients(activeChannels[0], activeChannels[1], activeChannels[2], symbolValues, formatString);
     }
 
     [ObserversRpc]
-    private void RpcSendPuzzleToClients(ChannelData ch1, ChannelData ch2, ChannelData ch3, int[] mapping)
+    private void RpcSendPuzzleToClients(ChannelData ch1, ChannelData ch2, ChannelData ch3, int[] mapping, string formatStr)
     {
+        RadioVoiceManager.Instance.SetRadioBrokenState(true);
+
         activeChannels[0] = ch1;
         activeChannels[1] = ch2;
         activeChannels[2] = ch3;
 
-        // UI'ları tetikle
         OnPuzzleGenerated?.Invoke();
-        OnSymbolMappingReceived?.Invoke(mapping); // Teknisyenin panosuna eşleşmeleri gönderir
+        OnSymbolMappingReceived?.Invoke(mapping);
+        OnFrequencyFormatReceived?.Invoke(formatStr);
     }
     // ==========================================
-    // CLIENT -> SERVER RPC PROTOKOLLERİ
+    // CLIENT -> SERVER RPC 
     // ==========================================
 
     [ServerRpc(requireOwnership: false)]
@@ -116,7 +126,6 @@ public class Magnetic_StationManager : NetworkBehaviour
 
         if (submittedWave.Equals(targetWave))
         {
-            // Doğru dalga! Teknisyenin kanalını atlat
             techCurrentChannel.value++;
             RpcTechChannelSuccess(techCurrentChannel.value);
         }
@@ -131,13 +140,11 @@ public class Magnetic_StationManager : NetworkBehaviour
 
         if (numpadInput == correctAnswer)
         {
-            // Doğru cevap! Mühendisin kanalını atlat
             engCurrentChannel.value++;
             RpcEngChannelSuccess(engCurrentChannel.value);
         }
         else
         {
-            // Yanlış Cevap! Ceza sistemi tetiklenir
             stationController.ReportRepairMistake();
             RpcStationMistake("Mühendis yanlış bir hesaplama yaptı!");
         }
@@ -146,25 +153,24 @@ public class Magnetic_StationManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void SubmitRadioFrequencyRPC(string inputFreq)
     {
-        if (!isRoundActive.value || engCurrentChannel.value < 3 || techCurrentChannel.value < 3) return;
+        if (!isRoundActive.value) return;
+        Debug.Log($"<color=magenta>Final frekans denemesi: {inputFreq}</color>");
 
         if (inputFreq == targetRadioFrequency.value)
         {
-            // İSTASYON BAŞARIYLA TAMAMLANDI!
             isRoundActive.value = false;
             stationController.SetReparied();
             RpcStationResolved(true);
         }
         else
         {
-            // YANLIŞ FREKANS! Ceza
-            stationController.ReportRepairMistake();
+            stationController.ReportRepairMistake(2);
             RpcStationMistake("Yanlış radyo frekansı girildi!");
         }
     }
 
     // ==========================================
-    // SERVER -> CLIENT BİLDİRİMLERİ (Görsel İşlemler İçin)
+    // SERVER -> CLIENT RPC
     // ==========================================
 
     [ObserversRpc]
@@ -183,17 +189,16 @@ public class Magnetic_StationManager : NetworkBehaviour
     private void RpcStationMistake(string reason)
     {
         Debug.LogWarning($"<color=red>HATA! CEZA UYGULANIYOR:</color> {reason}");
-        // Hata durumunda UI titremesi, kırmızı ışık yanması vs. burada tetiklenebilir.
     }
 
     [ObserversRpc]
     private void RpcStationResolved(bool isSuccess)
     {
         Debug.Log("<color=green>BAŞARILI! MAGNETIC İSTASYONU ÇÖZÜLDÜ.</color>");
-        // Tamamlanma sesleri, ışıkların düzelmesi vs.
+        RadioVoiceManager.Instance.SetRadioBrokenState(false);
+
     }
 
-    // Yardımcı Karıştırma Fonksiyonu
     private void Shuffle<T>(List<T> list)
     {
         for (int i = 0; i < list.Count; i++)
@@ -205,7 +210,6 @@ public class Magnetic_StationManager : NetworkBehaviour
         }
     }
 
-    // Frontend (UI) scriptlerinin veriyi okuyabilmesi için public bir Getter
     public ChannelData GetChannelData(int channelIndex)
     {
         if (channelIndex >= 0 && channelIndex < 3)
@@ -215,65 +219,12 @@ public class Magnetic_StationManager : NetworkBehaviour
     }
 
 
-#if UNITY_EDITOR
-    [ContextMenu("Test/1. Start New Round")]
+    [ContextMenu("Start New Round")]
     private void Test_StartNewRound()
     {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("Testleri çalıştırabilmek için Play Mode'da olmalısınız!");
-            return;
-        }
 
-        Debug.Log("<color=yellow>--- YENİ BULMACA ÜRETİLİYOR ---</color>");
         StartNewRound();
-        Test_PrintPuzzleInfo();
     }
 
-    [ContextMenu("Test/2. Print Puzzle Info")]
-    private void Test_PrintPuzzleInfo()
-    {
-        if (!Application.isPlaying || !isRoundActive.value) return;
 
-        for (int i = 0; i < 3; i++)
-        {
-            ChannelData data = GetChannelData(i);
-            Debug.Log($"<b>[KANAL {i + 1}]</b> Dalga Hedefi: (A:{data.targetWave.amplitude}, F:{data.targetWave.frequency}, P:{data.targetWave.phase}) | " +
-                      $"Sembol ID: S{data.symbolID} | " +
-                      $"Denklem: {data.equation.displayString} | " +
-                      $"Cevap: {data.equation.targetAnswer}");
-        }
-
-        Debug.Log($"<b>[FİNAL HEDEF]</b> Radyo Frekansı: {targetRadioFrequency.value}");
-    }
-
-    [ContextMenu("Test/3. Simulate Tech Correct Wave")]
-    private void Test_SimulateTechCorrectWave()
-    {
-        if (!Application.isPlaying || !isRoundActive.value || techCurrentChannel.value >= 3) return;
-
-        ChannelData currentData = GetChannelData(techCurrentChannel.value);
-        Debug.Log($"<color=cyan>Teknisyen Doğru Dalgayı Gönderiyor (Kanal {techCurrentChannel.value + 1})</color>");
-        SubmitWaveRPC(currentData.targetWave.amplitude, currentData.targetWave.frequency, currentData.targetWave.phase);
-    }
-
-    [ContextMenu("Test/4. Simulate Eng Correct Answer")]
-    private void Test_SimulateEngCorrectAnswer()
-    {
-        if (!Application.isPlaying || !isRoundActive.value || engCurrentChannel.value >= 3) return;
-
-        ChannelData currentData = GetChannelData(engCurrentChannel.value);
-        Debug.Log($"<color=orange>Mühendis Doğru Denklem Cevabını Gönderiyor (Kanal {engCurrentChannel.value + 1}): {currentData.equation.targetAnswer}</color>");
-        SubmitEquationAnswerRPC(currentData.equation.targetAnswer);
-    }
-
-    [ContextMenu("Test/5. Simulate Final Radio Frequency")]
-    private void Test_SimulateFinalFrequency()
-    {
-        if (!Application.isPlaying || !isRoundActive.value) return;
-
-        Debug.Log($"<color=green>Teknisyen Final Frekansı Gönderiyor: {targetRadioFrequency.value}</color>");
-        SubmitRadioFrequencyRPC(targetRadioFrequency.value);
-    }
-#endif
 }

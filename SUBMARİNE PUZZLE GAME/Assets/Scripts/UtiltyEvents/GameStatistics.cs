@@ -40,6 +40,7 @@ public enum StatType
     SecurityLockDown,
     BlackOut,
     EngineerLockDown,
+    MagneticInterference,
 
 
 
