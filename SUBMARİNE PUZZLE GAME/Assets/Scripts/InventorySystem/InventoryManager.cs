@@ -357,6 +357,7 @@ public class InventoryManager : NetworkBehaviour
 
 
 
+
         SetItemSettings(itemObj, true);
         if (isServer) ObserversPickupRpc(itemObj);
 
@@ -364,7 +365,13 @@ public class InventoryManager : NetworkBehaviour
         if (playerInventory.HandPosition)
         {
             itemObj.transform.SetParent(playerInventory.HandPosition);
+
             ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
+            if (lootComponent.isInElevator)
+            {
+                LiftManager.OnItemInElevator(false);
+                lootComponent.isInElevator = false;
+            }
             if (lootComponent)
             {
                 itemObj.transform.localPosition = lootComponent.Data.positionOffset;
@@ -462,6 +469,7 @@ public class InventoryManager : NetworkBehaviour
             float rndX = UnityEngine.Random.Range(-range, range);
             Vector3 worldPos = liftTransform.TransformPoint(new Vector3(rndX, .5f, 0f));
 
+
             DropServerRpc(container.PhysicalObject, liftTransform.gameObject, worldPos, Quaternion.identity);
         }
     }
@@ -473,7 +481,12 @@ public class InventoryManager : NetworkBehaviour
 
         // 1. GÖRSEL KOPMA: Obje her iki tarafta (Client ve Server) anında elden (parent'tan) ayrılır
         itemObj.transform.SetParent(parentObj != null ? parentObj.transform : null);
+        if (parentObj != null)
+        {
+            LiftManager.OnItemInElevator?.Invoke(true);
+            itemObj.GetComponent<ItemLoot>().isInElevator = true;
 
+        }
         var itemLogic = itemObj.GetComponent<IInventoryItem>();
         itemLogic?.OnDrop();
 

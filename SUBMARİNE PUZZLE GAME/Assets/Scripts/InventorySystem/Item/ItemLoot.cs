@@ -9,6 +9,7 @@ public class ItemLoot : NetworkBehaviour
     [SerializeField] private ItemData itemData;
 
     public ItemData Data => itemData;
+    public bool isInElevator = false;
 
     public void LootItem()
     {

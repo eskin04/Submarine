@@ -9,6 +9,9 @@ public class GameLoader : MonoBehaviour
     [SerializeField] private LobbyManager lobbyManager;
     [SerializeField] private LevelData[] allLevels;
 
+    public AudioEventChannelSO _channel;
+    public FMODUnity.EventReference allReadySound;
+
 
 
     [PurrScene] public string ContractScene;
@@ -69,9 +72,18 @@ public class GameLoader : MonoBehaviour
                 yield break;
             }
         }
-
+        PlaySound(allReadySound);
 
         SceneManager.LoadSceneAsync(levelData.CurrentScene);
+    }
+
+    private void PlaySound(FMODUnity.EventReference sound)
+    {
+        if (_channel != null && !sound.IsNull)
+        {
+            AudioEventPayload payload = new AudioEventPayload(sound, this.transform.position);
+            _channel.RaiseEvent(payload);
+        }
     }
 
     private LevelData GetLevelDataByID(int id)

@@ -266,18 +266,22 @@ public class RadioVoiceManager : MonoBehaviour
     void StartTransmission()
     {
         OnRadioStateChanged?.Invoke(true);
-        if (!string.IsNullOrEmpty(currentChannelName))
-        {
-            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_PRESSED");
-        }
+
         if (isRadioBroken)
         {
             if (_activeStaticEmitter != null)
             {
                 _activeStaticEmitter.SetPaused(false);
             }
+            OnReceivingTransmission?.Invoke(true);
+
             Debug.Log("<color=orange>[Telsiz]</color> Telsiz bozuk! Mandala basıldı ama sadece cızırtı duyuluyor.");
             return;
+        }
+
+        if (!string.IsNullOrEmpty(currentChannelName))
+        {
+            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_PRESSED");
         }
         if (!connectEvent.IsNull)
         {
@@ -296,10 +300,7 @@ public class RadioVoiceManager : MonoBehaviour
     void StopTransmission()
     {
         OnRadioStateChanged?.Invoke(false);
-        if (!string.IsNullOrEmpty(currentChannelName))
-        {
-            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_RELEASED");
-        }
+
 
         if (isRadioBroken)
         {
@@ -307,7 +308,13 @@ public class RadioVoiceManager : MonoBehaviour
             {
                 _activeStaticEmitter.SetPaused(true);
             }
+            OnReceivingTransmission?.Invoke(false);
+
             return;
+        }
+        if (!string.IsNullOrEmpty(currentChannelName))
+        {
+            VivoxService.Instance.SendChannelTextMessageAsync(currentChannelName, "Q_RELEASED");
         }
         if (!disconnectEvent.IsNull)
         {

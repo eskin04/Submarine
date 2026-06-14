@@ -2,10 +2,12 @@ using UnityEngine;
 using DG.Tweening;
 using PurrNet;
 using System;
+using FMODUnity;
 
 public class LiftManager : NetworkBehaviour
 {
     public static Action<Transform, float> OnDropItemToLıft;
+    public static Action<bool> OnItemInElevator;
 
 
     [System.Serializable]
@@ -19,6 +21,7 @@ public class LiftManager : NetworkBehaviour
     [SerializeField] private LiftButtonData[] allLiftButtons;
     [SerializeField] private GameObject lift;
     [SerializeField] private LiftDoor[] liftDoors;
+    [SerializeField] private Light liftLight;
 
     [Header("Settings")]
     [SerializeField] private float liftSpeed = 2f;
@@ -27,11 +30,20 @@ public class LiftManager : NetworkBehaviour
     [SerializeField] private float liftDownPosition = 0f;
     [SerializeField] private bool isDisable;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioEventChannelSO sfxChannel;
+    [SerializeField] private EventReference liftMoveSound;
+    [SerializeField] private EventReference liftArriveSound;
+
+    private FMODEmitter _activeMoveEmitter;
+
     private int currentFloorIndex = 0;
 
     void Awake()
     {
         InventoryManager.OnEquipChange += ToggleInteractLift;
+        OnItemInElevator += HandleLightState;
+
     }
 
     void Start()
@@ -75,6 +87,29 @@ public class LiftManager : NetworkBehaviour
                 buttonData.button.OnLiftButtonPressed -= HandleLiftButtonPressed;
         }
         InventoryManager.OnEquipChange -= ToggleInteractLift;
+        OnItemInElevator -= HandleLightState;
+
+        if (_activeMoveEmitter != null)
+        {
+            _activeMoveEmitter.StopSound();
+            _activeMoveEmitter = null;
+        }
+    }
+    [ObserversRpc(runLocally: true)]
+    private void HandleLightState(bool isInLift)
+    {
+        if (liftLight.enabled == isInLift)
+            return;
+        if (isInLift)
+        {
+            liftLight.enabled = true;
+        }
+        else
+        {
+            if (lift.GetComponentInChildren<ItemLoot>())
+                return;
+            liftLight.enabled = false;
+        }
     }
 
     [ObserversRpc(runLocally: true)]
@@ -86,9 +121,11 @@ public class LiftManager : NetworkBehaviour
         liftDoors[currentFloorIndex].ToggleDoor(false);
 
         float targetY = targetFloorIndex == 0 ? liftDownPosition : liftUpPosition;
+        StartLiftAudio();
 
         lift.transform.DOLocalMoveY(targetY, liftSpeed).SetEase(Ease.InOutSine).SetDelay(0.3f).OnComplete(() =>
         {
+            HandleLiftArrival();
             currentFloorIndex = targetFloorIndex;
             liftDoors[currentFloorIndex].ToggleDoor(true);
 
@@ -137,5 +174,30 @@ public class LiftManager : NetworkBehaviour
     {
         OnDropItemToLıft?.Invoke(lift.transform, xPosRange);
         lift.GetComponent<Interactable>().StopInteract();
+    }
+
+
+    private void StartLiftAudio()
+    {
+        if (_activeMoveEmitter == null && !liftMoveSound.IsNull && lift != null)
+        {
+            _activeMoveEmitter = AudioManager.Instance.PlayLoopingOrAttachedSound(liftMoveSound, lift.transform);
+        }
+    }
+
+    private void HandleLiftArrival()
+    {
+        if (_activeMoveEmitter != null)
+        {
+            _activeMoveEmitter.StopSound();
+            _activeMoveEmitter = null;
+        }
+
+        if (sfxChannel != null && !liftArriveSound.IsNull && lift != null)
+        {
+            sfxChannel.RaiseEvent(new AudioEventPayload(liftArriveSound, lift.transform.position));
+        }
+
+
     }
 }
