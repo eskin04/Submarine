@@ -62,7 +62,6 @@ public class StationController : NetworkBehaviour
 
     void Update()
     {
-        // input shift + K tuşuna basıldığında, eğer istasyon bozuk durumdaysa tamir edilmiş olarak değiştirsin (test amaçlı)
         if (!isServer) return;
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.K))
         {

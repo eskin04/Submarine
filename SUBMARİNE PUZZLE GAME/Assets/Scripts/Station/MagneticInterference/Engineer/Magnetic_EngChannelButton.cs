@@ -17,6 +17,7 @@ public class Magnetic_EngChannelButton : MonoBehaviour
     {
         if (buttonMesh != null)
             originalLocalPos = buttonMesh.localPosition;
+
     }
 
     public void UpdateButtonState(bool active, bool locked)
@@ -36,6 +37,13 @@ public class Magnetic_EngChannelButton : MonoBehaviour
             else
             {
                 buttonMesh.DOLocalMove(originalLocalPos, 0.2f);
+            }
+
+            bool canBeHighlighted = !isLocked && !isActive;
+
+            if (HighlightManager.Instance != null)
+            {
+                HighlightManager.Instance.SetInteractableState(buttonMesh.gameObject, canBeHighlighted);
             }
         }
     }

@@ -35,6 +35,13 @@ public class Magnetic_ChannelButton : MonoBehaviour
             {
                 buttonMesh.DOLocalMove(originalLocalPos, 0.2f);
             }
+
+            bool canBeHighlighted = !isLocked && !isActive;
+
+            if (HighlightManager.Instance != null)
+            {
+                HighlightManager.Instance.SetInteractableState(buttonMesh.gameObject, canBeHighlighted);
+            }
         }
     }
 

@@ -13,6 +13,7 @@ public class HighlightManager : MonoBehaviour
 
     private List<Outline> currentActiveOutlines = new List<Outline>();
     private Outline currentHoveredOutline;
+    private Dictionary<GameObject, int> originalLayers = new Dictionary<GameObject, int>();
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -76,6 +77,57 @@ public class HighlightManager : MonoBehaviour
 
             if (currentHoveredOutline != null)
                 currentHoveredOutline.OutlineWidth = hoverOutlineWidth;
+        }
+    }
+
+
+    // ==========================================
+    public void SetInteractableState(GameObject targetObj, bool isInteractable)
+    {
+        if (targetObj == null) return;
+
+        Outline outline = targetObj.GetComponent<Outline>();
+
+        if (isInteractable)
+        {
+            if (originalLayers.ContainsKey(targetObj))
+            {
+                targetObj.layer = originalLayers[targetObj];
+            }
+
+            if (outline == null)
+            {
+                outline = targetObj.AddComponent<Outline>();
+                outline.OutlineMode = Outline.Mode.OutlineVisible;
+                outline.OutlineColor = outlineColor;
+            }
+
+            outline.enabled = true;
+            outline.OutlineWidth = normalOutlineWidth;
+
+            if (!currentActiveOutlines.Contains(outline))
+            {
+                currentActiveOutlines.Add(outline);
+            }
+        }
+        else
+        {
+            if (!originalLayers.ContainsKey(targetObj))
+            {
+                originalLayers[targetObj] = targetObj.layer;
+            }
+
+            targetObj.layer = 0;
+
+            if (outline != null)
+            {
+                outline.enabled = false;
+
+                if (currentHoveredOutline == outline)
+                {
+                    currentHoveredOutline = null;
+                }
+            }
         }
     }
 }

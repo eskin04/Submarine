@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PurrNet;
 using PurrLobby;
+using DG.Tweening;
 
 [RequireComponent(typeof(PlayerInventory))]
 public class InventoryManager : NetworkBehaviour
@@ -67,6 +68,8 @@ public class InventoryManager : NetworkBehaviour
         LiftManager.OnDropItemToLıft += HandleLiftDrop;
         Interactor.OnInteract += Interactor_OnInteract;
         Interactor.OnInteractableChanged += Interactor_OnInteractableChanged;
+        CameraLayerController.OnInteractionStarted += SetInteractItemParent;
+        CameraLayerController.OnInteractionEnded += SetNormalItemParent;
         OnLocalInventoryReady?.Invoke(this);
 
         HandleStartingItems();
@@ -80,7 +83,53 @@ public class InventoryManager : NetworkBehaviour
         LiftManager.OnDropItemToLıft -= HandleLiftDrop;
         Interactor.OnInteract -= Interactor_OnInteract;
         Interactor.OnInteractableChanged -= Interactor_OnInteractableChanged;
+        CameraLayerController.OnInteractionStarted -= SetInteractItemParent;
+        CameraLayerController.OnInteractionEnded -= SetNormalItemParent;
         base.OnDestroy();
+    }
+
+    private void SetInteractItemParent()
+    {
+        var container = containers[currentSlotIndex];
+        if (!container.IsEmpty && container.PhysicalObject != null)
+        {
+            var itemObj = container.PhysicalObject;
+            itemObj.transform.SetParent(playerInventory.InteractCameraTrans);
+            ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
+            if (lootComponent)
+            {
+                itemObj.transform.DOLocalMove(lootComponent.Data.positionOffsetInInteract, 0.5f);
+                itemObj.transform.DOLocalRotate(Vector3.zero, 0.5f);
+            }
+            else
+            {
+                itemObj.transform.localPosition = Vector3.zero;
+                itemObj.transform.localRotation = Quaternion.identity;
+            }
+        }
+    }
+
+    private void SetNormalItemParent()
+    {
+        var container = containers[currentSlotIndex];
+        if (!container.IsEmpty && container.PhysicalObject != null)
+        {
+
+            var itemObj = container.PhysicalObject;
+            DOTween.Kill(itemObj.transform);
+            itemObj.transform.SetParent(playerInventory.HandPosition);
+            ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
+            if (lootComponent)
+            {
+                itemObj.transform.localPosition = lootComponent.Data.positionOffset;
+                itemObj.transform.localRotation = Quaternion.Euler(lootComponent.Data.rotationOffset);
+            }
+            else
+            {
+                itemObj.transform.localPosition = Vector3.zero;
+                itemObj.transform.localRotation = Quaternion.identity;
+            }
+        }
     }
 
 
@@ -235,7 +284,7 @@ public class InventoryManager : NetworkBehaviour
             {
                 OnEquipChange?.Invoke(true);
                 if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
-                    promptView.AddPrompt("page_drop", "G", "Drop Page");
+                    promptView.AddPrompt("item_drop", "G", "Drop Item");
             }
             else
             {
@@ -265,7 +314,7 @@ public class InventoryManager : NetworkBehaviour
 
             itemObj.SetActive(false);
             if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
-                promptView.RemovePrompt("page_drop");
+                promptView.RemovePrompt("item_drop");
         }
     }
 
@@ -395,6 +444,9 @@ public class InventoryManager : NetworkBehaviour
                     finalPos = transform.position + transform.forward * 1.5f;
                 }
             }
+
+            if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+                promptView.RemovePrompt("item_drop");
 
             DropServerRpc(itemToDrop, null, finalPos, finalRot);
         }

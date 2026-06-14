@@ -21,6 +21,11 @@ public class FloodManager : NetworkBehaviour
     [Header("Network Data")]
     [SerializeField] private SyncVar<float> currentWater = new SyncVar<float>(0f);
 
+    [Header("Dynamic Pacing Settings")]
+    [SerializeField] private float fastBreakDelay = 15f;
+    private bool isFastBreakActive = false;
+    private float fastBreakTime = 0f;
+
     // private bool criticalEventTriggered = false;
 
     private Queue<StationController> pendingMainStations = new Queue<StationController>();
@@ -35,6 +40,8 @@ public class FloodManager : NetworkBehaviour
     private int currentMainWaveIndex = 0;
 
     private float nextProbabilityCheckTime = 0f;
+
+
 
     protected override void OnSpawned()
     {
@@ -82,6 +89,7 @@ public class FloodManager : NetworkBehaviour
         gameTimeCounter = 0f;
         currentMainWaveIndex = 0;
         nextProbabilityCheckTime = 1f;
+        isFastBreakActive = false;
         Debug.Log("Flood Başladı! Main istasyon sayısı: " + pendingMainStations.Count);
 
     }
@@ -110,6 +118,24 @@ public class FloodManager : NetworkBehaviour
 
                 if (brokenStations.Contains(station))
                     brokenStations.Remove(station);
+
+                if (isStart && !isGameOver && station.stationType == StationType.Main)
+                {
+                    int currentBrokenMains = brokenStations.Count(s => s.stationType == StationType.Main);
+
+                    if (currentBrokenMains == 0 && pendingMainStations.Count > 0 && currentMainWaveIndex < mainBreakdownProfile.waves.Count)
+                    {
+                        BreakdownWave nextWave = mainBreakdownProfile.waves[currentMainWaveIndex];
+                        float targetFastTime = gameTimeCounter + fastBreakDelay;
+
+                        if (targetFastTime < nextWave.startTime)
+                        {
+                            isFastBreakActive = true;
+                            fastBreakTime = targetFastTime;
+                            Debug.Log($"<color=cyan>İstasyon çok hızlı çözüldü! Oyun temposu artırılıyor. Sıradaki istasyon {fastBreakDelay} saniye sonra bozulacak.</color>");
+                        }
+                    }
+                }
                 break;
         }
     }
@@ -137,8 +163,23 @@ public class FloodManager : NetworkBehaviour
             shouldRollDice = true;
             nextProbabilityCheckTime = gameTimeCounter + 1f;
         }
+        if (isFastBreakActive)
+        {
+            if (gameTimeCounter >= fastBreakTime)
+            {
+                isFastBreakActive = false;
+                if (pendingMainStations.Count > 0)
+                {
+                    BreakNextStation(pendingMainStations);
+                    currentMainWaveIndex++;
+                }
+            }
+        }
 
-        ProcessBreakdownScenario(mainBreakdownProfile, pendingMainStations, ref currentMainWaveIndex, shouldRollDice);
+        else
+        {
+            ProcessBreakdownScenario(mainBreakdownProfile, pendingMainStations, ref currentMainWaveIndex, shouldRollDice);
+        }
     }
 
     private void ProcessBreakdownScenario(BreakdownProfile profile, Queue<StationController> queue, ref int waveIndex, bool shouldRollDice)
@@ -167,7 +208,6 @@ public class FloodManager : NetworkBehaviour
             }
         }
 
-        // 2. SÜRE BİTİMİ (Zorunlu geçiş)
         if (progress >= 1.0f)
         {
             if (currentWave.endProbability >= 99.9f)
@@ -238,7 +278,8 @@ public class FloodManager : NetworkBehaviour
     private void UpdateWaterUI(float value)
     {
         var view = InstanceHandler.GetInstance<MainGameView>();
-        if (view != null) view.SetWaterLevelText(value, maxWater);
+        float clampValue = Mathf.Clamp(value, 0, 100);
+        if (view != null) view.SetWaterLevelText(clampValue, maxWater);
     }
     [ObserversRpc]
     private void TimerTextUpdate(float timeInSeconds)

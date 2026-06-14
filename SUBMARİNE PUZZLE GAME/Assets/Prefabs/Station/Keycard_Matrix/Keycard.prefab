@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3999181172239596343}
   - component: {fileID: 8424503499845119961}
   - component: {fileID: 2155544323934311533}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Keycard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,6 +50,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2d505dfef0450749a2f697f64430d18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Keycard_Item
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
   myData:
     CardID: 0
     Color: 0
@@ -214,6 +223,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Keycard
       objectReference: {fileID: 0}
+    - target: {fileID: 1169882126219522578, guid: a9fc545ff35f8e24a9bec219e03fa59e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1979210217683216552, guid: a9fc545ff35f8e24a9bec219e03fa59e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -253,6 +266,10 @@ PrefabInstance:
     - target: {fileID: 1979210217683216552, guid: a9fc545ff35f8e24a9bec219e03fa59e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6851425673067731854, guid: a9fc545ff35f8e24a9bec219e03fa59e, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

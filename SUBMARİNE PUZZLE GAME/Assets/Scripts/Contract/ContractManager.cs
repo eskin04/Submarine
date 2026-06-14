@@ -4,12 +4,14 @@ using PurrNet;
 using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
+using System.Collections;
 
 public class ContractManager : NetworkBehaviour
 {
     [Header("Configuration")]
     [PurrScene] public string NextScene;
     public float delayBeforeLoad = 1.5f;
+    public int minPlayersToStart = 2;
 
     [Header("UI")]
     public CanvasGroup[] contractPages;
@@ -32,6 +34,8 @@ public class ContractManager : NetworkBehaviour
     private int currentPageIndex = 0;
     private bool isFading = false;
     private HashSet<PlayerID> readyPlayers = new HashSet<PlayerID>();
+    private SyncVar<int> readyPlayerCount = new SyncVar<int>(0);
+    private HashSet<PlayerID> waitingPlayers = new HashSet<PlayerID>();
 
     void Start()
     {
@@ -50,6 +54,48 @@ public class ContractManager : NetworkBehaviour
         LoadingScreenManager.Instance?.HideLoadingScreen();
 
         UpdateButtons();
+
+        if (isServer)
+        {
+            waitingPlayers.Clear();
+            waitingPlayers.Add(networkManager.localPlayer);
+
+            StartCoroutine(WaitForPlayers());
+        }
+        else
+        {
+            SendClientReadyServerRpc();
+        }
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    private void SendClientReadyServerRpc(RPCInfo info = default)
+    {
+        waitingPlayers.Add(info.sender);
+    }
+
+
+
+    private IEnumerator WaitForPlayers()
+    {
+
+
+        while (waitingPlayers.Count < minPlayersToStart)
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        RpcHideLoadingScreen();
+
+    }
+
+    [ObserversRpc]
+    private void RpcHideLoadingScreen()
+    {
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.HideLoadingScreen();
+        }
     }
 
     protected override void OnDestroy()
@@ -123,7 +169,7 @@ public class ContractManager : NetworkBehaviour
                 }
                 if (currentPageIndex == contractPages.Length - 1)
                 {
-                    UpdateStatusTextRpc(readyPlayers.Count, NetworkManager.main.playerCount);
+                    UpdateStatusTextRpc(readyPlayerCount.value, NetworkManager.main.playerCount);
                 }
 
             }
@@ -158,8 +204,9 @@ public class ContractManager : NetworkBehaviour
             readyPlayers.Remove(info.sender);
 
         int totalPlayers = NetworkManager.main.playerCount;
+        readyPlayerCount.value = readyPlayers.Count;
 
-        UpdateStatusTextRpc(readyPlayers.Count, totalPlayers);
+        UpdateStatusTextRpc(readyPlayerCount.value, totalPlayers);
 
         if (readyPlayers.Count >= totalPlayers && totalPlayers > 0)
         {
@@ -170,6 +217,7 @@ public class ContractManager : NetworkBehaviour
     [ObserversRpc]
     private void UpdateStatusTextRpc(int readyCount, int totalCount)
     {
+
         if (statusText != null && currentPageIndex == contractPages.Length - 1)
         {
             statusText.text = $"Ready Players: {readyCount}/{totalCount}";
