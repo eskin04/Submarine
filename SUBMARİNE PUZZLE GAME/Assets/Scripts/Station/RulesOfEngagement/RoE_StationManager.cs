@@ -350,12 +350,11 @@ public class RoE_StationManager : NetworkBehaviour
     {
         if (threat.currentDistance > avoidDistanceThreshold)
         {
-            RpcSendFeedback("TOO FAR TO EVADE!", Color.yellow);
             return;
         }
         SetNewRandomRule();
         stationController.ReportRepairMistake(0.5f);
-        RpcSendFeedback("Avoided!", Color.cyan);
+        RpcSendFeedback("Evasion Successful", Color.cyan);
         DestroyThreat(threat);
     }
 
@@ -363,7 +362,7 @@ public class RoE_StationManager : NetworkBehaviour
     {
         if (success)
         {
-            RpcSendFeedback("success!", Color.green);
+            RpcSendFeedback("Success", Color.green);
             succesThreats.Add(threat);
             DestroyThreat(threat);
 
@@ -372,7 +371,7 @@ public class RoE_StationManager : NetworkBehaviour
         {
             stationController.ReportRepairMistake();
 
-            RpcSendFeedback("failure!", Color.red);
+            RpcSendFeedback("Failure", Color.red);
 
             DestroyThreat(threat);
 

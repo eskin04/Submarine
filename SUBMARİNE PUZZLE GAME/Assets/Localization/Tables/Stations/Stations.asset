@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: Stations
+  m_EditorClassIdentifier: Unity.Localization.Editor::UnityEditor.Localization.StringTableCollection
+  m_SharedTableData: {fileID: 11400000, guid: 50dd52577454a8d40ada5fc2c0da04d7, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: 938de52d137f509448db5022374cff88, type: 2}
+  - {fileID: 11400000, guid: b1e351acf3efca343accc06e7561a2ed, type: 2}
+  - {fileID: 11400000, guid: 9d10b6ca690835b4ab2c1cbaf44b98d0, type: 2}
+  m_Extensions:
+  - rid: 8544654921302540397
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds:
+    - rid: 8544654921302540397
+      type: {class: GoogleSheetsExtension, ns: UnityEditor.Localization.Plugins.Google, asm: Unity.Localization.Editor}
+      data:
+        m_Collection: {fileID: 11400000}
+        m_SheetsServiceProvider: {fileID: 11400000, guid: 45f398c625d89a943a8be4fd754cf63f, type: 2}
+        m_SpreadsheetId: 1H_wRxJjqyP9E1Le6S_flyqu9sw0KnlA42saGPaThmFU
+        m_SheetId: 1
+        m_Columns: []
+        m_RemoveMissingPulledKeys: 1

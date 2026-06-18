@@ -2,22 +2,34 @@ using TMPro;
 using UnityEngine;
 using PurrNet;
 using DG.Tweening;
+using UnityEngine.Localization;
 
 public class LevelView : View
 {
     [SerializeField] private TMP_Text levelText;
+    [SerializeField] private LocalizedString localizedLevelText = new LocalizedString { TableReference = "UI_General", TableEntryReference = "ui_level_display" };
 
     private Sequence tweenSequence;
 
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
+        localizedLevelText.StringChanged += OnTranslatedLevelText;
     }
 
     private void OnDestroy()
     {
+        localizedLevelText.StringChanged -= OnTranslatedLevelText;
         InstanceHandler.UnregisterInstance<LevelView>();
         tweenSequence?.Kill();
+    }
+
+    private void OnTranslatedLevelText(string translatedText)
+    {
+        if (levelText != null)
+        {
+            levelText.text = translatedText;
+        }
     }
 
     public override void OnShow()
@@ -56,7 +68,8 @@ public class LevelView : View
         if (levelText != null)
         {
             Debug.Log($"Setting Level Text: Level {level}");
-            levelText.text = "LEVEL " + level.ToString();
+            localizedLevelText.Arguments = new object[] { new { LevelNumber = level } };
+            localizedLevelText.RefreshString();
         }
     }
 }

@@ -53,7 +53,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         isEquipped = true;
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
         {
-            promptView.AddPrompt("handbook_open", "Mouse0", "Open Handbook");
+            promptView.AddPrompt("handbook_open", "Left Click", "Open Handbook");
         }
 
     }
@@ -101,7 +101,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             {
                 promptView.AddPrompt("handbook_scroll", "Scroll", "Turn Page", PromptGroup.Item, scrollIcon);
                 promptView.RemovePrompt("handbook_open");
-                promptView.AddPrompt("handbook_close", "Mouse0", "Close Handbook");
+                promptView.AddPrompt("handbook_close", "Left Click", "Close Handbook");
             }
 
         }
@@ -120,7 +120,7 @@ public class Handbook : NetworkBehaviour, IInventoryItem
             {
                 promptView.RemovePrompt("handbook_scroll");
                 promptView.RemovePrompt("handbook_close");
-                promptView.AddPrompt("handbook_open", "Mouse0", "Open Handbook");
+                promptView.AddPrompt("handbook_open", "Left Click", "Open Handbook");
             }
         }
     }

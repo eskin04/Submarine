@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using PurrNet;
+using UnityEngine.Localization;
 
 public class EventUI : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class EventUI : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color failureColor = Color.red;
     [SerializeField] private Color repairColor = Color.green;
+
+    [Header("Localization")]
+    [SerializeField] private LocalizedString failureStringTemplate;
+    [SerializeField] private LocalizedString restoredStringTemplate;
 
     private Sequence currentSequence;
 
@@ -31,12 +36,15 @@ public class EventUI : MonoBehaviour
 
 
 
-    public void PlayTypewriterEffect(string stationName, bool isFailure)
+    public void PlayTypewriterEffect(string stationKey, bool isFailure)
     {
         currentSequence?.Kill();
 
-        string prefix = isFailure ? "SYSTEM FAILURE" : "SYSTEM RESTORED";
-        string fullMessage = $"{prefix}: {stationName.ToUpper()}";
+        string localizedStationName = LocalizationHelper.GetTranslatedText("UI_General", stationKey).ToUpper();
+        LocalizedString activeTemplate = isFailure ? failureStringTemplate : restoredStringTemplate;
+        activeTemplate.Arguments = new object[] { new { StationName = localizedStationName } };
+        string fullMessage = activeTemplate.GetLocalizedString();
+
 
         if (infoText)
         {

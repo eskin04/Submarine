@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.Localization;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class PromptSlot : MonoBehaviour
@@ -14,14 +15,31 @@ public class PromptSlot : MonoBehaviour
 
     public string CurrentId { get; private set; }
     public string CurrentKey { get; private set; }
-    public string CurrentAction { get; private set; }
+    public string CurrentActionKey { get; private set; }
     public Sprite CurrentIcon { get; private set; }
+
+    private LocalizedString localizedAction = new LocalizedString { TableReference = "UI_General" };
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0f;
         gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        localizedAction.StringChanged += OnTranslatedTextChanged;
+    }
+
+    private void OnDisable()
+    {
+        localizedAction.StringChanged -= OnTranslatedTextChanged;
+    }
+
+    private void OnTranslatedTextChanged(string translatedText)
+    {
+        actionText.text = translatedText;
     }
 
     public void Show(string id, string key, string action, Sprite icon = null)
@@ -36,13 +54,13 @@ public class PromptSlot : MonoBehaviour
         canvasGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad);
     }
 
-    public void UpdateContent(string key, string action, Sprite icon = null)
+    public void UpdateContent(string key, string actionKey, Sprite icon = null)
     {
         CurrentKey = key;
-        CurrentAction = action;
+        CurrentActionKey = actionKey;
         CurrentIcon = icon;
 
-        actionText.text = action;
+        localizedAction.TableEntryReference = actionKey;
 
         if (icon != null)
         {
@@ -62,7 +80,7 @@ public class PromptSlot : MonoBehaviour
     {
         CurrentId = string.Empty;
         CurrentKey = string.Empty;
-        CurrentAction = string.Empty;
+        CurrentActionKey = string.Empty;
         CurrentIcon = null;
 
         canvasGroup.DOKill();

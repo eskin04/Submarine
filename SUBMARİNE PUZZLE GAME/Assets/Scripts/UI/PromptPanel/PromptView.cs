@@ -50,6 +50,7 @@ public class PromptView : View
         {
             gameViewManager.ShowView<PromptView>(false);
         }
+
         activePrompts[id] = new PromptData { id = id, key = key, action = action, group = group, icon = icon };
         isDirty = true;
     }

@@ -102,6 +102,24 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         }
     }
 
+    private void TogglePromptView(bool isPlacementActive)
+    {
+
+        if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
+        {
+            if (isPlacementActive)
+            {
+                promptView.AddPrompt("page_snap", "Left Click", "Snap To Surface");
+                promptView.RemovePrompt("page_place");
+            }
+            else
+            {
+                promptView.AddPrompt("page_place", "R", "Place Page");
+                promptView.RemovePrompt("page_snap");
+            }
+        }
+    }
+
 
     private void Update()
     {
@@ -111,6 +129,7 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         {
             isPlacementModeActive = !isPlacementModeActive;
             if (hologramObj != null) hologramObj.SetActive(isPlacementModeActive);
+            TogglePromptView(isPlacementModeActive);
         }
 
         if (isPlacementModeActive)
@@ -227,6 +246,8 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
         {
             promptView.RemovePrompt("page_place");
+            promptView.RemovePrompt("page_snap");
+
 
         }
     }

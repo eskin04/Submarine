@@ -3,22 +3,33 @@ using TMPro;
 using UnityEngine;
 using PurrNet;
 using DG.Tweening;
-
+using UnityEngine.Localization;
 public class PlayerSpawnView : View
 {
     [SerializeField] private TMP_Text roleText;
+    private LocalizedString localizedRole = new LocalizedString { TableReference = "UI_General" };
 
     private Sequence tweenSequence;
 
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
+        localizedRole.StringChanged += OnTranslatedRoleText;
     }
 
     private void OnDestroy()
     {
+        localizedRole.StringChanged -= OnTranslatedRoleText;
         InstanceHandler.UnregisterInstance<PlayerSpawnView>();
         tweenSequence?.Kill();
+    }
+
+    private void OnTranslatedRoleText(string translatedText)
+    {
+        if (roleText != null)
+        {
+            roleText.text = translatedText.ToUpper();
+        }
     }
 
     public override void OnShow()
@@ -53,7 +64,7 @@ public class PlayerSpawnView : View
     {
         if (roleText != null) //
         {
-            roleText.text = role.ToString().ToUpper();
+            localizedRole.TableEntryReference = role.ToString();
         }
     }
 }

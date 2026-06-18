@@ -284,7 +284,7 @@ public class InventoryManager : NetworkBehaviour
             {
                 OnEquipChange?.Invoke(true);
                 if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
-                    promptView.AddPrompt("item_drop", "G", "Drop Item");
+                    promptView.AddPrompt("item_drop", "G", "Drop The Item");
             }
             else
             {

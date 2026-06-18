@@ -25,6 +25,7 @@ public class ModuleInteraction : MonoBehaviour
 
     [SerializeField] private List<ModulePromptData> modulePrompts = new List<ModulePromptData>();
     private const string DEFAULT_EXIT_PROMPT_ID = "module_default_exit";
+    private const string DEFAULT_INTERACT_PROMPT_ID = "module_default_interact";
 
 
     private FirstPersonController playerController;
@@ -199,6 +200,10 @@ public class ModuleInteraction : MonoBehaviour
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
         {
             promptView.AddPrompt(DEFAULT_EXIT_PROMPT_ID, "Right Click", "Exit", PromptGroup.Module);
+            if (isUnlockCursor)
+            {
+                promptView.AddPrompt(DEFAULT_INTERACT_PROMPT_ID, "Left Click", "Interact", PromptGroup.Module);
+            }
 
             foreach (var prompt in modulePrompts)
             {

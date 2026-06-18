@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using System.Collections;
 using DG.Tweening;
-
+using UnityEngine.Localization;
 
 public class RoE_TechnicianUI : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class RoE_TechnicianUI : MonoBehaviour
     public RoE_PhysicalButton evadeButton;
     public GameObject evadeGlassCover;
     public TMP_Text feedbackText;
+    private LocalizedString localizedFeedback = new LocalizedString { TableReference = "UI_General" };
 
     [Header("Sonar Settings")]
     public Material radarMaterial;
@@ -86,12 +87,32 @@ public class RoE_TechnicianUI : MonoBehaviour
             SetRadarIntensity(0.2f);
         }
 
+        if (HighlightManager.Instance != null)
+        {
+            HighlightManager.Instance.SetInteractableState(evadeButton.gameObject, false);
+        }
+
+    }
+
+    void OnEnable()
+    {
+        localizedFeedback.StringChanged += OnTranslatedFeedback;
+
     }
 
     private void OnDestroy()
     {
         _radarInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         _radarInstance.release();
+        localizedFeedback.StringChanged -= OnTranslatedFeedback;
+    }
+
+    private void OnTranslatedFeedback(string translatedText)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = translatedText;
+        }
     }
     private void Update()
     {
@@ -341,7 +362,8 @@ public class RoE_TechnicianUI : MonoBehaviour
     public void UpdateFeedBack(string feedback, Color color)
     {
         if (displayCoroutine != null) StopCoroutine(displayCoroutine);
-        feedbackText.text = feedback;
+        localizedFeedback.TableEntryReference = feedback;
+        localizedFeedback.RefreshString();
         feedbackText.color = color;
         displayCoroutine = StartCoroutine(ClearFeedBack());
     }
@@ -407,6 +429,11 @@ public class RoE_TechnicianUI : MonoBehaviour
 
         evadeGlassCover.transform.DOKill();
 
+        if (HighlightManager.Instance != null)
+        {
+            HighlightManager.Instance.SetInteractableState(evadeButton.gameObject, isCoverOpen);
+        }
+
         if (isCoverOpen)
         {
             evadeGlassCover.transform.DOLocalRotate(new Vector3(0, 90, 0), 1f)
@@ -417,12 +444,14 @@ public class RoE_TechnicianUI : MonoBehaviour
                 AudioEventPayload payload = new AudioEventPayload(glassOpenSound, evadeGlassCover.transform.position);
                 _channel.RaiseEvent(payload);
             }
+
         }
         else
         {
             evadeGlassCover.transform.DOLocalRotate(Vector3.zero, 1f)
                 .SetEase(Ease.OutBounce);
         }
+
     }
 
     public void OnInteractEnter() => SetRadarIntensity(1.0f);
