@@ -178,10 +178,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639170480155231816
+  lastModified: 639165571940534893
   FileSizes:
   - Name: Desktop
-    Value: 3300
+    Value: 3188
   Exists: 1
 --- !u!114 &-5510877157030363373
 MonoBehaviour:
@@ -237,33 +237,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1000
---- !u!114 &-4864104797028078007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Elevator/ElevatorMove
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/SFX/Elevator/ElevatorMove
-  Guid:
-    Data1: -2132288269
-    Data2: 1165939480
-    Data3: 1709490833
-    Data4: -2051543622
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 4000
 --- !u!114 &-4754944528713808126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,7 +353,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639136823972653153
+  lastModified: 639165571940778060
   FileSizes:
   - Name: Desktop
     Value: 506
@@ -784,15 +757,13 @@ MonoBehaviour:
   - {fileID: -2662692666984447828}
   - {fileID: 964611538871919889}
   - {fileID: 6115645512660762016}
-  - {fileID: 7911339338111278507}
-  - {fileID: -4864104797028078007}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639170498035724279
+  cacheTime: 639165571967116345
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -872,10 +843,6 @@ MonoBehaviour:
     index: 37
   - key: event:/SFX/PowerRouting/SmallSwitch
     index: 38
-  - key: event:/SFX/Elevator/ElevatorArrive
-    index: 39
-  - key: event:/SFX/Elevator/ElevatorMove
-    index: 40
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1120,7 +1087,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639170480155231816
+  lastModified: 639165571940493321
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1248,10 +1215,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639170498035724279
+  lastModified: 639165571967116345
   FileSizes:
   - Name: Desktop
-    Value: 2903808
+    Value: 2793280
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:
@@ -1322,7 +1289,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Ambiance.bank
   Name: Ambiance
   StudioPath: bank:/Ambiance
-  lastModified: 639136823972415210
+  lastModified: 639165571940408315
   FileSizes:
   - Name: Desktop
     Value: 4863872
@@ -1732,33 +1699,6 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 4493
---- !u!114 &7911339338111278507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/SFX/Elevator/ElevatorArrive
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/SFX/Elevator/ElevatorArrive
-  Guid:
-    Data1: -107056524
-    Data2: 1123495112
-    Data3: 1989428413
-    Data4: 1292027046
-  Banks:
-  - {fileID: 4258567297402627855}
-  IsStream: 0
-  Is3D: 1
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 1959
 --- !u!114 &7994460046545407945
 MonoBehaviour:
   m_ObjectHideFlags: 0
