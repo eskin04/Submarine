@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class RoE_EngineerDisplay : MonoBehaviour
 {
@@ -15,6 +17,47 @@ public class RoE_EngineerDisplay : MonoBehaviour
 
     private string currentDisplayedCode = "";
 
+    private LocalizedString uiRuleString = new LocalizedString();
+    private LocalizedString uiTargetCodeString = new LocalizedString { TableReference = "UI_General" };
+
+    private RoE_RuleData activeRuleData;
+    private bool activeIsShoot;
+    private ObjectCategory activeCatX;
+    private ObjectCategory activeCatY;
+
+
+    private void OnEnable()
+    {
+        // Event'e baştan abone oluyoruz
+        uiRuleString.StringChanged += OnTranslatedRuleReady;
+        uiTargetCodeString.StringChanged += OnTranslatedTargetCodeReady;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDestroy()
+    {
+        uiRuleString.StringChanged -= OnTranslatedRuleReady;
+        uiTargetCodeString.StringChanged -= OnTranslatedTargetCodeReady;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnTranslatedTargetCodeReady(string translatedText)
+    {
+        if (targetCodeText != null)
+        {
+            targetCodeText.text = translatedText;
+        }
+    }
+
+    private void OnLanguageChanged(Locale newLocale)
+    {
+
+        if (activeRuleData != null)
+        {
+            UpdateRuleDisplay(activeRuleData, activeIsShoot, activeCatX, activeCatY);
+        }
+    }
+
     void Start()
     {
         SetDisplayActive(false);
@@ -23,7 +66,7 @@ public class RoE_EngineerDisplay : MonoBehaviour
     public void StartDisplaySequence(List<int> symbolIndices, string codeName)
     {
         currentDisplayedCode = codeName;
-        targetCodeText.text = codeName;
+        uiTargetCodeString.TableEntryReference = codeName;
 
 
         DisplayAllSymbols(symbolIndices);
@@ -64,7 +107,7 @@ public class RoE_EngineerDisplay : MonoBehaviour
 
             if (targetCodeText != null)
             {
-                targetCodeText.text = "SIGNAL LOST";
+                uiTargetCodeString.TableEntryReference = "Signal Lost";
                 targetCodeText.color = Color.red;
             }
 
@@ -72,11 +115,41 @@ public class RoE_EngineerDisplay : MonoBehaviour
         }
     }
 
-    public void UpdateRuleDisplay(string description)
+    public void UpdateRuleDisplay(RoE_RuleData ruleData, bool isShoot, ObjectCategory catX, ObjectCategory catY)
+    {
+        activeRuleData = ruleData;
+        activeIsShoot = isShoot;
+        activeCatX = catX;
+        activeCatY = catY;
+        string actionKey = isShoot ? "Shoot" : "Pass";
+        string translatedAction = LocalizationHelper.GetTranslatedText("UI_General", actionKey);
+
+        string xKey = catX.ToString();
+        string translatedX = LocalizationHelper.GetTranslatedText("UI_General", xKey);
+
+        string yKey = catY.ToString();
+        string translatedY = LocalizationHelper.GetTranslatedText("UI_General", yKey);
+
+        var ruleArguments = new Dictionary<string, string>
+        {
+            { "ACTION", translatedAction },
+            { "X", translatedX },
+            { "Y", translatedY }
+        };
+
+        uiRuleString.Arguments = new object[] { ruleArguments };
+
+        uiRuleString.TableReference = ruleData.localizedRuleDescription.TableReference;
+        uiRuleString.TableEntryReference = ruleData.localizedRuleDescription.TableEntryReference;
+
+        uiRuleString.RefreshString();
+    }
+
+    private void OnTranslatedRuleReady(string finalRuleText)
     {
         if (ruleText != null)
         {
-            ruleText.text = description;
+            ruleText.text = finalRuleText;
         }
     }
 

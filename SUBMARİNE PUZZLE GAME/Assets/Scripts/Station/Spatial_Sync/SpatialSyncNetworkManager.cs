@@ -226,7 +226,7 @@ public class SpatialSyncNetworkManager : NetworkBehaviour
     {
         if (sSTechnicianUIManager != null)
         {
-            sSTechnicianUIManager.UpdateInputText("Fail!");
+            sSTechnicianUIManager.UpdateInputText();
         }
 
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Localization;
 
 public enum ObjectCategory
 {
@@ -16,7 +17,7 @@ public enum ObjectCategory
 public class RoE_ObjectData : ScriptableObject
 {
     [Header("Identity")]
-    public string objectName;
+    public LocalizedString objectName;
     public Sprite polaroidImage;
 
     [Header("Handbook Stats")]

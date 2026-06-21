@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization;
 
 public enum RuleLogicType
 {
@@ -29,9 +30,7 @@ public enum RuleLogicType
 [CreateAssetMenu(fileName = "New_RoE_Rule", menuName = "RoE/Daily Rule")]
 public class RoE_RuleData : ScriptableObject
 {
-    [TextArea]
-    [Tooltip("Dinamik metinler için {X} ve {Y} kullanın.")]
-    public string ruleDescription;
+    public LocalizedString localizedRuleDescription;
 
     public RuleLogicType logicType;
 

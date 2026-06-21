@@ -27,7 +27,7 @@ public class RoE_HandbookLoader : MonoBehaviour
             {
                 List<ObjectCategory> shuffledCats = obj.categories.OrderBy(x => Random.value).ToList();
 
-                itemScript.Setup(obj.objectName, shuffledCats);
+                itemScript.Setup(obj, shuffledCats);
             }
         }
     }

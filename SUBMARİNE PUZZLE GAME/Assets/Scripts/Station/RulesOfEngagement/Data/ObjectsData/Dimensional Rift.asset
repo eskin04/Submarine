@@ -12,6 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f9f91a86dfcce84792c8ad389aba5ef, type: 3}
   m_Name: Dimensional Rift
   m_EditorClassIdentifier: Assembly-CSharp::RoE_ObjectData
-  objectName: Dimensional Rift
+  objectName:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 1822591051014149
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   polaroidImage: {fileID: 0}
   categories: 0600000002000000
+  references:
+    version: 2
+    RefIds: []

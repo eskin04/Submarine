@@ -163,23 +163,20 @@ public class RoE_StationManager : NetworkBehaviour
         activeCategoryY = allCats[1];
 
         isCurrentRuleShoot = Random.value > 0.5f;
-        string actionString = isCurrentRuleShoot ? "SHOOT" : "PASS";
 
-        activeRuleDescription = currentDailyRule.ruleDescription
-            .Replace("{ACTION}", actionString)
-            .Replace("{X}", activeCategoryX.ToString())
-            .Replace("{Y}", activeCategoryY.ToString());
 
-        RpcUpdateRuleDisplay(allRules.IndexOf(newRule), activeRuleDescription);
+        int ruleIndex = allRules.IndexOf(newRule);
+        RpcUpdateRuleDisplay(ruleIndex, isCurrentRuleShoot, activeCategoryX, activeCategoryY);
     }
 
     [ObserversRpc]
-    private void RpcUpdateRuleDisplay(int ruleIndex, string ruleDescription)
+    private void RpcUpdateRuleDisplay(int ruleIndex, bool isShoot, ObjectCategory catX, ObjectCategory catY)
     {
         currentDailyRule = allRules[ruleIndex];
+
         if (engineerDisplay != null)
         {
-            engineerDisplay.UpdateRuleDisplay(ruleDescription);
+            engineerDisplay.UpdateRuleDisplay(currentDailyRule, isShoot, catX, catY);
         }
     }
 

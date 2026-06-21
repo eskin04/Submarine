@@ -1,59 +1,75 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class Keycard_ConditionParser
 {
-    public static string ParseToEnglish(ConditionData cond)
+    // Artık string değil, UI'ın kullanacağı (Şablon Key'i, Argümanlar) ikilisini döndürüyoruz.
+    public static (string templateKey, Dictionary<string, string> arguments) GetLocalizationData(ConditionData cond)
     {
-        string mustBe = cond.IsPositive ? "MUST BE" : "MUST NOT BE";
-        string trait = GetTraitString(cond);
+        var args = new Dictionary<string, string>();
+        string templateKey = "";
 
+        // 1. Trait (Özellik) çeviri anahtarını al ve anında çevir
+        string traitKey = GetTraitKey(cond);
+        if (!string.IsNullOrEmpty(traitKey))
+        {
+            args.Add("Trait", LocalizationHelper.GetTranslatedText("UI_General", traitKey));
+        }
+
+        // 2. Enum durumuna göre doğru Şablon Key'ini ve sayısal argümanları ayarla
         switch (cond.TemplateType)
         {
             case ConditionTemplateType.SpecificSocketTrait:
-                return $"If this card is in the system, the card on SOCKET {cond.TargetSocket1 + 1} {mustBe} {trait}.";
+                templateKey = cond.IsPositive ? "cond_socket_pos" : "cond_socket_neg";
+                args.Add("Socket", (cond.TargetSocket1 + 1).ToString());
+                break;
 
             case ConditionTemplateType.GlobalTraitPresence:
-                return $"If this card is in the system, there {mustBe} a {trait} card present.";
+                templateKey = cond.IsPositive ? "cond_global_pos" : "cond_global_neg";
+                break;
 
             case ConditionTemplateType.RelativeDirectionTrait:
-                string dir1 = cond.Direction == RelativeDirection.Left ? "LEFT" : "RIGHT";
-                return $"If this card is in the system, the card to its {dir1} {mustBe} {trait}.";
+                templateKey = cond.IsPositive ? "cond_relative_pos" : "cond_relative_neg";
+                string dirKey = cond.Direction == RelativeDirection.Left ? "dir_left" : "dir_right";
+                args.Add("Dir", LocalizationHelper.GetTranslatedText("UI_General", dirKey));
+                break;
 
             case ConditionTemplateType.ForbiddenSockets:
-                return $"This card must NOT be placed on SOCKET {cond.TargetSocket1 + 1} or SOCKET {cond.TargetSocket2 + 1}.";
+                templateKey = "cond_forbidden";
+                args.Add("Socket1", (cond.TargetSocket1 + 1).ToString());
+                args.Add("Socket2", (cond.TargetSocket2 + 1).ToString());
+                break;
 
             case ConditionTemplateType.RelativeSharedCategory:
-                string dir2 = cond.Direction == RelativeDirection.Left ? "LEFT" : "RIGHT";
-                string category = GetCategoryString(cond.TargetCategory);
-                return $"If this card is in the system, it must share the same {category} with the card to its {dir2}.";
+                templateKey = "cond_shared_cat";
+                string dir2Key = cond.Direction == RelativeDirection.Left ? "dir_left" : "dir_right";
+                args.Add("Dir", LocalizationHelper.GetTranslatedText("UI_General", dir2Key));
+                string catKey = $"cat_{cond.TargetCategory.ToString().ToLower()}";
+                args.Add("Category", LocalizationHelper.GetTranslatedText("UI_General", catKey));
+                break;
 
             case ConditionTemplateType.ExactGlobalTraitCount:
-                string plural = cond.TargetCount > 1 ? "cards" : "card";
-                return $"If this card is in the system, there must be exactly {cond.TargetCount} {trait} {plural} present.";
-
-            default:
-                return "ERR_NO_DATA_FOUND";
+                templateKey = "cond_exact_count";
+                args.Add("Count", cond.TargetCount.ToString());
+                break;
         }
+
+        return (templateKey, args);
     }
 
-    private static string GetTraitString(ConditionData cond)
+    // Enum'ları Google Sheets'teki karşılık gelen Key'lere dönüştürür
+    private static string GetTraitKey(ConditionData cond)
     {
         switch (cond.TargetCategory)
         {
-            case PropertyCategory.Color: return cond.TargetColor.ToString().ToUpper();
+            case PropertyCategory.Color:
+                return cond.TargetColor.ToString();
             case PropertyCategory.Type:
-                if (cond.TargetType == CardType.Crack1) return "broken in the middle";
-                if (cond.TargetType == CardType.Crack2) return "broken edge";
-                if (cond.TargetType == CardType.Crack3) return "hole in the middle";
-                if (cond.TargetType == CardType.Crack4) return "hole on top";
-                return cond.TargetType.ToString().ToUpper();
-            case PropertyCategory.Detail: return cond.TargetDetail.ToString().ToUpper();
-            default: return "";
+                return $"trait_type_{cond.TargetType.ToString().ToLower()}";
+            case PropertyCategory.Detail:
+                return $"trait_detail_{cond.TargetDetail.ToString().ToLower()}";
+            default:
+                return "";
         }
-    }
-
-    private static string GetCategoryString(PropertyCategory category)
-    {
-        return category.ToString().ToUpper();
     }
 }

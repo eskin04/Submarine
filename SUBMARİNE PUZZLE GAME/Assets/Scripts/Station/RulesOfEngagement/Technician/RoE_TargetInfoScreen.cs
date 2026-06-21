@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.Localization;
+using System;
 
 public class RoE_TargetInfoScreen : MonoBehaviour
 {
@@ -9,6 +11,8 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     public TextMeshProUGUI distanceText;
     public TextMeshProUGUI cooldownText;
     public TextMeshProUGUI targetSpeedText;
+    private LocalizedString localizedFeedback = new LocalizedString { TableReference = "UI_General" };
+
 
     [Header("Managers")]
     public RoE_ThreatManager threatManager;
@@ -24,11 +28,21 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     void OnEnable()
     {
         technicianUI.OnLockStateChanged += OnLockStateChanged;
+        localizedFeedback.StringChanged += OnTranslatedText;
+        localizedFeedback.TableEntryReference = "NO TARGET";
+
     }
 
     void OnDisable()
     {
         technicianUI.OnLockStateChanged -= OnLockStateChanged;
+        localizedFeedback.StringChanged -= OnTranslatedText;
+
+    }
+
+    private void OnTranslatedText(string translatedText)
+    {
+        codeNameText.text = translatedText;
     }
 
     private void OnLockStateChanged()
@@ -96,7 +110,8 @@ public class RoE_TargetInfoScreen : MonoBehaviour
     {
         if (string.IsNullOrEmpty(newCode))
         {
-            codeNameText.text = "NO TARGET";
+            localizedFeedback.TableEntryReference = "NO TARGET";
+
             distanceText.text = "";
             cachedThreat = null;
             targetSpeedText.text = "";
@@ -109,7 +124,8 @@ public class RoE_TargetInfoScreen : MonoBehaviour
         }
         else
         {
-            codeNameText.text = newCode;
+            localizedFeedback.TableEntryReference = newCode;
+
             cachedThreat = threatManager.GetThreat(newCode);
             targetSpeedText.text = $"({cachedThreat.approachSpeed:F1} m/s)";
 

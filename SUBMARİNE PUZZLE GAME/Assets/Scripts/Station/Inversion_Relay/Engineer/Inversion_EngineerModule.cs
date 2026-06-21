@@ -1,5 +1,8 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings; // Dil takibi için eklendi
 
 public class Inversion_EngineerModule : MonoBehaviour
 {
@@ -8,11 +11,45 @@ public class Inversion_EngineerModule : MonoBehaviour
     public TextMeshProUGUI[] ruleTexts = new TextMeshProUGUI[5];
 
     [Header("Glitch Effect")]
-    [Tooltip("İbre Sweet Spot'tan ne kadar uzaksa bu değer o kadar artar (0 ile 1 arası)")]
     public float currentGlitchIntensity = 0f;
 
     private EngineerRule[] currentRules = new EngineerRule[5];
     private string glitchCharacters = "!@#$%^&*()_+{}|:<>?~";
+
+    private LocalizedString[] uiRuleStrings = new LocalizedString[5];
+
+    private void Awake()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            uiRuleStrings[i] = new LocalizedString();
+
+            int index = i;
+            uiRuleStrings[i].StringChanged += (translatedText) =>
+            {
+                if (ruleTexts[index] != null)
+                {
+                    ruleTexts[index].text = translatedText;
+                }
+            };
+        }
+
+        // Dil değişimini dinliyoruz
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDestroy()
+    {
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(Locale newLocale)
+    {
+        if (currentRules != null && currentRules.Length > 0)
+        {
+            UpdateRuleDisplay();
+        }
+    }
 
     public void SetupRules(EngineerRule[] rules)
     {
@@ -35,21 +72,37 @@ public class Inversion_EngineerModule : MonoBehaviour
         {
             if (ruleTexts[i] == null) continue;
 
+            string finalStateStr;
+
             if (currentRules[i].IsCorrupted)
             {
-                ruleTexts[i].text = $"Pipe {currentRules[i].Letter} -> <color=red>DATA CORRUPTED</color>";
+                string cleanText = LocalizationHelper.GetTranslatedText("UI_General", "inv_data_corrupted");
+
+                finalStateStr = $"<color=red>{cleanText}</color>";
             }
             else
             {
-                string targetStateStr = currentRules[i].TargetState.ToString();
+                string stateKey = $"inv_state_{currentRules[i].TargetState.ToString().ToLower()}";
+                string translatedState = LocalizationHelper.GetTranslatedText("UI_General", stateKey);
 
                 if (currentGlitchIntensity > 0f)
                 {
-                    targetStateStr = ScrambleString(targetStateStr, currentGlitchIntensity);
+                    translatedState = ScrambleString(translatedState, currentGlitchIntensity);
                 }
 
-                ruleTexts[i].text = $"Pipe {currentRules[i].Letter} -> {targetStateStr}";
+                finalStateStr = translatedState;
             }
+
+            var args = new Dictionary<string, string>
+            {
+                { "Letter", currentRules[i].Letter.ToString() },
+                { "State", finalStateStr }
+            };
+
+            uiRuleStrings[i].Arguments = new object[] { args };
+            uiRuleStrings[i].TableReference = "UI_General";
+            uiRuleStrings[i].TableEntryReference = "inv_pipe_rule";
+            uiRuleStrings[i].RefreshString();
         }
     }
 

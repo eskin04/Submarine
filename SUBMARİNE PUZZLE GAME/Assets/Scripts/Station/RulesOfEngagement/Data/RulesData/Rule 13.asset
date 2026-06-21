@@ -12,7 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a52325e7499d66d4cbbe91b10f47ca77, type: 3}
   m_Name: Rule 13
   m_EditorClassIdentifier: Assembly-CSharp::RoE_RuleData
-  ruleDescription: '{ACTION} if the object is slower than 4m/s AND is in the inner
-    radar.'
+  localizedRuleDescription:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 1845267714973721
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   logicType: 19
   innerRadarDistanceThreshold: 100
+  references:
+    version: 2
+    RefIds: []

@@ -2,6 +2,8 @@ using UnityEngine;
 using PurrNet;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.Localization;
+using System;
 
 public class LightsOut_Switch : NetworkBehaviour
 {
@@ -21,8 +23,25 @@ public class LightsOut_Switch : NetworkBehaviour
     public AudioEventChannelSO _channel;
     public FMODUnity.EventReference switchSound;
 
+    private LocalizedString localizedString = new LocalizedString { TableReference = "UI_General" };
+
     private bool isPressed = false;
 
+    void OnEnable()
+    {
+        localizedString.StringChanged += UpdateLabelText;
+    }
+
+    void OnDisable()
+    {
+        localizedString.StringChanged -= UpdateLabelText;
+    }
+
+    private void UpdateLabelText(string value)
+    {
+        labelText.text = value;
+
+    }
 
     public void Setup(WireColor color, WireColor fakeVisualColor)
     {
@@ -30,7 +49,8 @@ public class LightsOut_Switch : NetworkBehaviour
         isPressed = false;
         if (labelText)
         {
-            labelText.text = color.ToString();
+            localizedString.TableEntryReference = color.ToString();
+            localizedString.RefreshString();
             labelText.color = GetUnityColor(fakeVisualColor);
         }
 

@@ -34,6 +34,10 @@ public class RoE_PhysicalButton : MonoBehaviour
     public void SetInteractable(bool state)
     {
         isInteractable = state;
+        if (HighlightManager.Instance != null)
+        {
+            HighlightManager.Instance.SetInteractableState(transform.gameObject, state);
+        }
     }
 
 

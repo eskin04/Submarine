@@ -52,6 +52,7 @@ public class RadioShaderLightIndicator : MonoBehaviour
         if (runtimeMaterial == null) return;
 
         float targetIntensity = isReceiving ? maxLightIntensity : 0f;
+        float delay = isReceiving ? 0 : .5f;
         int colorIndex = isReceiving ? 1 : 0;
         runtimeMaterial.SetFloat(LightSelectionProp, colorIndex);
 
@@ -62,6 +63,6 @@ public class RadioShaderLightIndicator : MonoBehaviour
             currentIntensity = x;
             runtimeMaterial.SetFloat(IntensityProp, currentIntensity);
         }, targetIntensity, animationDuration)
-        .SetEase(isReceiving ? Ease.OutBack : Ease.InOutQuad);
+        .SetEase(isReceiving ? Ease.OutBack : Ease.InOutQuad).SetDelay(delay);
     }
 }

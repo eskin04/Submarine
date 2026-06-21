@@ -136,7 +136,7 @@ public class SSEngineerUIManager : MonoBehaviour
 
         if (legendText != null)
         {
-            legendText.text = "Reference: " + GetCoordinateString(refPoint);
+            legendText.text = GetCoordinateString(refPoint);
         }
 
         Vector2 containerCenter = new Vector2(nodeLayer.rect.width / 2f, nodeLayer.rect.height / 2f);

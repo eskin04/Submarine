@@ -3,6 +3,8 @@ using TMPro;
 using DG.Tweening;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using UnityEngine.Localization;
 
 public class SlotMachineFrontend : MonoBehaviour
 {
@@ -30,6 +32,9 @@ public class SlotMachineFrontend : MonoBehaviour
         }
     }
 
+    private LocalizedString uiResultString = new LocalizedString();
+
+
     private void OnEnable()
     {
         backend.OnBetChanged += UpdateBetUI;
@@ -37,6 +42,7 @@ public class SlotMachineFrontend : MonoBehaviour
         backend.OnWin += HandleWin;
         backend.OnPenalty += HandlePenalty;
         backend.OnLoss += HandleLoss;
+        uiResultString.StringChanged += OnTranslatedResultReady;
     }
 
     private void OnDisable()
@@ -46,6 +52,15 @@ public class SlotMachineFrontend : MonoBehaviour
         backend.OnWin -= HandleWin;
         backend.OnPenalty -= HandlePenalty;
         backend.OnLoss -= HandleLoss;
+        uiResultString.StringChanged -= OnTranslatedResultReady;
+    }
+
+    private void OnTranslatedResultReady(string translatedText)
+    {
+        if (resultText != null)
+        {
+            resultText.text = translatedText;
+        }
     }
 
     private void Start()
@@ -60,7 +75,7 @@ public class SlotMachineFrontend : MonoBehaviour
     }
     private void UpdateBetUI(int newBet)
     {
-        betText.text = $"Bet: {newBet}";
+        betText.text = newBet.ToString();
         betText.transform.DOPunchScale(Vector3.one * 0.2f, 0.2f, 10, 1f);
     }
 
@@ -132,7 +147,8 @@ public class SlotMachineFrontend : MonoBehaviour
     {
         Debug.Log($"Frontend: Kazandın! Miktar: {amount}");
 
-        ShowResultText($"-{amount} Water", Color.green);
+        var args = new Dictionary<string, string> { { "Amount", $"-{amount}" } };
+        ShowLocalizedResultText("slot_water_change", args, Color.green);
         IsInteractable = true;
     }
 
@@ -140,7 +156,8 @@ public class SlotMachineFrontend : MonoBehaviour
     {
         Debug.Log($"Frontend: Ceza! Miktar: {amount}");
 
-        ShowResultText($"+{amount} Water", Color.red);
+        var args = new Dictionary<string, string> { { "Amount", $"+{amount}" } };
+        ShowLocalizedResultText("slot_water_change", args, Color.red);
         IsInteractable = true;
     }
 
@@ -148,27 +165,44 @@ public class SlotMachineFrontend : MonoBehaviour
     {
         Debug.Log("Frontend: Kaybettin.");
 
-        ShowResultText("LOSS", Color.gray);
+        ShowLocalizedResultText("slot_loss", null, Color.gray);
         IsInteractable = true;
     }
 
-    private void ShowResultText(string message, Color color)
+    private void ShowLocalizedResultText(string key, Dictionary<string, string> args, Color color)
     {
-        if (resultText == null) return;
+        {
+            if (resultText == null) return;
 
-        resultText.DOKill();
-        resultText.text = message;
-        resultText.color = color;
+            resultText.DOKill();
+            resultText.color = color;
 
-        resultText.alpha = 1f;
-        resultText.transform.localScale = Vector3.zero;
+            // 1. Önce argümanları (varsa) sisteme yükle (Race condition önlemi)
+            if (args != null)
+            {
+                uiResultString.Arguments = new object[] { args };
+            }
+            else
+            {
+                uiResultString.Arguments = null; // Eski argümanları temizle
+            }
 
-        Sequence seq = DOTween.Sequence();
+            // 2. Şifreyi ver ve zorla yenile
+            // (Eğer farklı bir tablo kullanıyorsan "UI_Core" kısmını güncellemeyi unutma)
+            uiResultString.TableReference = "UI_General";
+            uiResultString.TableEntryReference = key;
+            uiResultString.RefreshString();
 
-        seq.Append(resultText.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+            resultText.alpha = 1f;
+            resultText.transform.localScale = Vector3.zero;
 
-        seq.AppendInterval(2f);
+            Sequence seq = DOTween.Sequence();
 
-        seq.Append(resultText.DOFade(0f, 1f));
+            seq.Append(resultText.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+
+            seq.AppendInterval(2f);
+
+            seq.Append(resultText.DOFade(0f, 1f));
+        }
     }
 }

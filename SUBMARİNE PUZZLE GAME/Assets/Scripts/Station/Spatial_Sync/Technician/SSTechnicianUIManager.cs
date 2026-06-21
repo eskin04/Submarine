@@ -164,7 +164,7 @@ public class SSTechnicianUIManager : MonoBehaviour
         }
     }
 
-    public void UpdateInputText(string input)
+    public void UpdateInputText(string input = "")
     {
         if (punchInputText == null) return;
 

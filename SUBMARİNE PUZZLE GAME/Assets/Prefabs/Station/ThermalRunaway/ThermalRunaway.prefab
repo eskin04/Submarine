@@ -263,6 +263,7 @@ GameObject:
   - component: {fileID: 4902485081018252763}
   - component: {fileID: 8553086464721595386}
   - component: {fileID: 4894069826804520784}
+  - component: {fileID: 3802743663049924361}
   m_Layer: 0
   m_Name: FrontText
   m_TagString: Untagged
@@ -433,6 +434,30 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 8553086464721595386}
   m_maskType: 0
+--- !u!114 &3802743663049924361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991418935917695877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 1974094042669056
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1184742610067640432
 GameObject:
   m_ObjectHideFlags: 0
@@ -844,6 +869,7 @@ GameObject:
   - component: {fileID: 2201295934853089515}
   - component: {fileID: 4863047813600249945}
   - component: {fileID: 8467743882270478137}
+  - component: {fileID: 4256987594906723507}
   m_Layer: 0
   m_Name: BackText
   m_TagString: Untagged
@@ -1014,6 +1040,30 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 4863047813600249945}
   m_maskType: 0
+--- !u!114 &4256987594906723507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4549711135064526665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 1974094042669057
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &5918431534289478131
 GameObject:
   m_ObjectHideFlags: 0

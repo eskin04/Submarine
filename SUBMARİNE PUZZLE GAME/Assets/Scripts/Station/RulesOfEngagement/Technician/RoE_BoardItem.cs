@@ -2,19 +2,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.Localization;
 
 public class RoE_BoardItem : MonoBehaviour
 {
     public Image objectImage;
     public TMP_Text objectName;
     public Image[] symbolSlots;
+    private LocalizedString uiLocalizeString = new LocalizedString();
+
+    void OnEnable()
+    {
+        uiLocalizeString.StringChanged += UpdateTranslatedName;
+    }
+
+    private void OnDestroy()
+    {
+        uiLocalizeString.StringChanged -= UpdateTranslatedName;
+    }
 
     public void Setup(RoE_ObjectData data, List<DecryptionSymbol> symbols)
     {
         if (data.polaroidImage)
             objectImage.sprite = data.polaroidImage;
 
-        objectName.text = data.objectName;
+
+        uiLocalizeString.TableReference = data.objectName.TableReference;
+        uiLocalizeString.TableEntryReference = data.objectName.TableEntryReference;
 
         for (int i = 0; i < symbolSlots.Length; i++)
         {
@@ -29,4 +43,14 @@ public class RoE_BoardItem : MonoBehaviour
             }
         }
     }
+
+    private void UpdateTranslatedName(string translatedText)
+    {
+        if (objectName != null)
+        {
+            objectName.text = translatedText;
+        }
+    }
+
+
 }
