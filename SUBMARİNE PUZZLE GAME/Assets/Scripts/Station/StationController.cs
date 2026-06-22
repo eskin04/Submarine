@@ -110,7 +110,7 @@ public class StationController : NetworkBehaviour
                 StopInteraction();
                 break;
             case StationState.Reparied:
-                SetInteractable(false);
+                StopInteraction();
                 break;
         }
     }
