@@ -223,8 +223,8 @@ public class InventoryManager : NetworkBehaviour
 
 
         RemoveCurrentItem();
-        SetItemSettings(extractedObj, false);
-        ObserversDropRpc(extractedObj);
+        SetExtractedItemSettings(extractedObj);
+        ObserversExtractRpc(extractedObj);
 
     }
 
@@ -526,6 +526,13 @@ public class InventoryManager : NetworkBehaviour
         SetItemSettings(itemObj, false);
     }
 
+    [ObserversRpc]
+    private void ObserversExtractRpc(GameObject itemObj)
+    {
+        if (itemObj == null) return;
+        SetExtractedItemSettings(itemObj);
+    }
+
 
 
 
@@ -556,6 +563,28 @@ public class InventoryManager : NetworkBehaviour
 
         var loot = itemObj.GetComponent<ItemLoot>();
         if (loot) loot.enabled = !isPickedUp;
+    }
+
+    private void SetExtractedItemSettings(GameObject itemObj)
+    {
+
+        var netTransform = itemObj.GetComponent<NetworkTransform>();
+        if (netTransform) netTransform.enabled = true;
+        if (!isOwner)
+            itemObj.SetActive(true);
+
+        var rb = itemObj.GetComponent<Rigidbody>();
+        if (rb)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+
+        var col = itemObj.GetComponent<Collider>();
+        if (col) col.enabled = true;
+
+        var loot = itemObj.GetComponent<ItemLoot>();
+        if (loot) loot.enabled = true;
     }
 
     private int GetFirstEmptySlot()

@@ -249,11 +249,19 @@ namespace StarterAssets
 		[ObserversRpc(runLocally: true)]
 		private void PlayFootstepSound()
 		{
-			AudioEventPayload payload = new AudioEventPayload(
-				_footstepSound,
-				transform.position
-			);
+			// 1. Sel yönetim sisteminden (FloodManager) su seviyesini (0-100) çekiyoruz.
+			// (Kendi yazdığın sel scriptindeki değişken veya fonksiyon adını buraya yazmalısın)
+			float currentFloodPercentage = GetCurrentWaterLevelPercentage();
 
+			// 2. Paketi oluştururken parametre adını ve değerini ekliyoruz.
+			// (Süslü parantez kullanarak değişkene atama yapıyoruz ki Constructor hatası vermesin)
+			AudioEventPayload payload = new AudioEventPayload(_footstepSound, transform.position)
+			{
+				ParameterName = "WaterLevel",
+				ParameterValue = currentFloodPercentage
+			};
+
+			// 3. Paketi kanala fırlatıyoruz
 			if (_sfxChannel != null)
 			{
 				_sfxChannel.RaiseEvent(payload);
@@ -262,6 +270,16 @@ namespace StarterAssets
 			{
 				Debug.LogWarning("[Audio] SFX_EventChannel atanmamış!");
 			}
+		}
+
+		private float GetCurrentWaterLevelPercentage()
+		{
+			InstanceHandler.TryGetInstance<FloodManager>(out FloodManager floodManager);
+			if (floodManager != null)
+			{
+				return floodManager.GetCurrentWaterLevel();
+			}
+			return 0f;
 		}
 
 		private void JumpAndGravity()

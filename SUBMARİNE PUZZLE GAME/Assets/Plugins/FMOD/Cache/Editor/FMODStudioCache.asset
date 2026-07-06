@@ -50,10 +50,11 @@ MonoBehaviour:
   IsStream: 0
   Is3D: 1
   IsOneShot: 1
-  Parameters: []
+  Parameters:
+  - {fileID: 8114267507107098947}
   MinDistance: 1
   MaxDistance: 20
-  Length: 600
+  Length: 0
 --- !u!114 &-7772726756496157327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,10 +179,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639170480155231816
+  lastModified: 639183524027224380
   FileSizes:
   - Name: Desktop
-    Value: 3300
+    Value: 3352
   Exists: 1
 --- !u!114 &-5510877157030363373
 MonoBehaviour:
@@ -765,7 +766,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639170498035724279
+  cacheTime: 639189023946026313
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -1093,7 +1094,7 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639170480155231816
+  lastModified: 639183524027204065
   FileSizes:
   - Name: Desktop
     Value: 2272
@@ -1248,10 +1249,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639170498035724279
+  lastModified: 639189023946026313
   FileSizes:
   - Name: Desktop
-    Value: 2903808
+    Value: 3042688
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:
@@ -1759,6 +1760,30 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2500
+--- !u!114 &8114267507107098947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/FootSteps/WaterLevel
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorParamRef
+  Name: WaterLevel
+  StudioPath: 
+  Min: 0
+  Max: 100
+  Default: 0
+  ID:
+    data1: 4218913090
+    data2: 1497167596
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &8146130566771494721
 MonoBehaviour:
   m_ObjectHideFlags: 0

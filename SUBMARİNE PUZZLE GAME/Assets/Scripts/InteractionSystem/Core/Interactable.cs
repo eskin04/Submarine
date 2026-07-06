@@ -11,6 +11,7 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private bool canDisableInteraction = true;
     [SerializeField] private UnityEvent onInteract;
     [SerializeField] private UnityEvent onStopInteract;
+    [SerializeField] private bool CanOutlined = true;
 
     private bool isInteracting = false;
 
@@ -18,6 +19,7 @@ public class Interactable : MonoBehaviour, IInteractable
 
     void Awake()
     {
+        if (!CanOutlined) return;
         outline = gameObject.AddComponent<Outline>();
         outline.OutlineMode = Outline.Mode.OutlineVisible;
         outline.OutlineColor = Color.yellow;
@@ -27,8 +29,11 @@ public class Interactable : MonoBehaviour, IInteractable
 
     void OnDestroy()
     {
-        outline.enabled = false;
-        Destroy(outline);
+        if (CanOutlined && outline != null)
+        {
+            outline.enabled = false;
+            Destroy(outline);
+        }
     }
     public string DisplayName => displayName;
 
@@ -54,12 +59,13 @@ public class Interactable : MonoBehaviour, IInteractable
 
     public void OnFocus()
     {
-        outline.enabled = true;
+        if (CanOutlined && outline != null)
+            outline.enabled = true;
     }
 
     public void OnLoseFocus()
     {
-        if (outline != null)
+        if (CanOutlined && outline != null)
             outline.enabled = false;
     }
 
