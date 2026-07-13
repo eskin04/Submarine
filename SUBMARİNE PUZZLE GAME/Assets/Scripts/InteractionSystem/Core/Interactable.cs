@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using System;
 
 public class Interactable : MonoBehaviour, IInteractable
 {
@@ -12,6 +13,7 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private UnityEvent onInteract;
     [SerializeField] private UnityEvent onStopInteract;
     [SerializeField] private bool CanOutlined = true;
+    public Func<bool> onInteractCondition;
 
     private bool isInteracting = false;
 
@@ -40,12 +42,26 @@ public class Interactable : MonoBehaviour, IInteractable
     public List<KeyCode> InteractKeys => interactKeys;
     public bool CanDisableInteraction() => canDisableInteraction;
 
-    public bool CanInteract() => isInteractable;
+    public bool CanInteract()
+    {
+        if (!isInteractable) return false;
+
+        if (onInteractCondition != null)
+        {
+            foreach (Func<bool> condition in onInteractCondition.GetInvocationList())
+            {
+                if (!condition.Invoke()) return false;
+            }
+        }
+
+        return true;
+    }
     public void SetInteractable(bool value) => isInteractable = value;
 
     public bool IsInteracting() => isInteracting;
     public void Interact()
     {
+        if (!CanInteract()) return;
         isInteracting = true;
         onInteract?.Invoke();
 

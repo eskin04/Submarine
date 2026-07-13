@@ -9,11 +9,13 @@ public class ItemLoot : NetworkBehaviour
     [SerializeField] private ItemData itemData;
 
     public ItemData Data => itemData;
+
+    public bool CanBeLooted = true;
     public bool isInElevator = false;
 
     public void LootItem()
     {
-
+        if (!CanBeLooted) return;
         OnLootAttempt?.Invoke(this);
 
     }

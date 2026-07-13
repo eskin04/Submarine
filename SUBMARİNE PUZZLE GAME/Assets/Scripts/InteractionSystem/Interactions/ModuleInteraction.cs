@@ -85,8 +85,28 @@ public class ModuleInteraction : MonoBehaviour
 
     public void Interact()
     {
+        if (this.isActiveAndEnabled == false) return;
+        if (playerCameraTransform == null)
+        {
+            if (PlayerInventory.LocalPlayerController != null)
+            {
+                // Değerleri PlayerInventory'den çekerek kendi atama fonksiyonumuzu zorla çalıştırıyoruz
+                HandlePlayerController(
+                    PlayerInventory.LocalPlayerController,
+                    PlayerInventory.LocalPlayerCamera,
+                    PlayerInventory.LocalInteractCamera
+                );
+                Debug.Log("<color=yellow>[MODULE]</color> Referanslar statik PlayerInventory üzerinden başarıyla çekildi.");
+            }
+            else
+            {
+                Debug.LogError("<color=red>[MODULE]</color> PlayerInventory statik referansları henüz dolmamış!");
+                return;
+            }
+        }
         if (playerCameraTransform != null)
         {
+            Debug.Log("etkileşime geçildi");
             InstanceHandler.GetInstance<MainGameView>().SetInteractionVisibility(false);
             playerController.enabled = false;
             SetInteractPosition();
@@ -102,6 +122,7 @@ public class ModuleInteraction : MonoBehaviour
                 HighlightManager.Instance.ActivateModuleHighlights(transform);
 
             }
+
         }
     }
 
@@ -126,11 +147,13 @@ public class ModuleInteraction : MonoBehaviour
             playerInteractCameraTransform.gameObject.SetActive(true);
             isInteracting = true;
         }
+        Debug.Log(isInteracting);
     }
 
 
     public void StopInteract()
     {
+        Debug.Log("etkileşimden çıkıldı");
         if (playerCameraTransform != null)
         {
             InstanceHandler.GetInstance<MainGameView>().SetInteractionVisibility(true);

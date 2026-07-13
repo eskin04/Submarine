@@ -41,6 +41,7 @@ public enum StatType
     BlackOut,
     EngineerLockDown,
     MagneticInterference,
+    HullBreach,
 
 
 

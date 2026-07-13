@@ -16,6 +16,9 @@ public class PlayerInventory : NetworkBehaviour
     public Transform DropPosition => dropPosition;
     public Transform InspectPosition => inspectPosition;
     public Transform InteractCameraTrans => interactCameraPosition;
+    public static FirstPersonController LocalPlayerController { get; private set; }
+    public static Transform LocalPlayerCamera { get; private set; }
+    public static Transform LocalInteractCamera { get; private set; }
 
 
 
@@ -28,11 +31,17 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (isOwner)
         {
+
             playerController = GetComponent<FirstPersonController>();
             OnAssignController?.Invoke(playerController, cameraPosition, interactCameraPosition);
+            LocalPlayerController = playerController;
+            LocalPlayerCamera = cameraPosition;
+            LocalInteractCamera = interactCameraPosition;
 
         }
     }
+
+
 
 
 }
