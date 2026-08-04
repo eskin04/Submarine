@@ -56,9 +56,10 @@ MonoBehaviour:
   maxWater: 100
   mainBaseFillRate: 0.2
   mainExtraFillRate: 0.25
-  mainBreakdownProfile: {fileID: 11400000, guid: 4c1d6d707ba0882408e53d9782e8b773, type: 2}
+  mainBreakdownProfile: {fileID: 11400000, guid: 2d5b5b4501f3f464a89588546a0602f7, type: 2}
   utilityFillRate: 0
   currentWater:
     _value: 0
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
+  fastBreakDelay: 8

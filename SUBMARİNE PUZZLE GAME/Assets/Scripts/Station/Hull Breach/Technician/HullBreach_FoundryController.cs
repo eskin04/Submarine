@@ -19,14 +19,15 @@ public class HullBreach_FoundryController : NetworkBehaviour
     [Header("Animation Settings")]
     public float animDuration = 0.4f;
     public Ease animEase = Ease.OutBack;
+    public float printDuration = 5f;
+
 
     [Header("Live State (SyncVars)")]
     public SyncVar<bool> isFoundryBusy = new SyncVar<bool>(false);
-    public SyncVar<bool> hasPlateInSlot = new SyncVar<bool>(false); // YENİ: Plaka yuvada mı?
+    public SyncVar<bool> hasPlateInSlot = new SyncVar<bool>(false);
 
     // Backend Timer
     private float printTimer = 0f;
-    private const float PRINT_DURATION = 5f;
     private PlateMaterial currentlyPrintingMaterial = PlateMaterial.None;
 
     private void Update()
@@ -47,7 +48,6 @@ public class HullBreach_FoundryController : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void CmdStartPrinting(PlateMaterial requestedMaterial)
     {
-        // İstasyon aktif değilse, makine meşgulse, slotta eşya varsa engelle
         if (!stationManager.isRoundActive.value || isFoundryBusy.value || hasPlateInSlot.value || requestedMaterial == PlateMaterial.None)
         {
             return;
@@ -55,7 +55,7 @@ public class HullBreach_FoundryController : NetworkBehaviour
 
         isFoundryBusy.value = true;
         currentlyPrintingMaterial = requestedMaterial;
-        printTimer = PRINT_DURATION;
+        printTimer = printDuration;
 
         RpcOnPrintStarted(requestedMaterial);
     }
@@ -72,16 +72,12 @@ public class HullBreach_FoundryController : NetworkBehaviour
             GameObject newPlateObj = Instantiate(prefabToSpawn, plateSlot.position, plateSlot.rotation);
             newPlateObj.transform.SetParent(plateSlot);
 
-            // ========================================================
-            // EVENT ABONELİĞİ (Parent'tan bağımsız referans kurgusu)
-            // ========================================================
+
             HullBreach_PlateItem plateScript = newPlateObj.GetComponent<HullBreach_PlateItem>();
             if (plateScript != null)
             {
-                // Plaka alındığında HandlePlateLooted fonksiyonumuzu tetiklemesini söylüyoruz
                 plateScript.OnPlateTakenServer += HandlePlateLooted;
             }
-            // ========================================================
 
             Rigidbody rb = newPlateObj.GetComponent<Rigidbody>();
             if (rb != null) rb.isKinematic = true;
@@ -89,7 +85,6 @@ public class HullBreach_FoundryController : NetworkBehaviour
             newPlateObj.transform.localScale = Vector3.zero;
             newPlateObj.transform.DOScale(Vector3.one, animDuration).SetEase(animEase);
 
-            // EĞER AĞDA DOĞURMAN GEREKİYORSA:
             // PurrNet.NetworkManager.Instantiate(newPlateObj); 
         }
 
@@ -99,11 +94,9 @@ public class HullBreach_FoundryController : NetworkBehaviour
 
     private void HandlePlateLooted(HullBreach_PlateItem takenPlate)
     {
-        // 1. İŞLEM: Memory Leak ve mantık hatalarını önlemek için aboneliği anında kaldır (-=)
         takenPlate.OnPlateTakenServer -= HandlePlateLooted;
         RpcOnPlateTaken();
 
-        // 2. İŞLEM: Makineyi yeni üretime aç
         hasPlateInSlot.value = false;
 
         Debug.Log($"<color=green>[FOUNDRY]</color> {takenPlate.gameObject.name} alındı, abonelik temizlendi ve makine üretime açıldı.");
@@ -121,29 +114,27 @@ public class HullBreach_FoundryController : NetworkBehaviour
     }
 
     // ==============================================================
-    // ENVARTER SİSTEMİ İLE BAĞLANTI (ITEM ALINDIĞINDA TETİKLENECEK)
+    // Inventory Interaction Callbacks
     // ==============================================================
 
-
-    // ==============================================================
 
     [ObserversRpc(runLocally: true)]
     private void RpcOnPrintStarted(PlateMaterial material)
     {
         OnInteractableStateChanged?.Invoke(false);
-        // Ses ve Animasyon başlangıcı
+        // Audio
     }
 
     [ObserversRpc(runLocally: true)]
     private void RpcOnPrintFinished(PlateMaterial material)
     {
-        // Bitiş sesi ve efektler
+
+        // Audio
     }
 
     [ObserversRpc(runLocally: true)]
     private void RpcOnPlateTaken()
     {
-        // Makine boşaldı, butonları tekrar etkileşime aç
         OnInteractableStateChanged?.Invoke(true);
     }
 }

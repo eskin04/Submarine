@@ -75,7 +75,7 @@ public class ConnectionStarter : MonoBehaviour
 
 
 
-    private async void DisconnectAndReturnToMainMenu()
+    private void DisconnectAndReturnToMainMenu()
     {
         RadioVoiceManager.Instance?.LeaveVoiceChannel();
 

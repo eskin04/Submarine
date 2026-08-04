@@ -11,7 +11,6 @@ public class PowerRoutingEngineerVisuals : MonoBehaviour
     [Header("3D Panel Text Meshes")]
     [SerializeField] private TextMeshPro[] _engDigitTexts;
     [SerializeField] private Color _normalTextColor = Color.white;
-    [SerializeField] private float _glowScale = 1.3f;
     [SerializeField] private float _animDuration = 0.2f;
 
     [Header("Light Controllers")]

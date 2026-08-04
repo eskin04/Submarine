@@ -3,9 +3,6 @@ using PurrNet;
 using System.Collections.Generic;
 using System.Linq;
 
-// ==========================================
-// VERİ TİPLERİ
-// ==========================================
 
 public enum PlateMaterial { None, Steel, Carbon, Titanium }
 public enum CrackZone { Left, Right, Front, Back }
@@ -21,19 +18,40 @@ public struct CrackData
     public CrackState state;
 }
 
+[System.Serializable]
+public struct StationPhaseConfig
+{
+    public string phaseName;
+    [Tooltip("Minimum su seviyesi (Dahil)")]
+    public float minWater;
+    [Tooltip("Maksimum su seviyesi (Hariç)")]
+    public float maxWater;
+    public int initialTechCracks;
+    public int initialEngCracks;
+    public float newCrackInterval;
+    public float crackLockDuration;
+    public float waterDrainage;
+}
+
 public class HullBreach_StationManager : NetworkBehaviour
 {
-    [Header("Station Settings (Inspector)")]
-    [SerializeField] private float damageTimerDuration = 85f; // Toplam süre
+    [Header("Station Settings")]
     [SerializeField] private float depthChangeInterval = 15f;
-    [SerializeField] private float waterLevelPenaltyPerCrack = 0.05f;
 
     [Header("Live State (SyncVars)")]
     public SyncVar<bool> isRoundActive = new SyncVar<bool>(false);
     public SyncVar<int> currentDepth = new SyncVar<int>(200);
 
-    public SyncVar<int> displayTimeRemaining = new SyncVar<int>(85);
-    public SyncVar<bool> isPermanentDamageTriggered = new SyncVar<bool>(false);
+    [Header("Phase Settings")]
+    [Tooltip("Tablodaki değerlere göre ayarlanmış başlangıç durumları")]
+    public List<StationPhaseConfig> phaseConfigs = new List<StationPhaseConfig>();
+    private StationPhaseConfig activePhaseConfig;
+
+    [Header("Dynamic Spawning System")]
+    public bool isSpawningEnabled = true;
+    public float waterPerCrack = 1.0f;
+    private float rollTimer = 0f;
+    private float cooldownTimer = 0f;
 
     [Header("Backend Data (Server Only)")]
     public List<CrackData> activeCracks = new List<CrackData>();
@@ -41,107 +59,111 @@ public class HullBreach_StationManager : NetworkBehaviour
     public List<HullBreach_CrackSocket> allSockets = new List<HullBreach_CrackSocket>();
     float randomZRotation = 0f;
 
-    // Timer takipleri
     private float nextDepthChangeTime;
-    private float nextCrackSpawnTime;
-    private float internalTimeRemaining;
 
-    // Sabit kat indeksleri (Kendi sistemine göre değiştirebilirsin)
-    private const int ENGINEER_FLOOR = 0;
-    private const int TECHNICIAN_FLOOR = 1;
+    private const int ENGINEER_FLOOR = 1;
+    private const int TECHNICIAN_FLOOR = 0;
     private const int MAX_FLOOR_COUNT = 2;
 
-    private void Awake()
-    {
-        randomZRotation = Random.Range(-30f, 30f);
-    }
 
     public void StartStation()
     {
+        randomZRotation = Random.Range(-30f, 30f);
+
         if (!isServer) return;
 
         if (isRoundActive.value) return;
 
-
         activeCracks.Clear();
         currentDepth.value = Random.Range(200, 601);
-
-        internalTimeRemaining = damageTimerDuration;
-        displayTimeRemaining.value = Mathf.CeilToInt(damageTimerDuration);
-        isPermanentDamageTriggered.value = false;
         isRoundActive.value = true;
+        rollTimer = 0f;
+        cooldownTimer = 0f;
+
+        DetermineActivePhase();
+
+        Debug.Log($"<color=orange>[SERVER]</color> Hull Breach İstasyonu Başlatıldı! Aktif Aşama: {activePhaseConfig.phaseName} | Başlangıç Derinliği: {currentDepth.value} m");
+
+        nextDepthChangeTime = Time.time + depthChangeInterval;
 
         SpawnInitialCracks();
 
-        nextCrackSpawnTime = Time.time + 15f;
+        SyncWithFloodManager();
+    }
 
-        nextDepthChangeTime = Time.time + depthChangeInterval;
+    private void DetermineActivePhase()
+    {
+        float currentWater = GetWaterLevel();
+        bool phaseFound = false;
+
+        foreach (var config in phaseConfigs)
+        {
+            if (currentWater >= config.minWater && currentWater < config.maxWater)
+            {
+                activePhaseConfig = config;
+                phaseFound = true;
+                break;
+            }
+        }
+
+        if (!phaseFound)
+        {
+            Debug.LogWarning("<color=yellow>[SERVER]</color> Su seviyesi hiçbir aralığa uymadı! İlk aşama ayarları kullanılıyor.");
+            if (phaseConfigs.Count > 0) activePhaseConfig = phaseConfigs[0];
+        }
     }
 
     private void Update()
     {
         if (!isServer || !isRoundActive.value) return;
 
-        HandleGlobalDamageTimer();
         HandleDepthTimer();
 
-        // 85 saniye dolmadıysa çatlak spawn etmeye devam et
-        if (!isPermanentDamageTriggered.value)
+        if (!isSpawningEnabled) return;
+
+        if (cooldownTimer > 0f)
         {
-            HandleCrackSpawnTimer();
+            cooldownTimer -= Time.deltaTime;
+            return;
+        }
+
+        HandlePhaseSpawning();
+    }
+
+    private void SyncWithFloodManager()
+    {
+        if (InstanceHandler.TryGetInstance<FloodManager>(out FloodManager floodManager))
+        {
+            int activeCount = activeCracks.Count(c => c.state == CrackState.Active);
+            int platedCount = activeCracks.Count(c => c.state == CrackState.Plated);
+
+            floodManager.UpdateHullBreachData(
+                isRoundActive.value,
+                activeCount,
+                platedCount,
+                waterPerCrack
+            );
         }
     }
 
+    // ==========================================
+    //  (NETWORK)
+    // ==========================================
+
     #region SERVER BACKEND LOGIC
+
+
+    [ServerRpc(requireOwnership: false)]
+    private void UpdateWaterLevelServerRpc(float fillAmount)
+    {
+        GlobalEvents.OnAddFloodPenalty?.Invoke(fillAmount);
+    }
 
     public void RegisterSocket(HullBreach_CrackSocket socket)
     {
         if (!allSockets.Contains(socket))
         {
             allSockets.Add(socket);
-        }
-    }
-
-    private void HandleGlobalDamageTimer()
-    {
-        if (isPermanentDamageTriggered.value) return;
-
-        internalTimeRemaining -= Time.deltaTime;
-
-        int secondsLeft = Mathf.CeilToInt(internalTimeRemaining);
-        if (secondsLeft != displayTimeRemaining.value)
-        {
-            displayTimeRemaining.value = secondsLeft;
-        }
-
-        if (internalTimeRemaining <= 0)
-        {
-            internalTimeRemaining = 0;
-            displayTimeRemaining.value = 0;
-            TriggerGlobalPermanentDamage();
-        }
-    }
-
-    private void TriggerGlobalPermanentDamage()
-    {
-        isPermanentDamageTriggered.value = true;
-        int unclosedCrackCount = 0;
-
-        for (int i = 0; i < activeCracks.Count; i++)
-        {
-            CrackData crack = activeCracks[i];
-            if (crack.state == CrackState.Active || crack.state == CrackState.Plated)
-            {
-                crack.state = CrackState.PermanentDamage;
-                activeCracks[i] = crack;
-                unclosedCrackCount++;
-            }
-        }
-
-        if (unclosedCrackCount > 0)
-        {
-            float totalPenalty = unclosedCrackCount * waterLevelPenaltyPerCrack;
-            Debug.LogWarning($"<color=red>[SERVER]</color> 85 Saniye doldu! {unclosedCrackCount} adet açık çatlak kalıcı hasara dönüştü. Toplam Su Artışı: %{totalPenalty * 100}");
         }
     }
 
@@ -154,17 +176,6 @@ public class HullBreach_StationManager : NetworkBehaviour
         }
     }
 
-    private void HandleCrackSpawnTimer()
-    {
-        if (Time.time >= nextCrackSpawnTime)
-        {
-            SpawnNewCrackRandomFloor();
-
-            // İlk dinamik çatlak 15. saniyede (Start'tan ayarlanmıştı), sonrakiler her 20 saniyede bir.
-            nextCrackSpawnTime = Time.time + 20f;
-        }
-    }
-
     private void ChangeDepthLogic()
     {
         int changeAmount = Random.Range(75, 151);
@@ -173,47 +184,65 @@ public class HullBreach_StationManager : NetworkBehaviour
         if (newDepth < 200) newDepth = 200;
 
         currentDepth.value = newDepth;
+        Debug.Log($"<color=orange>[SERVER]</color> Su derinliği değişti! Yeni Derinlik: {currentDepth.value} m");
     }
 
     #endregion
 
-    #region CRACK SPAWN ALGORITHM
+    #region DYNAMIC CRACK SPAWN ALGORITHM
+
+    private void HandlePhaseSpawning()
+    {
+        rollTimer += Time.deltaTime;
+
+        if (rollTimer >= activePhaseConfig.newCrackInterval)
+        {
+            int randomFloor = Random.Range(0, MAX_FLOOR_COUNT);
+            SpawnCrackAtFloor(randomFloor);
+
+            cooldownTimer = activePhaseConfig.crackLockDuration;
+            rollTimer = 0f;
+
+            Debug.Log($"<color=orange>[SERVER]</color> Zamanlayıcı doldu. {randomFloor}. katta yeni çatlak oluşturuldu! Sistem {cooldownTimer}s kilitlendi.");
+        }
+    }
+
+    private float GetWaterLevel()
+    {
+        if (InstanceHandler.TryGetInstance<FloodManager>(out FloodManager floodManager))
+        {
+            return floodManager.GetCurrentWaterLevel();
+        }
+
+        return 0f;
+    }
 
     private void SpawnInitialCracks()
     {
-        // 0. Saniye: Mühendis ve Teknisyen katında birer tane çatlak çıkar
-        SpawnCrackAtFloor(ENGINEER_FLOOR);
-        SpawnCrackAtFloor(TECHNICIAN_FLOOR);
+        for (int i = 0; i < activePhaseConfig.initialEngCracks; i++)
+        {
+            SpawnCrackAtFloor(ENGINEER_FLOOR);
+        }
+
+        for (int i = 0; i < activePhaseConfig.initialTechCracks; i++)
+        {
+            SpawnCrackAtFloor(TECHNICIAN_FLOOR);
+        }
     }
-
-    private void SpawnNewCrackRandomFloor()
-    {
-        // Rastgele bir kat seç
-        int randomFloor = Random.Range(0, MAX_FLOOR_COUNT);
-        SpawnCrackAtFloor(randomFloor);
-    }
-
-
 
     private void SpawnCrackAtFloor(int targetFloor)
     {
-        // 1. KURAL KONTROLÜ: O katta halihazırda aktif/kapanmamış çatlağı olan bölgeleri (Zone) bul
         var occupiedZones = activeCracks
             .Where(c => c.floorIndex == targetFloor && (c.state == CrackState.Active || c.state == CrackState.Plated))
             .Select(c => c.zone)
             .ToList();
 
-        // 2. FİLTRELEME: Sahnede kayıtlı tüm soketler (allSockets) içerisinden;
-        // - İstenilen katta olanları filtrele,
-        // - Bölgesinde halihazırda çatlak OLMAYANLARI filtrele,
-        // - YENİ KURAL: Geçmişte ÇATLAMIŞ (Active, Plated, Fixed, PermanentDamage fark etmeksizin) soketleri listeden ÇIKAR!
         var availableSockets = allSockets
             .Where(s => s.floorIndex == targetFloor &&
                         !occupiedZones.Contains(s.zone) &&
                         !activeCracks.Any(c => c.floorIndex == s.floorIndex && c.zone == s.zone && c.spawnPointIndex == s.spawnPointIndex))
             .ToList();
 
-        // 3. SEÇİM: Eğer kurallara uygun boş soket varsa, rastgele birini seç
         if (availableSockets.Count > 0)
         {
             HullBreach_CrackSocket chosenSocket = availableSockets[Random.Range(0, availableSockets.Count)];
@@ -227,7 +256,6 @@ public class HullBreach_StationManager : NetworkBehaviour
 
     private void ActivateCrackOnSocket(HullBreach_CrackSocket socket)
     {
-        // Seçilen soketin kimlik bilgilerini (Kat, Bölge, İndeks) alarak veriyi oluştur
         CrackData newCrack = new CrackData
         {
             crackID = nextCrackID++,
@@ -239,18 +267,16 @@ public class HullBreach_StationManager : NetworkBehaviour
 
         activeCracks.Add(newCrack);
 
-        // Sokete "Sen aktif oldun, suyunu akıtmaya başla" komutunu gönder
         socket.RpcActivateCrack(newCrack.crackID);
+        SyncWithFloodManager();
 
         Debug.Log($"<color=orange>[SERVER]</color> Yeni Çatlak Spawn Oldu! ID: {newCrack.crackID} | Kat: {socket.floorIndex} | Bölge: {socket.zone}");
     }
 
-
-
     #endregion
+
     #region PLATE PLACEMENT & DEPTH RULES
 
-    // İstemciden gelen plaka takma isteği
     [ServerRpc(requireOwnership: false)]
     public void CmdTryPlacePlate(int crackID, GameObject plateObj, HullBreach_CrackSocket socket, RPCInfo info = default)
     {
@@ -260,22 +286,18 @@ public class HullBreach_StationManager : NetworkBehaviour
         if (crackIndex == -1) return;
 
         CrackData crack = activeCracks[crackIndex];
-        if (crack.state != CrackState.Active) return; // Zaten kapanmışsa engelle
+        if (crack.state != CrackState.Active) return;
 
         HullBreach_PlateItem plateScript = plateObj.GetComponent<HullBreach_PlateItem>();
         if (plateScript == null) return;
 
-        // PDF Tablosuna göre doğruluk kontrolü (Bir önceki mesajdaki tablo fonksiyonu)
         if (IsPlateValidForCrack(crack.zone, plateScript.plateMaterial, currentDepth.value))
         {
-
-
-            // Plaka doğru! Durum kilitlendi, artık derinlik değişse de sorun yok.
             crack.state = CrackState.Plated;
             activeCracks[crackIndex] = crack;
 
-            // Sokete plakayı görsel olarak yerleştirmesini söyle
             socket.RpcPlacePlateInSocket(plateObj, randomZRotation);
+            SyncWithFloodManager();
 
             Debug.Log($"<color=green>[SERVER]</color> {plateScript.plateMaterial} plakası başarıyla yerleştirildi.");
         }
@@ -283,20 +305,14 @@ public class HullBreach_StationManager : NetworkBehaviour
         {
             Debug.LogWarning($"<color=orange>[SERVER]</color> Hatalı plaka denemesi!");
             TargetShowWarning(info.sender, "Wrong Plate!");
-            // İsteğe bağlı hata sesi
         }
     }
 
     [TargetRpc]
     public void TargetShowWarning(PlayerID target, string message)
     {
-        // Bu kod bloğu ARTIK SADECE "target" olarak belirlenen oyuncunun kendi bilgisayarında çalışır!
-
         InstanceHandler.GetInstance<GameViewManager>().ShowView<ModuleInfoView>(hideOthers: false);
         InstanceHandler.GetInstance<ModuleInfoView>().SetWarningText(message);
-
-        // TODO: Eğer ileride bir hata sesi ("Buzzer") ekleyeceksen onu da buraya koymalısın
-        // ki sesi sadece hatayı yapan kişi duysun.
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -309,48 +325,41 @@ public class HullBreach_StationManager : NetworkBehaviour
 
         CrackData crack = activeCracks[crackIndex];
 
-        // Sadece Plated durumundakiler tamir edilebilir
         if (crack.state != CrackState.Plated) return;
 
-        // Durumu "Fixed" (Tamir Edildi) olarak güncelle
         crack.state = CrackState.Fixed;
         activeCracks[crackIndex] = crack;
 
         Debug.Log($"<color=green>[SERVER]</color> Çatlak ID {crackID} tamamen kaynaklandı ve onarıldı!");
 
-        // İstemcilere onarıldığını bildir (Görsel efektler, sesler vs. için)
         RpcOnCrackFixed(crackID);
+        SyncWithFloodManager();
+
+        UpdateWaterLevelServerRpc(-activePhaseConfig.waterDrainage);
+
+        bool hasActiveThreats = activeCracks.Any(c => c.state == CrackState.Active || c.state == CrackState.Plated);
+
+        if (!hasActiveThreats)
+        {
+            cooldownTimer = activePhaseConfig.crackLockDuration;
+            rollTimer = 0f;
+
+        }
     }
 
     [ObserversRpc]
     private void RpcOnCrackFixed(int crackID)
     {
-        // Çatlağın soketini bul
         HullBreach_CrackSocket socket = allSockets.FirstOrDefault(s => s.currentCrackID == crackID);
         if (socket != null)
         {
-            // Plaka artık sökülemez hale gelir, üzerindeki WeldPoint collider'ları kapatılabilir
             Collider[] colliders = socket.GetComponentsInChildren<Collider>();
             foreach (var col in colliders)
             {
                 col.enabled = false;
             }
             socket.RpcOnCrackFixed();
-            // TODO: "Başarılı Tamir" sesi ve partikülü eklenebilir
         }
-    }
-
-    // Oyuncu takılı ama kaynaklanmamış plakayı geri almak isterse
-    public void ServerSetCrackActive(int crackID)
-    {
-        int crackIndex = activeCracks.FindIndex(c => c.crackID == crackID);
-        if (crackIndex == -1) return;
-
-        CrackData crack = activeCracks[crackIndex];
-        crack.state = CrackState.Active;
-        activeCracks[crackIndex] = crack;
-
-        Debug.Log($"<color=yellow>[SERVER]</color> Çatlak ID {crackID} üzerindeki plaka söküldü, su tekrar akıyor.");
     }
 
     private bool IsPlateValidForCrack(CrackZone zone, PlateMaterial material, int depth)
@@ -358,19 +367,16 @@ public class HullBreach_StationManager : NetworkBehaviour
         bool isUclar = (zone == CrackZone.Front || zone == CrackZone.Back);
         bool isYanlar = (zone == CrackZone.Left || zone == CrackZone.Right);
 
-        // Derinlik 200m - 400m
         if (depth >= 200 && depth <= 400)
         {
             if (isUclar && material == PlateMaterial.Carbon) return true;
             if (isYanlar && material == PlateMaterial.Steel) return true;
         }
-        // Derinlik 401m - 650m
         else if (depth >= 401 && depth <= 650)
         {
             if (isUclar && material == PlateMaterial.Titanium) return true;
             if (isYanlar && material == PlateMaterial.Carbon) return true;
         }
-        // Derinlik 651m - 800m
         else if (depth >= 651 && depth <= 800)
         {
             if (isUclar && material == PlateMaterial.Steel) return true;
@@ -380,11 +386,7 @@ public class HullBreach_StationManager : NetworkBehaviour
         return false;
     }
 
-
-
     #endregion
-
-
 
     #region CONTEXT MENU TESTS (EDITOR)
 
@@ -392,6 +394,13 @@ public class HullBreach_StationManager : NetworkBehaviour
     public void Test_StartRound()
     {
         StartStation();
+    }
+
+    [ContextMenu("TEST: Spawn Crack")]
+    public void Test_SpawnCrack()
+    {
+        int randomFloor = Random.Range(0, MAX_FLOOR_COUNT);
+        SpawnCrackAtFloor(randomFloor);
     }
 
     #endregion

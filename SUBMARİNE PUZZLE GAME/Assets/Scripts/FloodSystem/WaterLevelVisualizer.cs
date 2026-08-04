@@ -10,12 +10,24 @@ public class WaterLevelVisualizer : MonoBehaviour
 
     [Header("Animation Settings")]
     public float smoothSpeed = 2.0f;
+    public GameObject waterMesh;
 
     private float targetY;
+
+    private void Awake()
+    {
+        transform.localPosition = new Vector3(transform.localPosition.x, minHeight, transform.localPosition.z);
+        waterMesh.SetActive(false);
+    }
 
     private void Update()
     {
         float currentWaterLevel = GetWaterLevel();
+        if (currentWaterLevel <= 0f) return;
+        if (!waterMesh.activeSelf)
+        {
+            waterMesh.SetActive(true);
+        }
 
         targetY = Mathf.Lerp(minHeight, maxHeight, currentWaterLevel / 100f);
 
@@ -24,6 +36,8 @@ public class WaterLevelVisualizer : MonoBehaviour
 
         transform.localPosition = newPos;
     }
+
+
 
     private float GetWaterLevel()
     {

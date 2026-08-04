@@ -61,14 +61,14 @@ public class GameLoader : MonoBehaviour
 
         if (levelData.levelID == 1)
         {
-            // bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
-            bool hasSignedContract = false;
+            bool hasSignedContract = PlayerPrefs.GetInt("ContractSigned", 0) == 1;
 
             if (!showContractOnlyOnce || !hasSignedContract)
             {
                 Debug.Log($"[GameLoader] Herkes hazır! Level 1 ilk kez oynanıyor, {ContractScene} yükleniyor...");
 
                 SceneManager.LoadSceneAsync(ContractScene);
+                PlayerPrefs.SetInt("ContractSigned", 1);
                 yield break;
             }
         }

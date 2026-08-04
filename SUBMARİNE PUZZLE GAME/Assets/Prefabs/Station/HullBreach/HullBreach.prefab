@@ -321,7 +321,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -657,7 +657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -1252,7 +1252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -1520,7 +1520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -1764,7 +1764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -1875,7 +1875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7362635379184487690}
   - component: {fileID: 306370315381536657}
-  - component: {fileID: 3892595155250951932}
+  - component: {fileID: 3928254660544265651}
   m_Layer: 0
   m_Name: HullBreach
   m_TagString: Untagged
@@ -1896,6 +1896,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1761445770075510311}
   - {fileID: 686245201352907717}
   - {fileID: 838390521852416567}
   - {fileID: 7378479342343228536}
@@ -1922,9 +1923,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  damageTimerDuration: 85
   depthChangeInterval: 15
-  waterLevelPenaltyPerCrack: 0.05
   isRoundActive:
     _value: 0
     _ownerAuth: 0
@@ -1933,14 +1932,49 @@ MonoBehaviour:
     _value: 200
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
-  displayTimeRemaining:
-    _value: 85
-    _ownerAuth: 0
-    _sendIntervalInSeconds: 0
-  isPermanentDamageTriggered:
-    _value: 0
-    _ownerAuth: 0
-    _sendIntervalInSeconds: 0
+  phaseConfigs:
+  - phaseName: 
+    minWater: 0
+    maxWater: 30
+    initialTechCracks: 1
+    initialEngCracks: 1
+    newCrackInterval: 20
+    crackLockDuration: 5
+    waterDrainage: 3
+  - phaseName: 
+    minWater: 30
+    maxWater: 40
+    initialTechCracks: 2
+    initialEngCracks: 2
+    newCrackInterval: 55
+    crackLockDuration: 20
+    waterDrainage: 8
+  - phaseName: 
+    minWater: 40
+    maxWater: 50
+    initialTechCracks: 1
+    initialEngCracks: 1
+    newCrackInterval: 45
+    crackLockDuration: 15
+    waterDrainage: 5
+  - phaseName: 
+    minWater: 50
+    maxWater: 60
+    initialTechCracks: 2
+    initialEngCracks: 1
+    newCrackInterval: 55
+    crackLockDuration: 20
+    waterDrainage: 7
+  - phaseName: 
+    minWater: 60
+    maxWater: 100
+    initialTechCracks: 0
+    initialEngCracks: 1
+    newCrackInterval: 10
+    crackLockDuration: 10
+    waterDrainage: 10
+  isSpawningEnabled: 1
+  waterPerCrack: 0.05
   activeCracks: []
   allSockets:
   - {fileID: 8586798530375122556}
@@ -1967,7 +2001,7 @@ MonoBehaviour:
   - {fileID: 4026769932434181812}
   - {fileID: 3518026631394756225}
   - {fileID: 5277771647525263551}
---- !u!114 &3892595155250951932
+--- !u!114 &3928254660544265651
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1988,9 +2022,9 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  utilityEventData: {fileID: 11400000, guid: 9f3a8848a391d664ab5e235c285c41c5, type: 2}
-  stationName: HullBreach
-  stationType: 0
+  utilityEventData: {fileID: 0}
+  stationName: Hull Breach
+  stationType: 1
   stationTier: 0
   mistakeWaterPenalty: 10
   waterPenaltyMultiplierPerMistake: 1.15
@@ -2172,7 +2206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -2690,7 +2724,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -3133,7 +3167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -3594,7 +3628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -4263,7 +4297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -4871,7 +4905,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -5318,7 +5352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HullBreach_MapManager
   stationManager: {fileID: 306370315381536657}
-  timerText: {fileID: 5370331293278883830}
+  depthText: {fileID: 5370331293278883830}
 --- !u!1 &3120347735782034428
 GameObject:
   m_ObjectHideFlags: 0
@@ -5469,7 +5503,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -5624,7 +5658,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -5854,7 +5888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -6105,7 +6139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -6420,7 +6454,7 @@ GameObject:
   - component: {fileID: 6411608698096454145}
   - component: {fileID: 5370331293278883830}
   m_Layer: 0
-  m_Name: TimerText
+  m_Name: DepthText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6688,6 +6722,7 @@ MonoBehaviour:
   titaniumPlatePrefab: {fileID: 4692588936148994930, guid: d986c9f06da7de647b9b6fe57705eda1, type: 3}
   animDuration: 0.4
   animEase: 27
+  printDuration: 3
   isFoundryBusy:
     _value: 0
     _ownerAuth: 0
@@ -6921,7 +6956,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -7256,7 +7291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -7753,7 +7788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -9106,7 +9141,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -9657,7 +9692,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -9887,7 +9922,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -10132,7 +10167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -10362,7 +10397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -11330,7 +11365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModuleInteraction
   animDuration: 0.5
   animEase: 4
-  initialPositionOffset: {x: 0, y: 0, z: 0.7}
+  initialPositionOffset: {x: 0, y: 0, z: 0.6}
   initialRotationOffset: {x: 0, y: 180, z: 0}
   isUnlockCursor: 1
   isMoveable: 0
@@ -11431,3 +11466,73 @@ MonoBehaviour:
   warningIcon: {fileID: 4652232149973718803}
   normalColor: {r: 0.2, g: 0.2, b: 0.2, a: 0}
   warningColor: {r: 1, g: 0, b: 0, a: 0.5058824}
+--- !u!1001 &1034383254624031860
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7362635379184487690}
+    m_Modifications:
+    - target: {fileID: 614397104042713442, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_Name
+      value: DrillItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.753
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4271181763725560699, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5965729571245389903, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+      propertyPath: restLocalPosition.z
+      value: -0.35
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+--- !u!4 &1761445770075510311 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1597431578492748371, guid: 8ec550090feee2040a93582dd400de59, type: 3}
+  m_PrefabInstance: {fileID: 1034383254624031860}
+  m_PrefabAsset: {fileID: 0}

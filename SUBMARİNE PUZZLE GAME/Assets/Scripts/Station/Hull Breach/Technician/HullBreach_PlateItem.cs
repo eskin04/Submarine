@@ -8,7 +8,6 @@ public class HullBreach_PlateItem : NetworkBehaviour, IInventoryItem
     [Header("Settings")]
     public PlateMaterial plateMaterial;
 
-    // Dökümhane (Foundry) makinesine "Ben alındım" demek için kullandığımız event
     public Action<HullBreach_PlateItem> OnPlateTakenServer;
 
     private ItemLoot myLoot;
@@ -29,9 +28,7 @@ public class HullBreach_PlateItem : NetworkBehaviour, IInventoryItem
         ItemLoot.OnLootAttempt -= HandleLootAttempt;
     }
 
-    // ==========================================
-    // DÖKÜMHANE KONTROLÜ (LOOT)
-    // ==========================================
+
     private void HandleLootAttempt(ItemLoot attemptedLoot)
     {
         if (attemptedLoot != myLoot || isLooted) return;
@@ -46,12 +43,9 @@ public class HullBreach_PlateItem : NetworkBehaviour, IInventoryItem
         OnPlateTakenServer?.Invoke(this);
     }
 
-    // ==========================================
-    // IINVENTORYITEM IMPLEMENTASYONU
-    // ==========================================
+
     public void OnEquip()
     {
-        // İsteğe bağlı: Oyuncu plakayı eline aldığında ekranda çıkacak prompt
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
         {
             // promptView.AddPrompt("plate_info", "Çatlağa Yerleştir");

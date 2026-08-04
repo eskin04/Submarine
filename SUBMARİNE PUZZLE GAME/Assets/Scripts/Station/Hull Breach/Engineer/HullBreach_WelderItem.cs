@@ -8,8 +8,8 @@ public class HullBreach_WelderItem : NetworkBehaviour, IInventoryItem
     public KeyCode operateKey = KeyCode.Mouse0;
 
     [Header("Effects (Local)")]
-    public ParticleSystem weldSparks; // Ucundan çıkacak kıvılcım
-                                      // TODO: FMOD Kaynak sesi referansı eklenebilir
+    public ParticleSystem weldSparks;
+    // TODO: FMOD Kaynak sesi referansı eklenebilir
 
     private bool isEquipped = false;
     private bool canOperate = true;
@@ -50,7 +50,6 @@ public class HullBreach_WelderItem : NetworkBehaviour, IInventoryItem
 
     private void Update()
     {
-        // Sadece eşyayı tutan kişi ve aktifse çalışır
         if (!isEquipped || !canOperate || !isOwner) return;
 
         if (Input.GetKey(operateKey))
@@ -68,19 +67,14 @@ public class HullBreach_WelderItem : NetworkBehaviour, IInventoryItem
         Camera mainCam = Camera.main;
         if (mainCam == null) return;
 
-        // Görsel efektleri başlat
         if (weldSparks != null && !weldSparks.isPlaying) weldSparks.Play();
-        // TODO: FMOD Kaynak sesini başlat/devam ettir
 
-        // Ekranın ortasından Raycast at
         Ray ray = new Ray(mainCam.transform.position, mainCam.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, weldRange))
         {
-            // Çarptığımız objede WeldPoint var mı?
             HullBreach_WeldPoint point = hit.collider.GetComponent<HullBreach_WeldPoint>();
             if (point != null)
             {
-                // Saniyede Time.deltaTime kadar ilerleme kaydettir
                 point.ApplyWeld(Time.deltaTime);
             }
         }
@@ -89,6 +83,5 @@ public class HullBreach_WelderItem : NetworkBehaviour, IInventoryItem
     private void StopWeldingEffects()
     {
         if (weldSparks != null && weldSparks.isPlaying) weldSparks.Stop();
-        // TODO: FMOD Kaynak sesini durdur
     }
 }

@@ -26,6 +26,12 @@ public class FloodManager : NetworkBehaviour
     private bool isFastBreakActive = false;
     private float fastBreakTime = 0f;
 
+    [Header("Hull Breach Data")]
+    private bool isHullBreachActive = false;
+    private int activeCrackCount = 0;
+    private int platedCrackCount = 0;
+    private float waterPerCrack = 0f;
+
     // private bool criticalEventTriggered = false;
 
     private Queue<StationController> pendingMainStations = new Queue<StationController>();
@@ -64,6 +70,14 @@ public class FloodManager : NetworkBehaviour
         GlobalEvents.OnStationStatusChanged -= HandleStationStatusChanged;
         currentWater.onChanged -= OnWaterChanged;
 
+    }
+
+    public void UpdateHullBreachData(bool isActive, int activeCracks, int platedCracks, float ratePerCrack)
+    {
+        isHullBreachActive = isActive;
+        activeCrackCount = activeCracks;
+        platedCrackCount = platedCracks;
+        waterPerCrack = ratePerCrack;
     }
 
     public float GetCurrentWaterLevel()
@@ -255,6 +269,12 @@ public class FloodManager : NetworkBehaviour
         if (brokenUtilityCount > 0)
         {
             totalFillRate += brokenUtilityCount * utilityFillRate;
+        }
+
+        if (isHullBreachActive)
+        {
+            // Tamamen açık çatlaklar tam değerde su alırken, plaka takılı olanlar yarı yarıya su alır
+            totalFillRate += (activeCrackCount * waterPerCrack) + (platedCrackCount * (waterPerCrack / 2f));
         }
 
         if (totalFillRate > 0)

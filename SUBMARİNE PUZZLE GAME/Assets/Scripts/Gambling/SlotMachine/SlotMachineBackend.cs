@@ -24,7 +24,6 @@ public struct SymbolConfig
 public class SlotMachineBackend : NetworkBehaviour
 {
     public event Action OnSpinStarted;
-    public event Action<AlchemicalSymbol[]> OnSpinCompleted;
     public event Action<AlchemicalSymbol[]> OnSpinCalculated;
     public event Action<int, bool> OnWin;
     public event Action<int, bool> OnPenalty;

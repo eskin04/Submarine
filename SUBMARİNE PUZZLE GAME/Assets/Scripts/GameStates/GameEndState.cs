@@ -8,14 +8,14 @@ using UnityEngine.SceneManagement;
 public class GameEndState : StateNode<ushort>
 {
     [PurrScene] public string NextScene;
-
+    private int currentLevelID;
 
     public override void Enter(ushort isWin, bool asServer)
     {
         base.Enter(isWin, asServer);
         if (!asServer) return;
         Debug.Log($"Showing Game End View. Win: {isWin}");
-
+        LevelManager.OnCurrentLevelData += (levelID) => currentLevelID = levelID;
         machine.StartCoroutine(StartAgain(isWin));
 
     }
@@ -33,6 +33,7 @@ public class GameEndState : StateNode<ushort>
         HideGameEndView();
         if (isWin == 1)
         {
+            SaveManager.UnlockLevel(currentLevelID + 1);
             networkManager.sceneModule.LoadSceneAsync(NextScene);
         }
         else
@@ -73,6 +74,7 @@ public class GameEndState : StateNode<ushort>
     {
         base.Exit(asServer);
         if (!asServer) return;
+        LevelManager.OnCurrentLevelData -= (levelID) => currentLevelID = levelID;
     }
 
 }

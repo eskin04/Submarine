@@ -49,8 +49,8 @@ public class LevelUIManager : MonoBehaviour
     {
         if (!lobbyManager.CurrentLobby.IsValid) return;
 
-        // int unlockedLevelID = SaveManager.GetMaxUnlockedLevelID();
-        int unlockedLevelID = 11;
+        int unlockedLevelID = SaveManager.GetMaxUnlockedLevelID();
+        // int unlockedLevelID = 11;
         bool isHost = lobbyManager.CurrentLobby.IsOwner;
 
         foreach (var btn in allLevelButtons)

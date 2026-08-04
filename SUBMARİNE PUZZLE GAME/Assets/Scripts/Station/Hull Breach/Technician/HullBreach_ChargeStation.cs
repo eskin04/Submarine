@@ -1,14 +1,14 @@
 using UnityEngine;
 using PurrNet;
-using UnityEngine.UI; // Slider için eklendi
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(Collider))]
 public class HullBreach_ChargeStation : NetworkBehaviour
 {
     [Header("Station Settings")]
-    public float chargeRate = 10f; // Saniyede %10
-    public Transform stationDrillSlot; // Matkabın istasyonda oturacağı pivot noktası
+    public float chargeRate = 10f;
+    public Transform stationDrillSlot;
 
     [Header("UI Visuals")]
     public Slider stationChargeBar;
@@ -34,7 +34,6 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         interactable = GetComponent<Interactable>();
         stationCollider = GetComponent<Collider>();
 
-        // Shader materyalini kopyala
         if (lightRenderer != null) runtimeLightMaterial = lightRenderer.materials[0];
 
         if (stationChargeBar != null)
@@ -48,38 +47,31 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         UpdateStationState();
     }
 
-    // ==========================================
-    // ŞARJ VE ÇEKİLME KONTROLÜ (Sadece Sunucu)
-    // ==========================================
+
     private void Update()
     {
         if (!isServer) return;
 
         if (slottedDrill != null)
         {
-            // OYUNCU MATKABI GERİ ALDI MI? (Keycard mantığı ile parent kontrolü)
             if (slottedDrill.transform.parent != stationDrillSlot || !slottedDrill.gameObject.activeSelf)
             {
                 ServerHandleDrillRemoved();
             }
             else
             {
-                // ŞARJ DOLUM MANTIĞI
                 if (slottedDrill.currentCharge < 100f)
                 {
                     slottedDrill.currentCharge += chargeRate * Time.deltaTime;
                     if (slottedDrill.currentCharge > 100f) slottedDrill.currentCharge = 100f;
 
-                    // Görselleri herkese bildir
                     RpcUpdateChargeVisuals(slottedDrill.currentCharge);
                 }
             }
         }
     }
 
-    // ==========================================
-    // ETKİLEŞİM (Interactable'ın OnInteract Eventi)
-    // ==========================================
+
     public void HandleInteraction()
     {
         if (slottedDrill == null)
@@ -99,7 +91,7 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         HullBreach_DrillItem drill = heldObj.GetComponent<HullBreach_DrillItem>();
         if (drill != null)
         {
-            inv.ExtractCurrentHeldItem(); // Matkabı elden çıkar
+            inv.ExtractCurrentHeldItem();
             interactable.StopInteract();
             CmdPlaceDrillInStation(drill.gameObject);
         }
@@ -111,9 +103,7 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         RpcClearStation();
     }
 
-    // ==========================================
-    // AĞ (NETWORK) GÖRSEL SENKRONİZASYONU
-    // ==========================================
+
     [ServerRpc(requireOwnership: false)]
     private void CmdPlaceDrillInStation(GameObject drillObj)
     {
@@ -128,8 +118,8 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         // Matkabı yuvaya oturt
         drillObj.transform.SetParent(stationDrillSlot);
         drillObj.transform.localPosition = Vector3.zero;
-        drillObj.transform.localRotation = Quaternion.identity; // Veya istasyonun pivotuna göre ayarla
-        drillObj.GetComponent<Collider>().enabled = true; // Oyuncu tekrar lootlayabilsin diye açık bırakıyoruz
+        drillObj.transform.localRotation = Quaternion.identity;
+        drillObj.GetComponent<Collider>().enabled = true;
         drillObj.SetActive(true);
 
         Rigidbody rb = drillObj.GetComponent<Rigidbody>();
@@ -145,35 +135,31 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         UpdateStationState();
     }
 
-    // Şarj değerini slider'lara ve matkaba iletir
     [ObserversRpc]
     private void RpcUpdateChargeVisuals(float charge)
     {
         if (slottedDrill != null)
         {
             slottedDrill.currentCharge = charge;
-            slottedDrill.UpdateDrillVisuals(); // Matkabın kendi ekranı
+            slottedDrill.UpdateDrillVisuals();
         }
 
         if (stationChargeBar != null)
         {
-            stationChargeBar.value = charge; // İstasyonun ekranı
+            stationChargeBar.value = charge;
         }
 
-        // Şarj 100 olunca yeşil ışığı yak
         SetLightState(charge >= 100f);
     }
 
-    // ==========================================
-    // DURUM VE IŞIK KONTROLLERİ
-    // ==========================================
+
     private void UpdateStationState()
     {
         if (interactable == null || stationCollider == null) return;
 
         if (slottedDrill != null)
         {
-            interactable.SetInteractable(false); // İstasyonun kendi tıklamasını kapat
+            interactable.SetInteractable(false);
             stationCollider.enabled = false;
 
             if (stationChargeBar != null) stationChargeBar.value = slottedDrill.currentCharge;
@@ -181,7 +167,7 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         }
         else
         {
-            interactable.SetInteractable(true); // İstasyon matkap bekliyor
+            interactable.SetInteractable(true);
             stationCollider.enabled = true;
 
             if (stationChargeBar != null) stationChargeBar.value = 0f;
@@ -189,22 +175,21 @@ public class HullBreach_ChargeStation : NetworkBehaviour
         }
     }
 
-    // LightsOut sisteminden uyarlanan Shader kontrolü
     private void SetLightState(bool isFull)
     {
         if (runtimeLightMaterial == null) return;
 
-        int index = isFull ? 2 : 0; // 2 = Yeşil, 0 = Kapalı
+        int index = isFull ? 2 : 0;
 
-        runtimeLightMaterial.SetFloat(LightSelectionProp, index); // Renk seçimi
+        runtimeLightMaterial.SetFloat(LightSelectionProp, index);
 
         if (lastColorIndex == 0 && index != 0)
         {
-            runtimeLightMaterial.SetFloat(IntensityProp, lightIntensity); // Işığı aç
+            runtimeLightMaterial.SetFloat(IntensityProp, lightIntensity);
         }
         else if (lastColorIndex != 0 && index == 0)
         {
-            runtimeLightMaterial.SetFloat(IntensityProp, 0.0f); // Işığı kapat
+            runtimeLightMaterial.SetFloat(IntensityProp, 0.0f);
         }
 
         lastColorIndex = index;

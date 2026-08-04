@@ -203,7 +203,7 @@ MonoBehaviour:
   interactionRange: 3.5
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 528
 --- !u!114 &3508419941885557654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,9 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0ae01f59acf8b48b235f032115978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraLayerController
-  interactCameraLayer:
-    serializedVersion: 2
-    m_Bits: 8
   ignoreNormalCameraLayer:
     serializedVersion: 2
     m_Bits: 64
