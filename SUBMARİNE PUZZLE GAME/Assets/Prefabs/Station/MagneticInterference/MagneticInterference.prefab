@@ -2519,6 +2519,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &6882722354163194569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5088,6 +5089,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &1207092452861897940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5141,7 +5143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Magnetic_EngineerUI
   stationManager: {fileID: 5526515232851420677}
-  symbolDatabase: {fileID: 11400000, guid: 61e761880f27f52479b15e331c6556db, type: 2}
+  unknownSymbolSprite: {fileID: 21300000, guid: c6b55e7c0dfc91d409f7a16acf4d51ab, type: 3}
   channelIndicatorText: {fileID: 3345264285201140431}
   channelButtons:
   - {fileID: 4482058126901173294}
@@ -6306,7 +6308,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3868317796890989537}
-  - {fileID: 8490672207471797448}
   - {fileID: 6812491529572192205}
   m_Father: {fileID: 8109460549850589889}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -6909,6 +6910,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8490672207471797448}
   - {fileID: 3990300820112393834}
   m_Father: {fileID: 8109460549850589889}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -8736,6 +8738,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &612918896530951367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12153,15 +12156,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7334433371646510620}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -4.258, y: 1.099, z: 2.858}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.003, y: -0.039, z: 0.028}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 271016662936680068}
   - {fileID: 1517181200843106728}
-  m_Father: {fileID: 4038370563563118855}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_Father: {fileID: 6394987705307917550}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3667328823206165060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12196,6 +12199,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &4011718165777927027
 MonoBehaviour:
   m_ObjectHideFlags: 0

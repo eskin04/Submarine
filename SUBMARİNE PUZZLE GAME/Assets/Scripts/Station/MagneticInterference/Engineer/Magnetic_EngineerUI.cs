@@ -6,7 +6,7 @@ public class Magnetic_EngineerUI : MonoBehaviour
 {
     [Header("References")]
     public Magnetic_StationManager stationManager;
-    public Magnetic_SymbolDatabase symbolDatabase;
+    public Sprite unknownSymbolSprite;
 
     [Header("Channel Navigation")]
     public TextMeshProUGUI channelIndicatorText;
@@ -101,8 +101,15 @@ public class Magnetic_EngineerUI : MonoBehaviour
             if (string.IsNullOrEmpty(leftStr)) leftEquationText.gameObject.SetActive(false);
             else { leftEquationText.gameObject.SetActive(true); leftEquationText.text = leftStr; }
 
-            int symbolId = int.Parse(eqStr.Substring(sIndex + 1, 1));
-            if (symbolDatabase != null) { symbolImage.sprite = symbolDatabase.GetSymbol(symbolId); symbolImage.gameObject.SetActive(true); }
+            if (unknownSymbolSprite != null)
+            {
+                symbolImage.sprite = unknownSymbolSprite;
+                symbolImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                symbolImage.gameObject.SetActive(false);
+            }
 
             string rightStr = eqStr.Substring(sIndex + 2).Trim();
             if (string.IsNullOrEmpty(rightStr)) rightEquationText.gameObject.SetActive(false);
@@ -132,7 +139,7 @@ public class Magnetic_EngineerUI : MonoBehaviour
         }
         else
         {
-            currentVariableText.text = $"{varNames[channelIndex]} = ?";
+            currentVariableText.text = $"{varNames[channelIndex]} = _";
         }
     }
 

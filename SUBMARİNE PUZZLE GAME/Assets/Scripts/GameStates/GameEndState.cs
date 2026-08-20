@@ -15,7 +15,7 @@ public class GameEndState : StateNode<ushort>
         base.Enter(isWin, asServer);
         if (!asServer) return;
         Debug.Log($"Showing Game End View. Win: {isWin}");
-        LevelManager.OnCurrentLevelData += (levelID) => currentLevelID = levelID;
+        currentLevelID = InstanceHandler.GetInstance<LevelManager>().GetCurrentLevelID();
         machine.StartCoroutine(StartAgain(isWin));
 
     }

@@ -29,6 +29,7 @@ public class LevelManager : NetworkBehaviour
         MainGameState.startGame += StartLevel;
         OnCurrentLevelData?.Invoke(currentLevelData.levelID);
         InstanceHandler.GetInstance<LevelView>()?.SetLevelText(currentLevelData.levelID);
+        InstanceHandler.RegisterInstance(this);
     }
 
     protected override void OnDestroy()
@@ -36,6 +37,12 @@ public class LevelManager : NetworkBehaviour
         base.OnDestroy();
         GlobalEvents.OnRegisterMainStation -= RegisterMainStation;
         MainGameState.startGame -= StartLevel;
+        InstanceHandler.UnregisterInstance<LevelManager>();
+    }
+
+    public int GetCurrentLevelID()
+    {
+        return currentLevelData.levelID;
     }
 
     private void RegisterMainStation(StationController station)

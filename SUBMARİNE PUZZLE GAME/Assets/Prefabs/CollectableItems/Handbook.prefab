@@ -98,18 +98,23 @@ MonoBehaviour:
   hingeFront: {fileID: 6452512180816826633}
   hingeBack: {fileID: 5880341172338476865}
   bookPages:
-  - {fileID: 21300000, guid: 10f7d1e740f13cf41a85a336542920db, type: 3}
-  - {fileID: 21300000, guid: ddc2d5b5429673741857ee82940c2e64, type: 3}
-  - {fileID: 21300000, guid: 0cd656de36d35764da23de3c47472b0a, type: 3}
-  - {fileID: 21300000, guid: 34ac5c0116ac7a643b548cf66952789b, type: 3}
-  - {fileID: 21300000, guid: 972a5618395700144b9f71ba8c4b789c, type: 3}
-  - {fileID: 21300000, guid: 3a9d8bd85d75dba4e96ea203e408d0f1, type: 3}
-  - {fileID: 21300000, guid: 9eafaf690ce51734cbabe2b624b19795, type: 3}
-  - {fileID: 21300000, guid: 571aa9e731d90b2438f04195f9c230ca, type: 3}
-  - {fileID: 21300000, guid: 45bce87cba763024fbf120c36f6e766e, type: 3}
-  - {fileID: 21300000, guid: e25e47a926b8fae4192047c1c3c75402, type: 3}
-  - {fileID: 21300000, guid: 4baf515622c9d2248b8253621d824d39, type: 3}
-  emptyPageBackground: {fileID: 21300000, guid: e25e47a926b8fae4192047c1c3c75402, type: 3}
+  - {fileID: 21300000, guid: d6eb46c04abfa134484c0d1f60bf15db, type: 3}
+  - {fileID: 21300000, guid: 1b2afc29e26f8954886e6c194db8a74a, type: 3}
+  - {fileID: 21300000, guid: 839dd4ecbda68e84593dd103b3fe97cd, type: 3}
+  - {fileID: 21300000, guid: 73264c18edf3b4148b67c992e85167aa, type: 3}
+  - {fileID: 21300000, guid: d35050b7e9ad410499e10bddcc83ae06, type: 3}
+  - {fileID: 21300000, guid: 65d729bd09154ca478a5616390f5dbcc, type: 3}
+  - {fileID: 21300000, guid: 338597e8a0372ea4a9bd74ec2389533b, type: 3}
+  - {fileID: 21300000, guid: 999dab2acdf4d7a48b3e52876792e761, type: 3}
+  - {fileID: 21300000, guid: 6dfdccd1f1edc5243a1e09bfddd5917c, type: 3}
+  - {fileID: 21300000, guid: 0b62a8de2e5229749a4447e9dd2ea2b5, type: 3}
+  - {fileID: 21300000, guid: 42be624f1ff8b4d42bc3193a6f0dfebf, type: 3}
+  - {fileID: 21300000, guid: bed6270db6d0c6d43896b45266467f46, type: 3}
+  - {fileID: 21300000, guid: b09439e5ba1918f4a894ef0626a95e7f, type: 3}
+  - {fileID: 21300000, guid: 6aba696853f7fa94eba70dfa19412525, type: 3}
+  - {fileID: 21300000, guid: facca0a7771ebe84eade4083c9ff089d, type: 3}
+  - {fileID: 21300000, guid: 5b3640e0cd9e65647b0d74d30f8c742e, type: 3}
+  emptyPageBackground: {fileID: 21300000, guid: d6eb46c04abfa134484c0d1f60bf15db, type: 3}
   flipDuration: 0.5
   flipEase: 7
   _channel: {fileID: 11400000, guid: cf867b55a14c051469f69415e3f8bf82, type: 2}
@@ -529,6 +534,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &8811113067314086387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -551,6 +557,8 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   itemData: {fileID: 11400000, guid: 901628f5a87162740a70456ac201800e, type: 2}
+  CanBeLooted: 1
+  isInElevator: 0
 --- !u!114 &5251773642579499778
 MonoBehaviour:
   m_ObjectHideFlags: 0

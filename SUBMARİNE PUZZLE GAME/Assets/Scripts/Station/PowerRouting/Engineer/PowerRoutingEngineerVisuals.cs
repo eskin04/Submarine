@@ -86,7 +86,7 @@ public class PowerRoutingEngineerVisuals : MonoBehaviour
             if (_engineerLights[i] != null) _engineerLights[i].TurnOff();
             if (_engDigitTexts[i] != null)
             {
-                _engDigitTexts[i].transform.DOKill(); // Devam eden animasyonları kes
+                _engDigitTexts[i].transform.DOKill();
                 _engDigitTexts[i].transform.localScale = Vector3.one;
                 _engDigitTexts[i].color = _normalTextColor;
             }
@@ -107,15 +107,14 @@ public class PowerRoutingEngineerVisuals : MonoBehaviour
                 {
                     _isDigitRevealed[i] = true;
                     _engDigitTexts[i].text = _currentEngDigits[i].ToString();
-                    _engDigitTexts[i].transform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5, 1f);
-                }
-                else
-                {
-                    Color glowColor = GetTextColorFromEnum(_currentLightSequence[i]);
 
-                    _engDigitTexts[i].DOColor(glowColor, _animDuration);
-                    _engDigitTexts[i].transform.DOPunchScale(Vector3.one * 0.35f, 0.4f, 6, 1f);
                 }
+
+                Color glowColor = GetTextColorFromEnum(_currentLightSequence[i]);
+
+                _engDigitTexts[i].DOColor(glowColor, _animDuration);
+                _engDigitTexts[i].transform.DOPunchScale(Vector3.one * 0.35f, 0.4f, 6, 1f);
+
 
                 yield return new WaitForSeconds(1.0f);
 
