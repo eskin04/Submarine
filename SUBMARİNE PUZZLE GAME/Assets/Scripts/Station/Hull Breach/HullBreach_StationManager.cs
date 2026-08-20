@@ -37,7 +37,8 @@ public class HullBreach_StationManager : NetworkBehaviour
 {
     [Header("Station Settings")]
     [SerializeField] private float depthChangeInterval = 15f;
-
+    [SerializeField] private float depthChangeRangeStart = 75f;
+    [SerializeField] private float depthChangeRangeEnd = 150f;
     [Header("Live State (SyncVars)")]
     public SyncVar<bool> isRoundActive = new SyncVar<bool>(false);
     public SyncVar<int> currentDepth = new SyncVar<int>(200);
@@ -178,7 +179,8 @@ public class HullBreach_StationManager : NetworkBehaviour
 
     private void ChangeDepthLogic()
     {
-        int changeAmount = Random.Range(75, 151);
+        int changeAmount = Random.Range((int)depthChangeRangeStart, (int)depthChangeRangeEnd + 1);
+        Debug.Log("min: " + depthChangeRangeStart + " max: " + depthChangeRangeEnd + " changeAmount: " + changeAmount);
         int newDepth = currentDepth.value + changeAmount;
         if (newDepth > 800) newDepth = currentDepth.value - changeAmount;
         if (newDepth < 200) newDepth = 200;
