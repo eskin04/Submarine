@@ -66,6 +66,7 @@ public class PlayerSpawningState : StateNode
 
     private void SpawnPlayerSimple()
     {
+        Debug.Log($"[PlayerSpawningState] Spawning players for {networkManager.playerCount} players.");
         var dataHolder = FindFirstObjectByType<LobbyDataHolder>();
 
         if (dataHolder == null || !dataHolder.CurrentLobby.IsValid)
@@ -76,6 +77,7 @@ public class PlayerSpawningState : StateNode
 
         if (networkManager.playerCount > 0)
         {
+            Debug.Log($"Spawning player {networkManager.players[0]} with role {dataHolder.CurrentLobby.Members[0].Role}");
             PlayerRole hostRole = dataHolder.CurrentLobby.Members[0].Role;
             SpawnByRole(networkManager.players[0], hostRole);
 

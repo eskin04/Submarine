@@ -10,7 +10,7 @@ public class Interactable : MonoBehaviour, IInteractable
     [SerializeField] private List<KeyCode> interactKeys = new List<KeyCode>() { KeyCode.E };
     [SerializeField] private bool isInteractable = true;
     [SerializeField] private bool canDisableInteraction = true;
-    [SerializeField] private UnityEvent onInteract;
+    public UnityEvent onInteract;
     [SerializeField] private UnityEvent onStopInteract;
     [SerializeField] private bool CanOutlined = true;
     public Func<bool> onInteractCondition;

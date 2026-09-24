@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24910d8333badb14095580b60dbbfe38, type: 3}
+  m_Name: Quest4_RadioTalk
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
+  questIndex: 4
+  questTitle: Chit Chat!
+  introSubtitles:
+  - "Now that you know how to communicate with items, it\u2019s time for you to learn
+    communicating with your voice. "
+  - Use your radio to talk with your companion!
+  megaphoneAudio:
+    Guid:
+      Data1: 1371045947
+      Data2: 1114636803
+      Data3: 18896282
+      Data4: 801922506
+    Path: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
+  technicianTasks:
+  - taskDescription: Hold [Q] to transmit signal
+    actionType: 14
+    requiredAmount: 5
+    isHiddenInitially: 0
+    revealsAfter: 0
+  - taskDescription: Listen to Engineer's reply
+    actionType: 15
+    requiredAmount: 5
+    isHiddenInitially: 1
+    revealsAfter: 14
+  engineerTasks:
+  - taskDescription: Listen to Technician's transmission
+    actionType: 15
+    requiredAmount: 5
+    isHiddenInitially: 0
+    revealsAfter: 0
+  - taskDescription: Hold [Q] to reply
+    actionType: 14
+    requiredAmount: 5
+    isHiddenInitially: 1
+    revealsAfter: 15
+  waitingForTechnicianText: Waiting for Technician
+  waitingForEngineerText: Waiting for Engineer

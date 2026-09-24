@@ -52,7 +52,7 @@ public class LoadingScreenManager : MonoBehaviour
     public void HideLoadingScreen()
     {
         if (!isShowing) return;
-
+        Debug.Log("Hiding Loading Screen");
         progressSlider.DOKill();
 
         progressSlider.DOValue(1f, 0.5f).SetUpdate(true)

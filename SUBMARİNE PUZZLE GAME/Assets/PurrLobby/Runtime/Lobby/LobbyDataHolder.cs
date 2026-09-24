@@ -17,7 +17,6 @@ namespace PurrLobby
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-            Application.targetFrameRate = 60;
         }
     }
 }

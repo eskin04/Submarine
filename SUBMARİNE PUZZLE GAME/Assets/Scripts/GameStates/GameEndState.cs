@@ -15,7 +15,14 @@ public class GameEndState : StateNode<ushort>
         base.Enter(isWin, asServer);
         if (!asServer) return;
         Debug.Log($"Showing Game End View. Win: {isWin}");
-        currentLevelID = InstanceHandler.GetInstance<LevelManager>().GetCurrentLevelID();
+        if (InstanceHandler.TryGetInstance(out LevelManager levelManager))
+        {
+            currentLevelID = levelManager.GetCurrentLevelID();
+        }
+        else
+        {
+            Debug.LogWarning("LevelManager instance not found. Cannot get current level ID.");
+        }
         machine.StartCoroutine(StartAgain(isWin));
 
     }

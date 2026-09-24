@@ -14,6 +14,7 @@ public class LevelView : View
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
+        localizedLevelText.Arguments = new object[] { new { LevelNumber = 1 } };
         localizedLevelText.StringChanged += OnTranslatedLevelText;
     }
 

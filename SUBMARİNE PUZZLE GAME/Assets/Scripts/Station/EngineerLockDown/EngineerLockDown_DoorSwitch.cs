@@ -1,7 +1,8 @@
 using UnityEngine;
 using DG.Tweening;
 using FMODUnity;
-
+using PurrNet;
+using PurrLobby;
 public class EngineerLockDown_DoorSwitch : MonoBehaviour
 {
     [Header("References")]
@@ -18,6 +19,10 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
     [SerializeField] private AudioEventChannelSO _channel;
     [SerializeField] private EventReference _switchSound;
 
+    [Header("Interaction Indicator")]
+    public InteractionIndicator leverIndicator;
+    private Interactable interactableComponent;
+
     private Vector3 originalRotation;
     private bool isAnimating = false;
 
@@ -25,6 +30,28 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
     {
         if (switchHandle != null)
             originalRotation = switchHandle.localEulerAngles;
+        interactableComponent = GetComponent<Interactable>();
+    }
+
+    private void OnEnable()
+    {
+        TutorialInputManager.OnEngineerLeverInteractStateChanged += HandleLeverInteractState;
+    }
+
+    private void OnDisable()
+    {
+        TutorialInputManager.OnEngineerLeverInteractStateChanged -= HandleLeverInteractState;
+    }
+
+    private void HandleLeverInteractState(bool isInteractable)
+    {
+        if (interactableComponent != null)
+        {
+            interactableComponent.SetInteractable(isInteractable);
+        }
+
+        if (isInteractable) leverIndicator?.Show();
+        else leverIndicator?.Hide();
     }
 
 
@@ -39,6 +66,16 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
         if (switchHandle != null)
         {
             isAnimating = true;
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+            {
+                leverIndicator?.Hide();
+                view.OnActionPerformed(TutorialAction.OpenDoorLever);
+
+                if (TutorialInputManager.Instance != null && PlayerStats.LocalInstance != null)
+                {
+                    TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)PlayerRole.Engineer, (int)TutorialAction.WaitDoorOpen);
+                }
+            }
             Vector3 targetRotation = new Vector3(pulledRotation.x, originalRotation.y, originalRotation.z);
             switchHandle.DOLocalRotate(targetRotation, pullAnimTime).OnComplete(() =>
             {

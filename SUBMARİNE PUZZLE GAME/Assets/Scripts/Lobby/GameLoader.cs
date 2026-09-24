@@ -56,6 +56,8 @@ public class GameLoader : MonoBehaviour
     private IEnumerator LoadLevelWithContract(LevelData levelData)
     {
         lobbyManager.SetLobbyStarted();
+
+        Debug.Log($"[GameLoader] All players are ready! Loading level {levelData.levelID} ({levelData.CurrentScene})...");
         LoadingScreenManager.Instance?.ShowLoadingScreen();
         yield return new WaitForSeconds(.6f);
 

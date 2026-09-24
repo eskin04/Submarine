@@ -14,12 +14,26 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
     public static event System.Action<float> OnEngineerDoorRequested;
     public StationController stationController;
 
+    [Header("Tutorial Settings")]
+    public InteractionIndicator overrideStationIndicator;
+
     [Header("Override State (SyncVars)")]
     [SerializeField] private SyncVar<EngineerLockDownStationState> overrideState = new SyncVar<EngineerLockDownStationState>(EngineerLockDownStationState.Idle);
     [SerializeField] public SyncVar<int> currentOverrideStep = new SyncVar<int>(0);
 
     [Header("Generated Data")]
     public List<EngineerLockDownStepData> overrideSteps = new List<EngineerLockDownStepData>();
+
+    private void OnEnable() => TutorialQuestView.OnTaskUnlockedLocal += HandleTaskUnlocked;
+    private void OnDisable() => TutorialQuestView.OnTaskUnlockedLocal -= HandleTaskUnlocked;
+
+    private void HandleTaskUnlocked(TutorialAction action)
+    {
+        if (action == TutorialAction.FixOverrideStation)
+        {
+            overrideStationIndicator?.Show();
+        }
+    }
 
     [ContextMenu("1. START OVERRIDE EVENT (TEST)")]
     public void StartOverrideEvent()
@@ -77,6 +91,8 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
                 RpcOverrideStateChanged(overrideState.value);
                 RpcOverrideSolved();
                 RequestEngineerDoorOpenRPC();
+                TutorialSolved();
+
             }
         }
         else
@@ -87,6 +103,16 @@ public class EngineerLockDown_StationManager : NetworkBehaviour
 
             RpcSyncOverrideData(overrideSteps.ToArray());
             RpcTriggerOverrideFailed();
+        }
+    }
+
+    [ObserversRpc]
+    private void TutorialSolved()
+    {
+        overrideStationIndicator?.Hide();
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.FixOverrideStation);
         }
     }
 

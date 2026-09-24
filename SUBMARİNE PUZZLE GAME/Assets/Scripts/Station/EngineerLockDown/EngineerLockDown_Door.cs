@@ -20,6 +20,7 @@ public class EngineerLockDown_Door : NetworkBehaviour
     [SerializeField] private EventReference _doorCloseSound;
 
 
+
     private Vector3 closedPos;
     private Tween currentTween;
     private bool isDoorOpen = true;
@@ -29,7 +30,7 @@ public class EngineerLockDown_Door : NetworkBehaviour
         if (doorPanel != null)
         {
             closedPos = doorPanel.localPosition;
-            doorPanel.localPosition = closedPos + openOffset;
+            // doorPanel.localPosition = closedPos + openOffset;
         }
 
     }

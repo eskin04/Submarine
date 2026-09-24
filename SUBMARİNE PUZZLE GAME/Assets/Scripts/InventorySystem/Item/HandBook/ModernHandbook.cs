@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using FMODUnity;
+using PurrNet;
 
 public class ModernHandbook : MonoBehaviour
 {
@@ -44,10 +45,20 @@ public class ModernHandbook : MonoBehaviour
         if (scroll < 0 && currentPageIndex < bookPages.Length - 2)
         {
             FlipRightToLeft();
+            TriggerPageTurnTask();
         }
         else if (scroll > 0 && currentPageIndex > 0)
         {
             FlipLeftToRight();
+            TriggerPageTurnTask();
+        }
+    }
+
+    private void TriggerPageTurnTask()
+    {
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.TurnManualPage);
         }
     }
 

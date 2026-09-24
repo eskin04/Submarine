@@ -18,6 +18,7 @@ public class WaitForPlayersState : StateNode
         {
             readyPlayers.Clear();
             readyPlayers.Add(networkManager.localPlayer);
+            Debug.Log($"[WaitForPlayersState] Server is ready. Waiting for players... {readyPlayers.Count}/{minPlayersToStart} ready.");
 
             machine.StartCoroutine(WaitForPlayers());
         }
@@ -35,6 +36,7 @@ public class WaitForPlayersState : StateNode
 
     private IEnumerator WaitForPlayers()
     {
+        yield return new WaitForSeconds(2f);
         if (isServer)
         {
             RpcShowLoadingScreen();
@@ -45,9 +47,9 @@ public class WaitForPlayersState : StateNode
             yield return new WaitForSeconds(0.5f);
         }
 
+
         if (isServer)
         {
-            Debug.Log("Hiding Loading Screen");
             RpcHideLoadingScreen();
         }
 
@@ -66,7 +68,6 @@ public class WaitForPlayersState : StateNode
     [ObserversRpc]
     private void RpcHideLoadingScreen()
     {
-        Debug.Log("RpcHideLoadingScreen called");
         if (LoadingScreenManager.Instance != null)
         {
             LoadingScreenManager.Instance.HideLoadingScreen();

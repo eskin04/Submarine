@@ -189,6 +189,10 @@ public class InventoryManager : NetworkBehaviour
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (scroll != 0f)
             {
+                if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                {
+                    view.OnActionPerformed(TutorialAction.CycleInventory);
+                }
                 int nextSlot = currentSlotIndex;
 
                 if (scroll > 0f)
@@ -234,6 +238,7 @@ public class InventoryManager : NetworkBehaviour
 
     private void HandleStartingItems()
     {
+        if (TutorialManager.Instance != null) return;
 
         if (handbookPrefab != null)
         {
@@ -371,6 +376,13 @@ public class InventoryManager : NetworkBehaviour
             {
                 LiftManager.OnItemInElevator(false);
                 lootComponent.isInElevator = false;
+                if (isOwner)
+                {
+                    if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                    {
+                        view.OnActionPerformed(TutorialAction.PickUpItem);
+                    }
+                }
             }
             if (lootComponent)
             {
@@ -471,6 +483,10 @@ public class InventoryManager : NetworkBehaviour
 
 
             DropServerRpc(container.PhysicalObject, liftTransform.gameObject, worldPos, Quaternion.identity);
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+            {
+                view.OnActionPerformed(TutorialAction.UseElevator);
+            }
         }
     }
 

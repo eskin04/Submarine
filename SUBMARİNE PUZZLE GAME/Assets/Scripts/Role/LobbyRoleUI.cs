@@ -6,7 +6,8 @@ using System.Collections.Generic;
 public class LobbyRoleUI : MonoBehaviour
 {
     [Header("Ayarlar")]
-    public Texture2D defaultAvatar;
+    public Texture2D engDefaultAvatar;
+    public Texture2D techDefaultAvatar;
 
     [Header("Mühendis (Engineer) UI")]
     public Button btnEngineer;
@@ -71,12 +72,12 @@ public class LobbyRoleUI : MonoBehaviour
     private void ResetUI()
     {
         btnEngineer.interactable = true;
-        imgEngineerAvatar.texture = defaultAvatar;
+        imgEngineerAvatar.texture = engDefaultAvatar;
         SetImageAlpha(imgEngineerAvatar, 0.5f);
         if (imgEngineerTaken) imgEngineerTaken.SetActive(false);
 
         btnTechnician.interactable = true;
-        imgTechnicianAvatar.texture = defaultAvatar;
+        imgTechnicianAvatar.texture = techDefaultAvatar;
         SetImageAlpha(imgTechnicianAvatar, 0.5f);
         if (imgTechnicianTaken) imgTechnicianTaken.SetActive(false);
     }

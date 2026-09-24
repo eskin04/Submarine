@@ -8,8 +8,11 @@ using UnityEngine.SceneManagement;
 public class MainGameState : StateNode
 {
     public static Action startGame;
-
-    public bool isTestMode = false;
+    [Header("Tutorial")]
+    public static Action startTutorial;
+    public static bool isTutorialStartedFlag = false;
+    public static Action OnTutorialFinished;
+    public bool isTutorial = false;
     [PurrScene, SerializeField] private string lobbyScene;
 
     private bool _isRestarting = false;
@@ -18,13 +21,24 @@ public class MainGameState : StateNode
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        if (isTestMode) return;
         SettingsView.resumeGame += CloseSettingsView;
         SettingsView.quitGame += QuitGame;
         if (!asServer) return;
+        SettingsView.restartGame += RestartGame;
+        if (isTutorial)
+        {
+            OnTutorialFinished += FinishTutorial;
+            startTutorial?.Invoke();
+            isTutorialStartedFlag = true;
+            return;
+        }
         startGame?.Invoke();
         FloodManager.OnGameEnd += HandleGameEnd;
-        SettingsView.restartGame += RestartGame;
+    }
+
+    private void FinishTutorial()
+    {
+        HandleGameEnd(1);
     }
 
     // public override void StateUpdate(bool asServer)
@@ -119,6 +133,10 @@ public class MainGameState : StateNode
         if (!asServer) return;
         FloodManager.OnGameEnd -= HandleGameEnd;
         SettingsView.restartGame -= RestartGame;
+        if (isTutorial)
+        {
+            OnTutorialFinished -= FinishTutorial;
+        }
     }
 
 

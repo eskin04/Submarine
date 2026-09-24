@@ -37,6 +37,8 @@ public class NotepadModule : NetworkBehaviour
     [SerializeField] private EventReference openSound;
     [SerializeField] private EventReference closeSound;
     [SerializeField] private EventReference pageFlipSound;
+    [Header("Tutorial")]
+    [SerializeField] private InteractionIndicator indicator;
 
     // Durum Değişkenleri
     private int currentPageIndex = 0;
@@ -44,13 +46,46 @@ public class NotepadModule : NetworkBehaviour
     private bool isAnimating = false;
     private bool isDrawingCursorActive = false;
     private int remainingPages = 4;
+    private Interactable interactableComponent;
 
     private Texture2D[] pageTextures;
     private Vector2 lastDrawPosition = -Vector2.one;
 
+    private void Awake()
+    {
+        // Interactable componentini Awake'de alıyoruz
+        interactableComponent = GetComponent<Interactable>();
+    }
     private void Start()
     {
         InitializeDrawingPages();
+    }
+
+    private void OnEnable()
+    {
+        TutorialInputManager.OnNotebookInteractStateChanged += HandleNotebookInteractState;
+    }
+
+    private void OnDisable()
+    {
+        TutorialInputManager.OnNotebookInteractStateChanged -= HandleNotebookInteractState;
+    }
+
+    private void HandleNotebookInteractState(bool isInteractable)
+    {
+        if (interactableComponent != null)
+        {
+            interactableComponent.SetInteractable(isInteractable);
+        }
+
+        if (isInteractable && !isInteracting)
+        {
+            indicator?.Show();
+        }
+        else
+        {
+            indicator?.Hide();
+        }
     }
 
     private void Update()
@@ -67,6 +102,12 @@ public class NotepadModule : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.E) && remainingPages > 0)
         {
             if (pageMeshes[currentPageIndex].activeSelf == false) return;
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView))
+            {
+                if (questView.ShouldBlockAction(TutorialAction.RipPage)) return;
+
+                questView.OnActionPerformed(TutorialAction.RipPage);
+            }
 
             isAnimating = true;
             PlaySound(pageFlipSound);
@@ -234,6 +275,12 @@ public class NotepadModule : NetworkBehaviour
 
         if (isHoveringValidPage && isClicking)
         {
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView))
+            {
+                if (questView.ShouldBlockAction(TutorialAction.DrawNotebook)) return;
+
+                questView.OnActionPerformed(TutorialAction.DrawNotebook);
+            }
             Vector2 currentUV = validHit.textureCoord;
 
             if (lastDrawPosition == -Vector2.one)
@@ -294,7 +341,9 @@ public class NotepadModule : NetworkBehaviour
     public void OnNotebookInteract()
     {
         if (isInteracting) return;
-
+        indicator?.Hide();
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var tutorialView))
+            tutorialView.OnActionPerformed(TutorialAction.InteractNotebook);
         isInteracting = true;
         isAnimating = true;
 
@@ -312,6 +361,9 @@ public class NotepadModule : NetworkBehaviour
     {
         if (!isInteracting) return;
 
+        Debug.Log("Notebook interaction ended");
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var tutorialView))
+            tutorialView.OnActionPerformed(TutorialAction.CloseNotebook);
         isAnimating = true;
         isInteracting = false;
 
@@ -336,6 +388,12 @@ public class NotepadModule : NetworkBehaviour
     {
         float scroll = Input.mouseScrollDelta.y;
         if (scroll == 0) return;
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView))
+        {
+            if (questView.ShouldBlockAction(TutorialAction.TurnPage)) return;
+
+            questView.OnActionPerformed(TutorialAction.TurnPage);
+        }
 
         if (scroll < 0)
         {

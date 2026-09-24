@@ -3,6 +3,7 @@ using DG.Tweening;
 using PurrNet;
 using System;
 using FMODUnity;
+using PurrLobby;
 
 public class LiftManager : NetworkBehaviour
 {
@@ -15,6 +16,7 @@ public class LiftManager : NetworkBehaviour
     {
         public LiftButton button;
         public int targetFloorIndex;
+        public InteractionIndicator indicator;
     }
 
     [Header("Lift Setup")]
@@ -35,38 +37,46 @@ public class LiftManager : NetworkBehaviour
     [SerializeField] private EventReference liftMoveSound;
     [SerializeField] private EventReference liftArriveSound;
 
+    [Header("Tutorial Indicators")]
+    [SerializeField] private InteractionIndicator[] liftFrameIndicators;
+
     private FMODEmitter _activeMoveEmitter;
 
     private int currentFloorIndex = 0;
+    private bool isElevatorTutorialLocked = false;
+    private bool isButtonTutorialLocked = false;
 
     void Awake()
     {
         InventoryManager.OnEquipChange += ToggleInteractLift;
         OnItemInElevator += HandleLightState;
+        TutorialQuestView.OnTaskUnlockedLocal += HandleTutorialTaskUnlocked;
 
     }
 
     void Start()
     {
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out _))
+        {
+            isElevatorTutorialLocked = true;
+            isButtonTutorialLocked = true;
+        }
         if (isDisable)
+        {
+            SetAllButtonsInteractability(false);
+        }
+        else
         {
             foreach (var buttonData in allLiftButtons)
             {
                 if (buttonData.button != null)
-                    buttonData.button.GetComponent<Interactable>().SetInteractable(false);
-            }
-            return;
-        }
-
-        foreach (var buttonData in allLiftButtons)
-        {
-            if (buttonData.button != null)
-            {
-                buttonData.button.OnLiftButtonPressed += HandleLiftButtonPressed;
-
-                if (!buttonData.button.GetComponent<Interactable>().CanInteract())
                 {
-                    currentFloorIndex = buttonData.targetFloorIndex;
+                    buttonData.button.OnLiftButtonPressed += HandleLiftButtonPressed;
+
+                    if (!buttonData.button.GetComponent<Interactable>().CanInteract())
+                    {
+                        currentFloorIndex = buttonData.targetFloorIndex;
+                    }
                 }
             }
         }
@@ -75,7 +85,7 @@ public class LiftManager : NetworkBehaviour
         float targetY = currentFloorIndex == 0 ? liftDownPosition : liftUpPosition;
         lift.transform.localPosition = new Vector3(lift.transform.localPosition.x, targetY, lift.transform.localPosition.z);
 
-        UpdateButtonInteractability(currentFloorIndex);
+        if (!isDisable) UpdateButtonInteractability(currentFloorIndex);
     }
 
     protected override void OnDestroy()
@@ -88,6 +98,7 @@ public class LiftManager : NetworkBehaviour
         }
         InventoryManager.OnEquipChange -= ToggleInteractLift;
         OnItemInElevator -= HandleLightState;
+        TutorialQuestView.OnTaskUnlockedLocal -= HandleTutorialTaskUnlocked;
 
         if (_activeMoveEmitter != null)
         {
@@ -95,6 +106,36 @@ public class LiftManager : NetworkBehaviour
             _activeMoveEmitter = null;
         }
     }
+
+    private void HandleTutorialTaskUnlocked(TutorialAction actionType)
+    {
+        if (actionType == TutorialAction.UseElevator)
+        {
+            isElevatorTutorialLocked = false;
+            bool hasItem = InventoryManager.LocalPlayer != null && InventoryManager.LocalPlayer.GetCurrentHeldObject() != null;
+            ToggleInteractLift(hasItem);
+
+            if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
+                liftFrameIndicators[currentFloorIndex]?.Show();
+        }
+        else if (actionType == TutorialAction.PickUpItem)
+        {
+            isElevatorTutorialLocked = false;
+            bool hasItem = InventoryManager.LocalPlayer != null && InventoryManager.LocalPlayer.GetCurrentHeldObject() != null;
+            ToggleInteractLift(hasItem);
+        }
+        else if (actionType == TutorialAction.SendElevatorItem)
+        {
+            isButtonTutorialLocked = false;
+            UpdateButtonInteractability(currentFloorIndex);
+
+            foreach (var btn in allLiftButtons)
+            {
+                if (btn.targetFloorIndex != currentFloorIndex) btn.indicator?.Show();
+            }
+        }
+    }
+
     [ObserversRpc(runLocally: true)]
     private void HandleLightState(bool isInLift)
     {
@@ -103,30 +144,55 @@ public class LiftManager : NetworkBehaviour
         if (isInLift)
         {
             liftLight.enabled = true;
+
+            if (!isButtonTutorialLocked)
+            {
+                foreach (var btn in allLiftButtons)
+                {
+                    if (btn.targetFloorIndex != currentFloorIndex) btn.indicator?.Show();
+                }
+            }
         }
         else
         {
             if (lift.GetComponentInChildren<ItemLoot>())
                 return;
             liftLight.enabled = false;
+            if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
+                liftFrameIndicators[currentFloorIndex]?.Hide();
         }
     }
 
     [ObserversRpc(runLocally: true)]
     private void HandleLiftButtonPressed(int targetFloorIndex)
     {
-        if (currentFloorIndex == targetFloorIndex) return;
+        if (currentFloorIndex == targetFloorIndex || isButtonTutorialLocked) return;
 
         SetAllButtonsInteractability(false);
         liftDoors[currentFloorIndex].ToggleDoor(false);
+        foreach (var btn in allLiftButtons) btn.indicator?.Hide();
+        if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
+            liftFrameIndicators[currentFloorIndex]?.Hide();
+
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.SendElevatorItem);
+
+            if (TutorialInputManager.Instance != null && PlayerStats.LocalInstance != null)
+            {
+                PlayerRole targetRole = PlayerStats.LocalInstance.Role == PlayerRole.Technician ? PlayerRole.Engineer : PlayerRole.Technician;
+                TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)targetRole, (int)TutorialAction.WaitForPartner);
+            }
+        }
 
         float targetY = targetFloorIndex == 0 ? liftDownPosition : liftUpPosition;
         StartLiftAudio();
 
         lift.transform.DOLocalMoveY(targetY, liftSpeed).SetEase(Ease.InOutSine).SetDelay(0.3f).OnComplete(() =>
         {
-            HandleLiftArrival();
             currentFloorIndex = targetFloorIndex;
+            HandleLiftArrival();
+
             liftDoors[currentFloorIndex].ToggleDoor(true);
 
             UpdateButtonInteractability(currentFloorIndex);
@@ -135,6 +201,11 @@ public class LiftManager : NetworkBehaviour
 
     private void UpdateButtonInteractability(int currentFloor)
     {
+        if (isButtonTutorialLocked)
+        {
+            SetAllButtonsInteractability(false);
+            return;
+        }
         foreach (var buttonData in allLiftButtons)
         {
             if (buttonData.button != null)
@@ -167,13 +238,21 @@ public class LiftManager : NetworkBehaviour
 
     private void ToggleInteractLift(bool isEquipped)
     {
+        if (isElevatorTutorialLocked)
+        {
+            lift.GetComponent<Interactable>().SetInteractable(false);
+            return;
+        }
         lift.GetComponent<Interactable>().SetInteractable(isEquipped);
     }
 
     public void LiftInteract()
     {
+
         OnDropItemToLıft?.Invoke(lift.transform, xPosRange);
         lift.GetComponent<Interactable>().StopInteract();
+        if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
+            liftFrameIndicators[currentFloorIndex]?.Hide();
     }
 
 
@@ -196,6 +275,12 @@ public class LiftManager : NetworkBehaviour
         if (sfxChannel != null && !liftArriveSound.IsNull && lift != null)
         {
             sfxChannel.RaiseEvent(new AudioEventPayload(liftArriveSound, lift.transform.position));
+        }
+
+        if (!isElevatorTutorialLocked)
+        {
+            if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
+                liftFrameIndicators[currentFloorIndex]?.Show();
         }
 
 

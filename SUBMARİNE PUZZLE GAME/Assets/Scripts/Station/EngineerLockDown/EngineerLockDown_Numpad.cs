@@ -9,6 +9,11 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
     public TMP_Text displayScreen;
     public EngineerLockDown_StationManager stationManager;
 
+    [Header("Tutorial Settings")]
+    public InteractionIndicator indicator;
+    private Interactable interactableComponent;
+    private bool isTutorialActive = false;
+
     [Header("3 Step Status Lights")]
     public MeshRenderer[] stepLights;
     public float lightIntensity = 5.0f;
@@ -28,6 +33,7 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
 
     private void Awake()
     {
+        interactableComponent = GetComponent<Interactable>();
         for (int i = 0; i < stepLights.Length; i++)
         {
             if (stepLights[i] != null)
@@ -41,6 +47,12 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
         EngineerLockDown_StationManager.OnOverrideStepCompleted += LightUpGreen;
         EngineerLockDown_StationManager.OnOverrideFailed += ResetAllLightsToRed;
         EngineerLockDown_StationManager.OnOverrideFailed += PlayWrongSound;
+
+        TutorialQuestView.OnTaskUnlockedLocal += HandleTaskUnlocked;
+        if (interactableComponent != null)
+        {
+            interactableComponent.onInteract.AddListener(HandleInteraction);
+        }
     }
 
     private void OnDisable()
@@ -49,6 +61,30 @@ public class EngineerLockDown_Numpad : NetworkBehaviour
         EngineerLockDown_StationManager.OnOverrideStepCompleted -= LightUpGreen;
         EngineerLockDown_StationManager.OnOverrideFailed -= ResetAllLightsToRed;
         EngineerLockDown_StationManager.OnOverrideFailed -= PlayWrongSound;
+
+        TutorialQuestView.OnTaskUnlockedLocal -= HandleTaskUnlocked;
+        if (interactableComponent != null)
+        {
+            interactableComponent.onInteract.RemoveListener(HandleInteraction);
+        }
+    }
+
+    private void HandleInteraction()
+    {
+        if (isTutorialActive)
+        {
+            indicator?.Hide();
+            isTutorialActive = false;
+        }
+    }
+
+    private void HandleTaskUnlocked(TutorialAction action)
+    {
+        if (action == TutorialAction.FixOverrideStation)
+        {
+            isTutorialActive = true;
+            indicator?.Show();
+        }
     }
 
     public void OnNumberPressed(int number)

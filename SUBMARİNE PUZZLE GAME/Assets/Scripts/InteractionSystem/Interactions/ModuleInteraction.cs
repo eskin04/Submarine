@@ -43,6 +43,9 @@ public class ModuleInteraction : MonoBehaviour
     private bool isHoveringMesh = false;
     private Camera mainCam;
 
+    [Header("Tutorial Settings")]
+    [SerializeField] private bool isNotebookModule = false;
+
     void Awake()
     {
         PlayerInventory.OnAssignController += HandlePlayerController;
@@ -73,6 +76,10 @@ public class ModuleInteraction : MonoBehaviour
     {
         if (ınteractable.IsInteracting() && Input.GetKeyDown(KeyCode.Mouse1) && isInteracting)
         {
+            if (isNotebookModule && InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView))
+            {
+                if (questView.ShouldBlockAction(TutorialAction.CloseNotebook)) return;
+            }
             StopInteract();
         }
         if (ınteractable.IsInteracting() && isUnlockCursor)
@@ -90,7 +97,6 @@ public class ModuleInteraction : MonoBehaviour
         {
             if (PlayerInventory.LocalPlayerController != null)
             {
-                // Değerleri PlayerInventory'den çekerek kendi atama fonksiyonumuzu zorla çalıştırıyoruz
                 HandlePlayerController(
                     PlayerInventory.LocalPlayerController,
                     PlayerInventory.LocalPlayerCamera,
@@ -147,7 +153,6 @@ public class ModuleInteraction : MonoBehaviour
             playerInteractCameraTransform.gameObject.SetActive(true);
             isInteracting = true;
         }
-        Debug.Log(isInteracting);
     }
 
 

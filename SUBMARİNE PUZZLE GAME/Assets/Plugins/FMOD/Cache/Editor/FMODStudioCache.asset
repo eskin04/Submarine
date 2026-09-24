@@ -55,6 +55,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &-7795431327819111544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest3VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest3VoiceOver
+  Guid:
+    Data1: -631235293
+    Data2: 1126544772
+    Data3: -519181648
+    Data4: 1519033734
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 14774
 --- !u!114 &-7772726756496157327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +191,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2371
+--- !u!114 &-5785917141918323478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
+  Guid:
+    Data1: 1371045947
+    Data2: 1114636803
+    Data3: 18896282
+    Data4: 801922506
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 13715
 --- !u!114 &-5517370742591190466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,10 +233,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639183524027224380
+  lastModified: 639258019057947607
   FileSizes:
   - Name: Desktop
-    Value: 3352
+    Value: 3706
   Exists: 1
 --- !u!114 &-5510877157030363373
 MonoBehaviour:
@@ -238,6 +292,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1000
+--- !u!114 &-5131550360582795670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest6VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest6VoiceOver
+  Guid:
+    Data1: 1338094515
+    Data2: 1141474030
+    Data3: 1342758067
+    Data4: -1411889429
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 15202
 --- !u!114 &-4754944528713808126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,6 +494,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1056
+--- !u!114 &-2518248018135150818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest5VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest5VoiceOver
+  Guid:
+    Data1: -1309036256
+    Data2: 1178167043
+    Data3: 103075494
+    Data4: 566890209
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 39838
 --- !u!114 &-2465408210372480596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,13 +868,19 @@ MonoBehaviour:
   - {fileID: 6115645512660762016}
   - {fileID: 2564265369934002152}
   - {fileID: 8329402767422410044}
+  - {fileID: 3291082579260276625}
+  - {fileID: 3248562346218792601}
+  - {fileID: -2518248018135150818}
+  - {fileID: -7795431327819111544}
+  - {fileID: -5785917141918323478}
+  - {fileID: -5131550360582795670}
   EditorParameters: []
   MasterBanks:
   - {fileID: 2543604692222824843}
   StringsBanks:
   - {fileID: -5517370742591190466}
   cacheVersion: 131859
-  cacheTime: 639189023946026313
+  cacheTime: 639258699521413013
   SerializableEventsDict:
   - key: event:/SFX/Player/FootSteps
     index: 0
@@ -850,6 +964,18 @@ MonoBehaviour:
     index: 39
   - key: event:/SFX/Elevator/ElevatorMove
     index: 40
+  - key: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
+    index: 41
+  - key: event:/SFX/VoiceOverannouncement/Quest2VoiceOver
+    index: 42
+  - key: event:/SFX/VoiceOverannouncement/Quest5VoiceOver
+    index: 43
+  - key: event:/SFX/VoiceOverannouncement/Quest3VoiceOver
+    index: 44
+  - key: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
+    index: 45
+  - key: event:/SFX/VoiceOverannouncement/Quest6VoiceOver
+    index: 46
 --- !u!114 &222821979863919972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1094,10 +1220,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639183524027204065
+  lastModified: 639258019057937099
   FileSizes:
   - Name: Desktop
-    Value: 2272
+    Value: 3586
   Exists: 1
 --- !u!114 &2564265369934002152
 MonoBehaviour:
@@ -1126,6 +1252,60 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 1959
+--- !u!114 &3248562346218792601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest2VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest2VoiceOver
+  Guid:
+    Data1: 2063570973
+    Data2: 1250804054
+    Data3: 1468283286
+    Data4: 798263158
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 15340
+--- !u!114 &3291082579260276625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
+  Guid:
+    Data1: -842280182
+    Data2: 1141277898
+    Data3: -1296514940
+    Data4: -717643768
+  Banks:
+  - {fileID: 4258567297402627855}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 17227
 --- !u!114 &3316582532417768414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1249,10 +1429,10 @@ MonoBehaviour:
   Path: ../FModAudioSystem/Build/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639189023946026313
+  lastModified: 639258699521413013
   FileSizes:
   - Name: Desktop
-    Value: 3042688
+    Value: 4237952
   Exists: 1
 --- !u!114 &4387403145445512229
 MonoBehaviour:

@@ -25,10 +25,21 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     [SerializeField] private AudioEventChannelSO _channel;
     [SerializeField] private EventReference _openSound;
     [SerializeField] private EventReference _closeSound;
+
+    [Header("Tutorial Settings")]
+    public InteractionIndicator manualIndicator;
     private bool canOperate = true;
     private Vector3 initialRotation;
     private Transform inspectPosition;
     private Transform originalParent;
+
+    private void OnEnable() => TutorialQuestView.OnTaskUnlockedLocal += HandleTaskUnlocked;
+    private void OnDisable() => TutorialQuestView.OnTaskUnlockedLocal -= HandleTaskUnlocked;
+
+    private void HandleTaskUnlocked(TutorialAction action)
+    {
+        if (action == TutorialAction.PickUpManual) manualIndicator?.Show();
+    }
 
     void Awake()
     {
@@ -51,6 +62,11 @@ public class Handbook : NetworkBehaviour, IInventoryItem
     public void OnEquip()
     {
         isEquipped = true;
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            manualIndicator?.Hide();
+            view.OnActionPerformed(TutorialAction.PickUpManual);
+        }
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
         {
             promptView.AddPrompt("handbook_open", "Left Click", "Open Handbook");
@@ -78,6 +94,15 @@ public class Handbook : NetworkBehaviour, IInventoryItem
         {
             isOperate = !isOperate;
             isOperating = true;
+
+            if (isOperate)
+            {
+                if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                {
+                    view.OnActionPerformed(TutorialAction.OpenManual);
+                }
+            }
+
             ToggleBookAnim();
             ToggleSound();
         }

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24910d8333badb14095580b60dbbfe38, type: 3}
+  m_Name: Quest2_Notebook
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
+  questIndex: 2
+  questTitle: Learn about Nova Dynamics employee bonuses.
+  introSubtitles:
+  - 'Good! You are functioning nice and well! '
+  - "Now let\u2019s see what you can use on ZOKA-46. Nova Dynamics provides you a
+    notebook that you can write.. or draw! Anything you want actually."
+  megaphoneAudio:
+    Guid:
+      Data1: 2063570973
+      Data2: 1250804054
+      Data3: 1468283286
+      Data4: 798263158
+    Path: event:/SFX/VoiceOverannouncement/Quest2VoiceOver
+  technicianTasks:
+  - taskDescription: Interact Notebook
+    actionType: 2
+    requiredAmount: 1
+    isHiddenInitially: 0
+    revealsAfter: 2
+  - taskDescription: Hold Left Click to Draw
+    actionType: 3
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 2
+  - taskDescription: Mouse Wheel Up/Down to turn pages
+    actionType: 4
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 3
+  - taskDescription: Click [E] to Rip off 2 pages
+    actionType: 5
+    requiredAmount: 2
+    isHiddenInitially: 1
+    revealsAfter: 4
+  - taskDescription: Right Click to Close
+    actionType: 6
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 5
+  engineerTasks:
+  - taskDescription: Interact Notebook
+    actionType: 2
+    requiredAmount: 1
+    isHiddenInitially: 0
+    revealsAfter: 2
+  - taskDescription: Hold Left Click to Draw
+    actionType: 3
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 2
+  - taskDescription: Mouse Wheel Up/Down to turn pages
+    actionType: 4
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 3
+  - taskDescription: Click [E] to Rip off 2 pages
+    actionType: 5
+    requiredAmount: 2
+    isHiddenInitially: 1
+    revealsAfter: 4
+  - taskDescription: Right Click to Close
+    actionType: 6
+    requiredAmount: 1
+    isHiddenInitially: 1
+    revealsAfter: 5
+  waitingForTechnicianText: Waiting for Technician
+  waitingForEngineerText: Waiting for Engineer

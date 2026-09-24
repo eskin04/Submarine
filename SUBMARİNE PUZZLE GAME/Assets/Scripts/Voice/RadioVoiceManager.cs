@@ -5,6 +5,7 @@ using Unity.Services.Vivox;
 using System.Threading.Tasks;
 using FMODUnity;
 using UnityEngine.SceneManagement;
+using PurrNet;
 
 public class RadioVoiceManager : MonoBehaviour
 {
@@ -12,6 +13,11 @@ public class RadioVoiceManager : MonoBehaviour
     public event System.Action<bool> OnRadioStateChanged;
     public AudioSource vivoxAudioSource { get; private set; }
     public event System.Action<bool> OnReceivingTransmission;
+
+    [Header("Tutorial Settings")]
+    private float talkTimer = 0f;
+    private float listenTimer = 0f;
+    private bool isCurrentlyReceiving = false;
 
     [Header("Malfunction Settings")]
     public bool isRadioBroken = false;
@@ -228,10 +234,12 @@ public class RadioVoiceManager : MonoBehaviour
 
         if (message.MessageText == "Q_PRESSED")
         {
+            isCurrentlyReceiving = true;
             OnReceivingTransmission?.Invoke(true);
         }
         else if (message.MessageText == "Q_RELEASED")
         {
+            isCurrentlyReceiving = false;
             OnReceivingTransmission?.Invoke(false);
         }
     }
@@ -251,20 +259,57 @@ public class RadioVoiceManager : MonoBehaviour
     {
         if (isLoggedIn)
         {
-            if (Input.GetKeyDown(pushToTalkKey))
+            if (Input.GetKeyDown(pushToTalkKey)) StartTransmission();
+            if (Input.GetKeyUp(pushToTalkKey)) StopTransmission();
+
+            bool canUseRadio = true;
+            if (TutorialInputManager.Instance != null && !TutorialInputManager.Instance.CanUseRadio.value)
             {
-                StartTransmission();
+                canUseRadio = false;
             }
 
-            if (Input.GetKeyUp(pushToTalkKey))
+            if (canUseRadio && Input.GetKey(pushToTalkKey))
             {
-                StopTransmission();
+                talkTimer += Time.deltaTime;
+                if (talkTimer >= 1f)
+                {
+                    talkTimer -= 1f;
+                    if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                    {
+                        view.OnActionPerformed(TutorialAction.RadioTalk);
+                    }
+                }
+            }
+            else
+            {
+                talkTimer = 0f;
+            }
+
+            if (canUseRadio && isCurrentlyReceiving && !Input.GetKey(pushToTalkKey))
+            {
+                listenTimer += Time.deltaTime;
+                if (listenTimer >= 1f)
+                {
+                    listenTimer -= 1f;
+                    if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                    {
+                        view.OnActionPerformed(TutorialAction.RadioListen);
+                    }
+                }
+            }
+            else
+            {
+                listenTimer = 0f;
             }
         }
     }
 
     void StartTransmission()
     {
+        if (TutorialInputManager.Instance != null && !TutorialInputManager.Instance.CanUseRadio.value)
+        {
+            return;
+        }
         OnRadioStateChanged?.Invoke(true);
 
         if (isRadioBroken)

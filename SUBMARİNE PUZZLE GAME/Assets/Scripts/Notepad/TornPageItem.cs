@@ -130,6 +130,13 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
             isPlacementModeActive = !isPlacementModeActive;
             if (hologramObj != null) hologramObj.SetActive(isPlacementModeActive);
             TogglePromptView(isPlacementModeActive);
+            if (isPlacementModeActive)
+            {
+                if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                {
+                    view.OnActionPerformed(TutorialAction.ViewAttachPoint);
+                }
+            }
         }
 
         if (isPlacementModeActive)
@@ -224,6 +231,11 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         if (InventoryManager.LocalPlayer != null)
         {
             InventoryManager.LocalPlayer.RemoveCurrentItem();
+        }
+
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.AttachPage);
         }
     }
     // =========================================================================================

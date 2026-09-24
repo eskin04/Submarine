@@ -28,7 +28,7 @@ public class LevelManager : NetworkBehaviour
         base.OnSpawned();
         MainGameState.startGame += StartLevel;
         OnCurrentLevelData?.Invoke(currentLevelData.levelID);
-        InstanceHandler.GetInstance<LevelView>()?.SetLevelText(currentLevelData.levelID);
+        if (InstanceHandler.TryGetInstance(out LevelView levelView)) levelView.SetLevelText(currentLevelData.levelID);
         InstanceHandler.RegisterInstance(this);
     }
 
