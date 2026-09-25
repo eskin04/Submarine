@@ -166,7 +166,7 @@ public class LiftManager : NetworkBehaviour
     [ObserversRpc(runLocally: true)]
     private void HandleLiftButtonPressed(int targetFloorIndex)
     {
-        if (currentFloorIndex == targetFloorIndex || isButtonTutorialLocked) return;
+        if (currentFloorIndex == targetFloorIndex) return;
 
         SetAllButtonsInteractability(false);
         liftDoors[currentFloorIndex].ToggleDoor(false);
@@ -174,15 +174,25 @@ public class LiftManager : NetworkBehaviour
         if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
             liftFrameIndicators[currentFloorIndex]?.Hide();
 
-        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        if (PlayerStats.LocalInstance != null)
         {
-            view.OnActionPerformed(TutorialAction.SendElevatorItem);
+            PlayerRole localRole = PlayerStats.LocalInstance.Role;
+            bool isSender = (currentFloorIndex == 0 && localRole == PlayerRole.Technician) ||
+                            (currentFloorIndex == 1 && localRole == PlayerRole.Engineer);
 
-            if (TutorialInputManager.Instance != null && PlayerStats.LocalInstance != null)
+            if (isSender)
             {
-                PlayerRole targetRole = PlayerStats.LocalInstance.Role == PlayerRole.Technician ? PlayerRole.Engineer : PlayerRole.Technician;
-                TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)targetRole, (int)TutorialAction.WaitForPartner);
+                if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+                {
+                    view.OnActionPerformed(TutorialAction.SendElevatorItem);
+                }
             }
+        }
+
+        if (isServer && TutorialInputManager.Instance != null)
+        {
+            PlayerRole targetRole = currentFloorIndex == 0 ? PlayerRole.Engineer : PlayerRole.Technician;
+            TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)targetRole, (int)TutorialAction.WaitForPartner);
         }
 
         float targetY = targetFloorIndex == 0 ? liftDownPosition : liftUpPosition;

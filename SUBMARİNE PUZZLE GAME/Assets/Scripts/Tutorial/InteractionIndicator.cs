@@ -17,10 +17,13 @@ public class InteractionIndicator : MonoBehaviour
     private Vector3 startLocalPos;
     private Tween bounceTween;
     private Camera mainCam;
+    private Vector3 startScale;
+    private Tween scaleTween;
 
     private void Awake()
     {
         startLocalPos = transform.localPosition;
+        startScale = transform.localScale;
         mainCam = Camera.main;
         gameObject.SetActive(false);
     }
@@ -43,11 +46,16 @@ public class InteractionIndicator : MonoBehaviour
         bounceTween = transform.DOLocalMove(targetPos, duration)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(Ease.InOutSine);
+
+        scaleTween = transform.DOScale(startScale * 1.25f, duration)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
     }
 
     public void Hide()
     {
         bounceTween?.Kill();
+        scaleTween?.Kill();
         gameObject.SetActive(false);
     }
 
@@ -79,5 +87,7 @@ public class InteractionIndicator : MonoBehaviour
     private void OnDestroy()
     {
         bounceTween?.Kill();
+        scaleTween?.Kill();
+
     }
 }

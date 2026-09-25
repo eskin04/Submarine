@@ -18,7 +18,6 @@ public class WaitForPlayersState : StateNode
         {
             readyPlayers.Clear();
             readyPlayers.Add(networkManager.localPlayer);
-            Debug.Log($"[WaitForPlayersState] Server is ready. Waiting for players... {readyPlayers.Count}/{minPlayersToStart} ready.");
 
             machine.StartCoroutine(WaitForPlayers());
         }
@@ -44,6 +43,7 @@ public class WaitForPlayersState : StateNode
 
         while (readyPlayers.Count < minPlayersToStart)
         {
+            Debug.Log($"[WaitForPlayersState] Waiting for players... {readyPlayers.Count}/{minPlayersToStart} ready.");
             yield return new WaitForSeconds(0.5f);
         }
 

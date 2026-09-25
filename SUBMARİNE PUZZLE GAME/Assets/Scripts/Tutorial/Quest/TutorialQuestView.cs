@@ -226,22 +226,25 @@ public class TutorialQuestView : View
             tmp.DOColor(Color.green, 0.3f);
             tmp.transform.DOPunchScale(Vector3.one * 0.15f, 0.2f, 10, .5f);
 
-            foreach (var checkTask in activeTasks.Values)
+            DOVirtual.DelayedCall(1.5f, () =>
             {
-                if (checkTask.isHiddenInitially && checkTask.revealsAfter == actionType)
+                foreach (var checkTask in activeTasks.Values)
                 {
-                    if (!unlockedTasks[checkTask.actionType])
+                    if (checkTask.isHiddenInitially && checkTask.revealsAfter == actionType)
                     {
-                        unlockedTasks[checkTask.actionType] = true;
+                        if (!unlockedTasks[checkTask.actionType])
+                        {
+                            unlockedTasks[checkTask.actionType] = true;
 
-                        var revealedTmp = taskUIElements[checkTask.actionType];
-                        revealedTmp.gameObject.SetActive(true);
+                            var revealedTmp = taskUIElements[checkTask.actionType];
+                            revealedTmp.gameObject.SetActive(true);
 
-                        AnimateTaskEntry(revealedTmp);
-                        OnTaskUnlockedLocal?.Invoke(checkTask.actionType);
+                            AnimateTaskEntry(revealedTmp);
+                            OnTaskUnlockedLocal?.Invoke(checkTask.actionType);
+                        }
                     }
                 }
-            }
+            });
 
             completedTasksCount++;
             if (TutorialManager.Instance != null)

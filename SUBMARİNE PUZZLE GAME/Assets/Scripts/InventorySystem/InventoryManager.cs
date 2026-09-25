@@ -605,7 +605,7 @@ public class InventoryManager : NetworkBehaviour
 
     private int GetFirstEmptySlot()
     {
-        for (int i = 0; i < inventorySize; i++)
+        for (int i = inventorySize - 1; i >= 0; i--)
         {
             if (containers[i].IsEmpty) return i;
         }
