@@ -326,6 +326,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &172640642744428162
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,6 +338,7 @@ GameObject:
   - component: {fileID: 9169609127705357128}
   - component: {fileID: 7673804021336692834}
   - component: {fileID: 8607461738281990549}
+  - component: {fileID: 5324943543283173944}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -507,6 +509,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 7673804021336692834}
   m_maskType: 0
+--- !u!114 &5324943543283173944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172640642744428162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388546
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &193719127435345904
 GameObject:
   m_ObjectHideFlags: 0
@@ -662,6 +689,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &197278557529324891
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,6 +1285,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &527690669215913513
 GameObject:
   m_ObjectHideFlags: 0
@@ -1525,6 +1554,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &715866579266061751
 GameObject:
   m_ObjectHideFlags: 0
@@ -1769,6 +1799,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &820361244608234875
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,6 +1955,8 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   depthChangeInterval: 15
+  depthChangeRangeStart: 75
+  depthChangeRangeEnd: 150
   isRoundActive:
     _value: 0
     _ownerAuth: 0
@@ -2211,6 +2244,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &1012521704748250755
 GameObject:
   m_ObjectHideFlags: 0
@@ -2729,6 +2763,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &1569815783849594451
 GameObject:
   m_ObjectHideFlags: 0
@@ -3172,6 +3207,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &1681850990794909832
 GameObject:
   m_ObjectHideFlags: 0
@@ -3633,6 +3669,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &1874439023655155721
 GameObject:
   m_ObjectHideFlags: 0
@@ -3977,6 +4014,7 @@ GameObject:
   - component: {fileID: 7667571320346321709}
   - component: {fileID: 635671136684886511}
   - component: {fileID: 5129037952151616852}
+  - component: {fileID: 2596939284102117795}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -4147,6 +4185,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 635671136684886511}
   m_maskType: 0
+--- !u!114 &2596939284102117795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088115544266521409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388545
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &2107724897702735033
 GameObject:
   m_ObjectHideFlags: 0
@@ -4302,6 +4365,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &2243071887729352553
 GameObject:
   m_ObjectHideFlags: 0
@@ -4910,6 +4974,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &2754587297792601839
 GameObject:
   m_ObjectHideFlags: 0
@@ -5508,6 +5573,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &3123146876955561081
 GameObject:
   m_ObjectHideFlags: 0
@@ -5663,6 +5729,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &3227369640645555832
 GameObject:
   m_ObjectHideFlags: 0
@@ -5893,6 +5960,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &3512869324542458557
 GameObject:
   m_ObjectHideFlags: 0
@@ -6144,6 +6212,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &3749930282523798370
 GameObject:
   m_ObjectHideFlags: 0
@@ -6673,6 +6742,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!65 &5694026392648468196
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6961,6 +7031,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &4293577638124426580
 GameObject:
   m_ObjectHideFlags: 0
@@ -7296,6 +7367,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &4440091037636350578
 GameObject:
   m_ObjectHideFlags: 0
@@ -7793,6 +7865,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &4846588595290688492
 GameObject:
   m_ObjectHideFlags: 0
@@ -8006,6 +8079,7 @@ GameObject:
   - component: {fileID: 284390970466922167}
   - component: {fileID: 2044292559995438240}
   - component: {fileID: 2198737074252925193}
+  - component: {fileID: 4287372800517027209}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -8176,6 +8250,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2044292559995438240}
   m_maskType: 0
+--- !u!114 &4287372800517027209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070443166773429096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388544
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &5072669162781063801
 GameObject:
   m_ObjectHideFlags: 0
@@ -9146,6 +9245,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &6194486518924016748
 GameObject:
   m_ObjectHideFlags: 0
@@ -9236,6 +9336,7 @@ MonoBehaviour:
   isUnlockCursor: 0
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!65 &3198942542103570290
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9697,6 +9798,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &6789926992905378744
 GameObject:
   m_ObjectHideFlags: 0
@@ -9927,6 +10029,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &7578043166667694464
 GameObject:
   m_ObjectHideFlags: 0
@@ -10172,6 +10275,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &7775308541236168943
 GameObject:
   m_ObjectHideFlags: 0
@@ -10402,6 +10506,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &7946629788517946312
 GameObject:
   m_ObjectHideFlags: 0
@@ -11370,6 +11475,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!1 &9075233787304414073
 GameObject:
   m_ObjectHideFlags: 0

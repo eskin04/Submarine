@@ -40,27 +40,28 @@ public class ModernHandbook : MonoBehaviour
 
         float scroll = Input.mouseScrollDelta.y;
 
+        if (scroll != 0 && currentPageIndex < bookPages.Length - 2 && currentPageIndex > 0)
+        {
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+            {
+                if (view.ShouldBlockAction(TutorialAction.TurnManualPage)) return;
+                view.OnActionPerformed(TutorialAction.TurnManualPage);
+
+            }
+        }
 
 
         if (scroll < 0 && currentPageIndex < bookPages.Length - 2)
         {
             FlipRightToLeft();
-            TriggerPageTurnTask();
         }
         else if (scroll > 0 && currentPageIndex > 0)
         {
             FlipLeftToRight();
-            TriggerPageTurnTask();
         }
     }
 
-    private void TriggerPageTurnTask()
-    {
-        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
-        {
-            view.OnActionPerformed(TutorialAction.TurnManualPage);
-        }
-    }
+
 
     private void PlayScrollSound()
     {

@@ -591,6 +591,7 @@ GameObject:
   - component: {fileID: 8831043381384633433}
   - component: {fileID: 7442911154142930248}
   - component: {fileID: 2785437572272373807}
+  - component: {fileID: 2207157349924649388}
   m_Layer: 0
   m_Name: TitleText
   m_TagString: Untagged
@@ -761,6 +762,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 7442911154142930248}
   m_maskType: 0
+--- !u!114 &2207157349924649388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7481591682742927977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388544
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &7639372346888575519
 GameObject:
   m_ObjectHideFlags: 0
@@ -1026,6 +1052,7 @@ GameObject:
   - component: {fileID: 1302839282873590841}
   - component: {fileID: 9045882223482364256}
   - component: {fileID: 3775973226187190845}
+  - component: {fileID: 517633788177323207}
   m_Layer: 0
   m_Name: TitleText (1)
   m_TagString: Untagged
@@ -1196,3 +1223,28 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 9045882223482364256}
   m_maskType: 0
+--- !u!114 &517633788177323207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000946465439134447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388544
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []

@@ -13,16 +13,40 @@ MonoBehaviour:
   m_Name: Quest5_Lever
   m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
   questIndex: 5
-  questTitle: 'Teamwork makes the dream work! '
-  introSubtitles:
-  - "That\u2019s enough chit chat! Maybe you noticed, you can\u2019t hear other party
-    while using your radio. So please don\u2019t interrupt when someone\u2019s speaking.
-    We call this effective communication."
-  - "Now it\u2019s time for some collaboration! In case of any system malfunction,
-    Engineer has a station manual explaining how to fix stations. However it\u2019s
-    on the other side of Engineer\u2019s door."
-  - "Technician! Use your lever to open Engineer\u2019s door for 5 seconds. Why?
-    Because we call this\u2026 Teamwork!"
+  localizedQuestTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047369
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedIntroSubtitles:
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047361
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047362
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047363
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   megaphoneAudio:
     Guid:
       Data1: -1309036256
@@ -31,31 +55,90 @@ MonoBehaviour:
       Data4: 566890209
     Path: event:/SFX/VoiceOverannouncement/Quest5VoiceOver
   technicianTasks:
-  - taskDescription: Use the lever to open Engineer's door
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047393
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 16
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 0
   engineerTasks:
-  - taskDescription: Wait for technician to open your door
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047388
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 17
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 0
-  - taskDescription: E to pick up Station Manual
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047389
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 18
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 17
-  - taskDescription: Left Click to Open the Station Manual
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047390
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 19
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 18
-  - taskDescription: Use Mouse Wheel Up/Down to turn pages
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047376
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 20
     requiredAmount: 6
     isHiddenInitially: 1
     revealsAfter: 19
-  waitingForTechnicianText: Waiting for Technician
-  waitingForEngineerText: Waiting for Engineer to learn how to read
+  localizedWaitingForTechText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323046510592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedWaitingForEngText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37763450191527936
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

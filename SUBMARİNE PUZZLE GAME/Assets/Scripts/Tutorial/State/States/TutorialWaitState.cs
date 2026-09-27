@@ -1,5 +1,6 @@
 using PurrNet.StateMachine;
 using UnityEngine;
+using System.Collections;
 
 public class TutorialWaitState : StateNode
 {
@@ -10,7 +11,7 @@ public class TutorialWaitState : StateNode
         if (!asServer) return;
         if (MainGameState.isTutorialStartedFlag)
         {
-            machine.Next();
+            machine.StartCoroutine(WaitForNextFrameAndNextState());
             return;
         }
 
@@ -22,8 +23,16 @@ public class TutorialWaitState : StateNode
 
         MainGameState.startTutorial -= OnMainTutorialStarted;
 
+        machine.StartCoroutine(WaitForNextFrameAndNextState());
+    }
+
+    private IEnumerator WaitForNextFrameAndNextState()
+    {
+        yield return new WaitForSeconds(2f);
         machine.Next();
     }
+
+
 
     public override void Exit(bool asServer)
     {

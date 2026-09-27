@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using FMODUnity;
+using UnityEngine.Localization;
 
 public enum TutorialAction
 {
@@ -28,7 +29,7 @@ public enum TutorialAction
 [System.Serializable]
 public class QuestTask
 {
-    public string taskDescription;
+    public LocalizedString localizedTaskDescription;
     public TutorialAction actionType;
     public int requiredAmount = 1;
     public bool isHiddenInitially = false;
@@ -40,10 +41,10 @@ public class TutorialQuestData : ScriptableObject
 {
     [Header("Quest Info")]
     public int questIndex;
-    public string questTitle;
+    public LocalizedString localizedQuestTitle;
 
     [Header("Megaphone Subtitles")]
-    [TextArea] public List<string> introSubtitles;
+    public List<LocalizedString> localizedIntroSubtitles;
     [Header("Megaphone (Global)")]
     public EventReference megaphoneAudio;
 
@@ -53,6 +54,6 @@ public class TutorialQuestData : ScriptableObject
 
     [Header("Waiting Phase")]
 
-    public string waitingForTechnicianText = "Waiting for Technician";
-    public string waitingForEngineerText = "Waiting for Engineer";
+    public LocalizedString localizedWaitingForTechText;
+    public LocalizedString localizedWaitingForEngText;
 }

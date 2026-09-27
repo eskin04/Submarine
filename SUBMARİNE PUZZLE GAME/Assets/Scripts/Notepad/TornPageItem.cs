@@ -127,16 +127,18 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            isPlacementModeActive = !isPlacementModeActive;
-            if (hologramObj != null) hologramObj.SetActive(isPlacementModeActive);
-            TogglePromptView(isPlacementModeActive);
-            if (isPlacementModeActive)
+            if (!isPlacementModeActive)
             {
                 if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
                 {
+                    if (view.ShouldBlockAction(TutorialAction.ViewAttachPoint)) return;
                     view.OnActionPerformed(TutorialAction.ViewAttachPoint);
                 }
             }
+            isPlacementModeActive = !isPlacementModeActive;
+            if (hologramObj != null) hologramObj.SetActive(isPlacementModeActive);
+            TogglePromptView(isPlacementModeActive);
+
         }
 
         if (isPlacementModeActive)
@@ -204,6 +206,11 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
 
     private void PlacePageOnSurface()
     {
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            if (view.ShouldBlockAction(TutorialAction.AttachPage)) return;
+            view.OnActionPerformed(TutorialAction.AttachPage);
+        }
         isPlacementModeActive = false;
         isEquippedLocally = false;
         if (hologramObj != null)
@@ -233,10 +240,7 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
             InventoryManager.LocalPlayer.RemoveCurrentItem();
         }
 
-        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
-        {
-            view.OnActionPerformed(TutorialAction.AttachPage);
-        }
+
     }
     // =========================================================================================
     // IInventoryItem Implementation

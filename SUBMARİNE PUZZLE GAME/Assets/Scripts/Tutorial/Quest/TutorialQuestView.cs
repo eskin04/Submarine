@@ -9,6 +9,8 @@ using FMODUnity;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System;
+using UnityEngine.Localization; // Eklendi
+using UnityEngine.Localization.Settings; // Eklendi
 
 public class TutorialQuestView : View
 {
@@ -22,7 +24,6 @@ public class TutorialQuestView : View
     public GameObject taskTextPrefab;
     public TextMeshProUGUI waitingStatusText;
 
-
     private PlayerRole myRole;
     private TutorialQuestData currentQuestData;
     private bool isWaitingForPartner = false;
@@ -32,13 +33,14 @@ public class TutorialQuestView : View
     private FMOD.Studio.EventInstance megaphoneInstance;
     private FMOD.Studio.EVENT_CALLBACK markerCallback;
 
-    // Thread-Safe (Güvenli) komut kuyruğu
     private ConcurrentQueue<string> fmodCommandQueue = new ConcurrentQueue<string>();
     private Dictionary<TutorialAction, bool> unlockedTasks = new Dictionary<TutorialAction, bool>();
 
     private Dictionary<TutorialAction, int> currentProgress = new Dictionary<TutorialAction, int>();
     private Dictionary<TutorialAction, QuestTask> activeTasks = new Dictionary<TutorialAction, QuestTask>();
     private Dictionary<TutorialAction, TextMeshProUGUI> taskUIElements = new Dictionary<TutorialAction, TextMeshProUGUI>();
+
+    private int currentSubtitleIndex = -1; // Dil değişiminde mevcut altyazıyı yakalayabilmek için
 
     void Awake()
     {
@@ -51,12 +53,84 @@ public class TutorialQuestView : View
         InstanceHandler.UnregisterInstance<TutorialQuestView>();
     }
 
-    private void OnEnable() => TutorialManager.OnPlayerProgressUpdated += HandlePartnerProgress;
+    private void OnEnable()
+    {
+        TutorialManager.OnPlayerProgressUpdated += HandlePartnerProgress;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged; // Dil değişimi takibi
+    }
 
-    private void OnDisable() => TutorialManager.OnPlayerProgressUpdated -= HandlePartnerProgress;
+    private void OnDisable()
+    {
+        TutorialManager.OnPlayerProgressUpdated -= HandlePartnerProgress;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
 
     public override void OnShow() { }
     public override void OnHide() { }
+
+    // DİL DEĞİŞTİĞİ AN ÇALIŞACAK MERKEZİ GÜNCELLEYİCİ
+    private void OnLanguageChanged(Locale newLocale)
+    {
+        RefreshAllTexts();
+    }
+
+    private void RefreshAllTexts()
+    {
+        if (currentQuestData == null) return;
+
+        // 1. Başlık Güncellemesi
+        if (questTitleText != null && questTitleText.alpha > 0)
+        {
+            questTitleText.text = currentQuestData.localizedQuestTitle.GetLocalizedString();
+        }
+
+        // 2. Aktif Altyazı Güncellemesi
+        if (currentSubtitleIndex >= 0 && subtitleText != null && subtitleText.alpha > 0)
+        {
+            subtitleText.text = currentQuestData.localizedIntroSubtitles[currentSubtitleIndex].GetLocalizedString();
+        }
+
+        // 3. Görevlerin Güncellemesi
+        foreach (var action in activeTasks.Keys)
+        {
+            UpdateTaskUIText(action);
+        }
+
+        // 4. Bekleme Ekranı Güncellemesi
+        if (isWaitingForPartner && waitingStatusText != null && waitingStatusText.gameObject.activeSelf)
+        {
+            int partnerProgress = (myRole == PlayerRole.Engineer)
+                ? TutorialManager.Instance.technicianTaskProgress.value
+                : TutorialManager.Instance.engineerTaskProgress.value;
+            UpdateWaitingTextUI(partnerProgress);
+        }
+    }
+
+    // GÖREV METNİ OLUŞTURMA YARDIMCISI (DRY Prensibi)
+    private void UpdateTaskUIText(TutorialAction actionType)
+    {
+        if (!activeTasks.ContainsKey(actionType) || !taskUIElements.ContainsKey(actionType)) return;
+
+        QuestTask task = activeTasks[actionType];
+        TextMeshProUGUI tmp = taskUIElements[actionType];
+        int current = currentProgress[actionType];
+
+        // Temiz metni tablodan çekiyoruz
+        string baseDesc = task.localizedTaskDescription.GetLocalizedString();
+
+        if (current >= task.requiredAmount)
+        {
+            tmp.text = task.requiredAmount > 1
+                ? $"<sprite name=check> {baseDesc} ({task.requiredAmount}/{task.requiredAmount})"
+                : $"<sprite name=check> {baseDesc}";
+        }
+        else
+        {
+            tmp.text = task.requiredAmount > 1
+                ? $"{baseDesc} ({current}/{task.requiredAmount})"
+                : baseDesc;
+        }
+    }
 
     public void SetPlayerRole(PlayerRole role)
     {
@@ -67,12 +141,14 @@ public class TutorialQuestView : View
     public void LoadQuest(TutorialQuestData newQuest)
     {
         currentQuestData = newQuest;
+        currentSubtitleIndex = -1;
+
         List<GameObject> oldTaskObjects = new List<GameObject>();
         foreach (Transform child in taskContainer)
         {
             oldTaskObjects.Add(child.gameObject);
         }
-        string oldTitle = questTitleText != null ? questTitleText.text : "";
+
         DOVirtual.DelayedCall(2.5f, () =>
         {
             foreach (var oldObj in oldTaskObjects)
@@ -93,7 +169,6 @@ public class TutorialQuestView : View
             DOVirtual.DelayedCall(0.3f, () =>
             {
                 taskContainer.gameObject.SetActive(false);
-
             });
 
             if (taskContainer.childCount <= oldTaskObjects.Count && questTitleText != null)
@@ -101,6 +176,7 @@ public class TutorialQuestView : View
                 questTitleText.DOFade(0f, 0.5f);
             }
         });
+
         activeTasks.Clear();
         currentProgress.Clear();
         taskUIElements.Clear();
@@ -120,7 +196,6 @@ public class TutorialQuestView : View
         if (!currentQuestData.megaphoneAudio.IsNull)
         {
             megaphoneInstance = RuntimeManager.CreateInstance(currentQuestData.megaphoneAudio);
-
             megaphoneInstance.setCallback(markerCallback, FMOD.Studio.EVENT_CALLBACK_TYPE.TIMELINE_MARKER | FMOD.Studio.EVENT_CALLBACK_TYPE.STOPPED);
             megaphoneInstance.start();
             megaphoneInstance.release();
@@ -131,14 +206,13 @@ public class TutorialQuestView : View
         }
     }
 
-
-
     private void PopulateTasks()
     {
         if (questTitleText != null && currentQuestData != null)
         {
-            questTitleText.text = currentQuestData.questTitle;
+            questTitleText.text = currentQuestData.localizedQuestTitle.GetLocalizedString();
         }
+
         var myTasks = (myRole == PlayerRole.Technician) ? currentQuestData.technicianTasks : currentQuestData.engineerTasks;
 
         foreach (var task in myTasks)
@@ -149,10 +223,13 @@ public class TutorialQuestView : View
 
             GameObject newTaskUI = Instantiate(taskTextPrefab, taskContainer);
             TextMeshProUGUI tmp = newTaskUI.GetComponent<TextMeshProUGUI>();
-            tmp.text = task.requiredAmount > 1 ? $"{task.taskDescription} (0/{task.requiredAmount})" : task.taskDescription;
+
+            taskUIElements.Add(task.actionType, tmp);
+
+            // Metin atamasını ortak fonksiyondan yapıyoruz
+            UpdateTaskUIText(task.actionType);
 
             if (task.isHiddenInitially) newTaskUI.SetActive(false);
-            taskUIElements.Add(task.actionType, tmp);
         }
     }
 
@@ -162,10 +239,11 @@ public class TutorialQuestView : View
         {
             if (command == "AUDIO_STOPPED")
             {
+                currentSubtitleIndex = -1;
                 subtitleText.text = "";
                 if (questTitleText != null && currentQuestData != null)
                 {
-                    questTitleText.text = currentQuestData.questTitle;
+                    questTitleText.text = currentQuestData.localizedQuestTitle.GetLocalizedString();
                     questTitleText.DOFade(1f, 0.5f);
                 }
                 PopulateTasks();
@@ -182,18 +260,19 @@ public class TutorialQuestView : View
             }
             else if (int.TryParse(command, out int markerIndex))
             {
-                if (currentQuestData.introSubtitles != null && markerIndex < currentQuestData.introSubtitles.Count)
+                if (currentQuestData.localizedIntroSubtitles != null && markerIndex < currentQuestData.localizedIntroSubtitles.Count)
                 {
+                    currentSubtitleIndex = markerIndex;
 
                     subtitleText.DOFade(0, 0.3f).OnComplete(() =>
                     {
-                        subtitleText.text = $"{currentQuestData.introSubtitles[markerIndex]}";
+                        subtitleText.text = currentQuestData.localizedIntroSubtitles[markerIndex].GetLocalizedString();
                         subtitleText.DOFade(1, 0.3f);
                     });
-
                 }
             }
         }
+
         if (currentQuestData == null || canvasGroup.alpha == 0 || isWaitingForPartner) return;
 
         if (unlockedTasks.ContainsKey(TutorialAction.WalkWASD) && unlockedTasks[TutorialAction.WalkWASD] && currentProgress[TutorialAction.WalkWASD] < activeTasks[TutorialAction.WalkWASD].requiredAmount)
@@ -218,11 +297,11 @@ public class TutorialQuestView : View
         QuestTask task = activeTasks[actionType];
         TextMeshProUGUI tmp = taskUIElements[actionType];
 
+        // Yeni metni ve renkleri güncelle
+        UpdateTaskUIText(actionType);
+
         if (currentProgress[actionType] >= task.requiredAmount)
         {
-            tmp.text = task.requiredAmount > 1
-                ? $"<sprite name=check> {task.taskDescription} ({task.requiredAmount}/{task.requiredAmount}) "
-                : $"<sprite name=check> {task.taskDescription}";
             tmp.DOColor(Color.green, 0.3f);
             tmp.transform.DOPunchScale(Vector3.one * 0.15f, 0.2f, 10, .5f);
 
@@ -253,10 +332,6 @@ public class TutorialQuestView : View
             }
 
             CheckAllTasksCompleted();
-        }
-        else
-        {
-            tmp.text = $"{task.taskDescription} ({currentProgress[actionType]}/{task.requiredAmount})";
         }
     }
 
@@ -295,8 +370,8 @@ public class TutorialQuestView : View
         if (waitingStatusText == null || currentQuestData == null) return;
 
         string baseText = (myRole == PlayerRole.Engineer)
-            ? currentQuestData.waitingForTechnicianText
-            : currentQuestData.waitingForEngineerText;
+            ? currentQuestData.localizedWaitingForTechText.GetLocalizedString()
+            : currentQuestData.localizedWaitingForEngText.GetLocalizedString();
 
         int partnerTotalTasks = (myRole == PlayerRole.Engineer)
             ? currentQuestData.technicianTasks.Count

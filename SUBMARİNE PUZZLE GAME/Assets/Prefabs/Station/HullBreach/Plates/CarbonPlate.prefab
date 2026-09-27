@@ -591,6 +591,7 @@ GameObject:
   - component: {fileID: 8075905252758980282}
   - component: {fileID: 5746992874918776041}
   - component: {fileID: 5750008575159087552}
+  - component: {fileID: 67051415282361205}
   m_Layer: 0
   m_Name: TitleText
   m_TagString: Untagged
@@ -761,6 +762,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 5746992874918776041}
   m_maskType: 0
+--- !u!114 &67051415282361205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5459003195685937275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388545
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &6131586640248357023
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,6 +798,7 @@ GameObject:
   - component: {fileID: 4609599632221958399}
   - component: {fileID: 3462147992014272487}
   - component: {fileID: 2082895528835989145}
+  - component: {fileID: 8471944345588797417}
   m_Layer: 0
   m_Name: TitleText (1)
   m_TagString: Untagged
@@ -942,6 +969,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3462147992014272487}
   m_maskType: 0
+--- !u!114 &8471944345588797417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6131586640248357023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37697203265388545
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &7288838382883262000
 GameObject:
   m_ObjectHideFlags: 0

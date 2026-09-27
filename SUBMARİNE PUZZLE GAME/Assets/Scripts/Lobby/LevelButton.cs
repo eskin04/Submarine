@@ -21,6 +21,10 @@ public class LevelButton : MonoBehaviour
     public void SetupButton(bool isUnlocked, bool isHost, System.Action<int> onClickAction)
     {
         levelText.text = "Level " + levelData.levelID.ToString();
+        if (levelData.levelID == 0)
+        {
+            levelText.text = "Tutorial";
+        }
         myButton.onClick.RemoveAllListeners();
 
         if (isUnlocked)

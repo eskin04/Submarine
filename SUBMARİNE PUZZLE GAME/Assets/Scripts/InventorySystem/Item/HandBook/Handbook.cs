@@ -92,16 +92,16 @@ public class Handbook : NetworkBehaviour, IInventoryItem
 
         if (isOwner && Input.GetKeyDown(operateKey) && !isOperating)
         {
-            isOperate = !isOperate;
-            isOperating = true;
-
-            if (isOperate)
+            if (!isOperate)
             {
                 if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
                 {
+                    if (view.ShouldBlockAction(TutorialAction.OpenManual)) return;
                     view.OnActionPerformed(TutorialAction.OpenManual);
                 }
             }
+            isOperate = !isOperate;
+            isOperating = true;
 
             ToggleBookAnim();
             ToggleSound();

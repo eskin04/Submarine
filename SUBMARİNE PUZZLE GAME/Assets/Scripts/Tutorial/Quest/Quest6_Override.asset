@@ -13,10 +13,24 @@ MonoBehaviour:
   m_Name: Quest6_Override
   m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
   questIndex: 6
-  questTitle: Another day in ZOKA-46
-  introSubtitles:
-  - Speaking of the devil! A station is broken in the submarine! Unfortunately we
-    exceeded our orientation budget. Good luck down there!
+  localizedQuestTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047370
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedIntroSubtitles:
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047364
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   megaphoneAudio:
     Guid:
       Data1: 1338094515
@@ -25,16 +39,51 @@ MonoBehaviour:
       Data4: -1411889429
     Path: event:/SFX/VoiceOverannouncement/Quest6VoiceOver
   technicianTasks:
-  - taskDescription: 'Fix the broken station: Override Protocol! '
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047385
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 21
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 0
   engineerTasks:
-  - taskDescription: 'Fix the broken station: Override Protocol! '
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047385
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 21
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 0
-  waitingForTechnicianText: Waiting for Technician
-  waitingForEngineerText: Waiting for Engineer
+  localizedWaitingForTechText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323046510592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedWaitingForEngText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323008761856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

@@ -26,7 +26,6 @@ public class Keycard_EngineerUI : MonoBehaviour
 
     private void OnLanguageChanged(Locale newLocale)
     {
-        // Dil değişirse mevcut kartı yeni dilde tekrar ekrana bas
         UpdateSocketVisual(activeCardID, activeCondition);
     }
 
@@ -45,7 +44,6 @@ public class Keycard_EngineerUI : MonoBehaviour
     {
         activeCardID = -1;
 
-        // Bekleme metninin Key'ini verip argümanları temizliyoruz
         uiInfoString.Arguments = null;
         uiInfoString.TableEntryReference = "ui_waiting_input";
         uiInfoString.RefreshString();
@@ -61,13 +59,10 @@ public class Keycard_EngineerUI : MonoBehaviour
             return;
         }
 
-        // 1. Parser'dan şablon şifresini ve çevrilmiş kelimeleri (Argümanları) al
         var (templateKey, arguments) = Keycard_ConditionParser.GetLocalizationData(condition);
 
-        // 2. Argümanları sisteme yükle (Race condition hatasını önlemek için önce argüman)
         uiInfoString.Arguments = new object[] { arguments };
 
-        // 3. Şablon şifresini ayarla ve zorla yenile
         uiInfoString.TableEntryReference = templateKey;
         uiInfoString.RefreshString();
     }

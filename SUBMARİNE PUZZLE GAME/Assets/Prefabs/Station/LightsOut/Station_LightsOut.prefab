@@ -151,6 +151,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  CanOutlined: 1
 --- !u!114 &6989398254605157459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +171,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!114 &3618247698385055660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1142,6 +1144,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &202259396895020159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1161,6 +1164,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!114 &5931046840075462551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1680,7 +1684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae7d8858120a6704bb38a705d296403c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
-  displayName: Pull Lever
+  displayName: Pull The Lever
   interactKeys: 6500000043010000
   isInteractable: 1
   canDisableInteraction: 1
@@ -1714,6 +1718,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &7886503976297416016
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,11 +13,32 @@ MonoBehaviour:
   m_Name: Quest1_Movement
   m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
   questIndex: 1
-  questTitle: Navigate the Zoka-46 submersible.
-  introSubtitles:
-  - Welcome, welcome the one and only employees of Nova Dynamics! First of all we
-    need some hands on practice before you guys go on actual missions!
-  - "So let\u2019s start by learning how to walk!"
+  localizedQuestTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047365
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedIntroSubtitles:
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37711362489106432
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752119853056
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   megaphoneAudio:
     Guid:
       Data1: -842280182
@@ -26,26 +47,77 @@ MonoBehaviour:
       Data4: -717643768
     Path: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
   technicianTasks:
-  - taskDescription: WASD to walk
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047371
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 0
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 2
-  - taskDescription: Space to jump!
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047372
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 1
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 0
   engineerTasks:
-  - taskDescription: WASD to walk
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047371
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 0
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 2
-  - taskDescription: Space to jump!
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047372
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 1
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 0
-  waitingForTechnicianText: Waiting for Technician
-  waitingForEngineerText: Waiting for Engineer
+  localizedWaitingForTechText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323046510592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedWaitingForEngText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323008761856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

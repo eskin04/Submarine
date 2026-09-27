@@ -23,7 +23,7 @@ public class EngineerLockDown_Door : NetworkBehaviour
 
     private Vector3 closedPos;
     private Tween currentTween;
-    private bool isDoorOpen = true;
+    private bool isDoorOpen = false;
 
     private void Awake()
     {
@@ -32,6 +32,7 @@ public class EngineerLockDown_Door : NetworkBehaviour
             closedPos = doorPanel.localPosition;
             // doorPanel.localPosition = closedPos + openOffset;
         }
+
 
     }
 

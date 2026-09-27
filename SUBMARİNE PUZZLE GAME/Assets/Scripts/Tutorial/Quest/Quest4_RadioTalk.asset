@@ -13,11 +13,32 @@ MonoBehaviour:
   m_Name: Quest4_RadioTalk
   m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
   questIndex: 4
-  questTitle: Chit Chat!
-  introSubtitles:
-  - "Now that you know how to communicate with items, it\u2019s time for you to learn
-    communicating with your voice. "
-  - Use your radio to talk with your companion!
+  localizedQuestTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047368
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedIntroSubtitles:
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752119853061
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047360
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   megaphoneAudio:
     Guid:
       Data1: 1371045947
@@ -26,26 +47,77 @@ MonoBehaviour:
       Data4: 801922506
     Path: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
   technicianTasks:
-  - taskDescription: Hold [Q] to transmit signal
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37759951982608384
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 14
     requiredAmount: 5
     isHiddenInitially: 0
     revealsAfter: 0
-  - taskDescription: Listen to Engineer's reply
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37759952016162818
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 15
     requiredAmount: 5
     isHiddenInitially: 1
     revealsAfter: 14
   engineerTasks:
-  - taskDescription: Listen to Technician's transmission
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37759952016162816
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 15
     requiredAmount: 5
     isHiddenInitially: 0
     revealsAfter: 0
-  - taskDescription: Hold [Q] to reply
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37759952016162817
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 14
     requiredAmount: 5
     isHiddenInitially: 1
     revealsAfter: 15
-  waitingForTechnicianText: Waiting for Technician
-  waitingForEngineerText: Waiting for Engineer
+  localizedWaitingForTechText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323046510592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedWaitingForEngText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323008761856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

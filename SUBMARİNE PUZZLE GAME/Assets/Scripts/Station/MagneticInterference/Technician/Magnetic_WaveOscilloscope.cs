@@ -3,9 +3,13 @@ using System.Collections;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.UI;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using System.Collections.Generic;
 
 public class Magnetic_WaveOscilloscope : MonoBehaviour
 {
+
     [Header("References")]
     public Magnetic_StationManager stationManager;
     public Renderer oscilloscopeScreen;
@@ -45,9 +49,47 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
     private readonly int playerAmpID = Shader.PropertyToID("_PlayerAmplitude");
     private readonly int playerPhaseID = Shader.PropertyToID("_PlayerPhase");
 
+    private LocalizedString uiChannelNameString = new LocalizedString();
+
     private void Awake()
     {
         if (oscilloscopeScreen != null) screenMaterial = oscilloscopeScreen.material;
+
+        uiChannelNameString.StringChanged += OnTranslatedChannelReady;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDestroy()
+    {
+        uiChannelNameString.StringChanged -= OnTranslatedChannelReady;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnTranslatedChannelReady(string translatedText)
+    {
+        if (channelNameText != null)
+        {
+            channelNameText.text = translatedText;
+        }
+    }
+
+    private void OnLanguageChanged(Locale newLocale)
+    {
+        // Dil değiştiğinde yazıyı anında o anki aktif kanala göre yenile
+        UpdateChannelLocalization();
+    }
+
+    private void UpdateChannelLocalization()
+    {
+        var args = new Dictionary<string, string>
+        {
+            { "Number", (currentlyViewedChannel + 1).ToString() }
+        };
+
+        uiChannelNameString.Arguments = new object[] { args };
+        uiChannelNameString.TableReference = "UI_General";
+        uiChannelNameString.TableEntryReference = "mag_channel_name";
+        uiChannelNameString.RefreshString();
     }
 
     private void Start()
@@ -99,10 +141,7 @@ public class Magnetic_WaveOscilloscope : MonoBehaviour
 
         currentlyViewedChannel = channelIndex;
 
-        if (channelNameText != null)
-        {
-            channelNameText.text = $"Channel {currentlyViewedChannel + 1}";
-        }
+        UpdateChannelLocalization();
 
         for (int i = 0; i < channelButtons.Length; i++)
         {

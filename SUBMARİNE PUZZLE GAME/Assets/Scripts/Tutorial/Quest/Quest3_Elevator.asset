@@ -13,10 +13,32 @@ MonoBehaviour:
   m_Name: Quest3_Elevator
   m_EditorClassIdentifier: Assembly-CSharp::TutorialQuestData
   questIndex: 3
-  questTitle: Learn MORE about Nova Dynamics employee bonuses.
-  introSubtitles:
-  - "Perfect! You both have some drawing skills!. What a shame\u2026"
-  - ANYWAYS! You can use the elevator to send items from your floor to your colleague!
+  localizedQuestTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752124047367
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedIntroSubtitles:
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752119853059
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  - m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37721752119853060
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   megaphoneAudio:
     Guid:
       Data1: -631235293
@@ -25,76 +47,207 @@ MonoBehaviour:
       Data4: 1519033734
     Path: event:/SFX/VoiceOverannouncement/Quest3VoiceOver
   technicianTasks:
-  - taskDescription: Use Mouse Whell Up/Down to cycle through your inventory.
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047379
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 9
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 2
-  - taskDescription: E to interact with the elevator (While holding items)
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047381
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 7
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 9
-  - taskDescription: Send one notebook page to Engineer
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047391
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 10
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 7
-  - taskDescription: Wait for Engineer to pick up the page and send you their page.
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047392
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 11
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 10
-  - taskDescription: E to pick up items
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047380
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 12
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 11
-  - taskDescription: 'R to see where you can attach the page (While holding a page) '
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047382
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 13
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 12
-  - taskDescription: Left Click to attach the page on a wall
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047383
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 8
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 13
   engineerTasks:
-  - taskDescription: Use Mouse Whell Up/Down to cycle through your inventory.
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047379
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 9
     requiredAmount: 1
     isHiddenInitially: 0
     revealsAfter: 2
-  - taskDescription: Wait for Technician to send you a page via elevator.
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047386
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 11
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 9
-  - taskDescription: E to pick up items
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047380
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 12
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 11
-  - taskDescription: E to interact with the elevator (While holding items)
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047381
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 7
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 12
-  - taskDescription: Send one of YOUR notebook page to Technician
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047387
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 10
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 7
-  - taskDescription: 'R to see where you can attach the page (While holding a page) '
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047382
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 13
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 10
-  - taskDescription: Left Click to attach the page on a wall
+  - localizedTaskDescription:
+      m_TableReference:
+        m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+      m_TableEntryReference:
+        m_KeyId: 37721752124047383
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
     actionType: 8
     requiredAmount: 1
     isHiddenInitially: 1
     revealsAfter: 13
-  waitingForTechnicianText: Waiting for Technician
-  waitingForEngineerText: Waiting for Engineer
+  localizedWaitingForTechText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323046510592
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedWaitingForEngText:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37747323008761856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

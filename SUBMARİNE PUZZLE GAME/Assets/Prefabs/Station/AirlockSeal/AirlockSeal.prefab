@@ -647,6 +647,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &5830644525077965544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,6 +667,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!65 &8269726014969863331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2170,6 +2172,7 @@ GameObject:
   - component: {fileID: 6200750395439732753}
   - component: {fileID: 2700104382378718274}
   - component: {fileID: 8463715687115664124}
+  - component: {fileID: 7511725009190894069}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -2340,6 +2343,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2700104382378718274}
   m_maskType: 0
+--- !u!114 &7511725009190894069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648546754607626211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37384785519755264
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1682095170903530700
 GameObject:
   m_ObjectHideFlags: 0
@@ -4665,6 +4693,7 @@ GameObject:
   - component: {fileID: 2893008571632102611}
   - component: {fileID: 4864259906652229639}
   - component: {fileID: 8047906879969623480}
+  - component: {fileID: 3850120147276996174}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -4835,6 +4864,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 4864259906652229639}
   m_maskType: 0
+--- !u!114 &3850120147276996174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5304053982393586026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff9b965624cb8649b729330bb46817d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTextLocalizer
+  localizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:648ae563c35fd1845be6bf358d242e57
+    m_TableEntryReference:
+      m_KeyId: 37384785519755264
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  smartArguments: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &5642913819717949413
 GameObject:
   m_ObjectHideFlags: 0
@@ -7480,6 +7534,7 @@ MonoBehaviour:
   onStopInteract:
     m_PersistentCalls:
       m_Calls: []
+  CanOutlined: 1
 --- !u!114 &1738559996635332297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7499,6 +7554,7 @@ MonoBehaviour:
   isUnlockCursor: 1
   isMoveable: 0
   modulePrompts: []
+  isNotebookModule: 0
 --- !u!65 &1518237146546995807
 BoxCollider:
   m_ObjectHideFlags: 0

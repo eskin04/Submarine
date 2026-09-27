@@ -41,7 +41,7 @@ public class HullBreach_StationManager : NetworkBehaviour
     [SerializeField] private float depthChangeRangeEnd = 150f;
     [Header("Live State (SyncVars)")]
     public SyncVar<bool> isRoundActive = new SyncVar<bool>(false);
-    public SyncVar<int> currentDepth = new SyncVar<int>(200);
+    public SyncVar<int> currentDepth = new SyncVar<int>(0);
 
     [Header("Phase Settings")]
     [Tooltip("Tablodaki değerlere göre ayarlanmış başlangıç durumları")]
@@ -306,7 +306,7 @@ public class HullBreach_StationManager : NetworkBehaviour
         else
         {
             Debug.LogWarning($"<color=orange>[SERVER]</color> Hatalı plaka denemesi!");
-            TargetShowWarning(info.sender, "Wrong Plate!");
+            TargetShowWarning(info.sender, "msg_wrong_plate");
         }
     }
 

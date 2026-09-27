@@ -310,6 +310,10 @@ public class RadioVoiceManager : MonoBehaviour
         {
             return;
         }
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            if (view.ShouldBlockAction(TutorialAction.RadioTalk)) return;
+        }
         OnRadioStateChanged?.Invoke(true);
 
         if (isRadioBroken)
@@ -344,6 +348,14 @@ public class RadioVoiceManager : MonoBehaviour
 
     void StopTransmission()
     {
+        if (TutorialInputManager.Instance != null && !TutorialInputManager.Instance.CanUseRadio.value)
+        {
+            return;
+        }
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            if (view.ShouldBlockAction(TutorialAction.RadioTalk)) return;
+        }
         OnRadioStateChanged?.Invoke(false);
 
 

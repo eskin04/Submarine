@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using System.Collections.Generic;
 
 public class Magnetic_EngineerUI : MonoBehaviour
 {
@@ -21,6 +24,45 @@ public class Magnetic_EngineerUI : MonoBehaviour
     public TextMeshProUGUI rightEquationText;
 
     private int currentlyViewedChannel = 0;
+    private LocalizedString uiChannelIndicatorString = new LocalizedString();
+
+    private void Awake()
+    {
+        uiChannelIndicatorString.StringChanged += OnTranslatedChannelReady;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDestroy()
+    {
+        uiChannelIndicatorString.StringChanged -= OnTranslatedChannelReady;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnTranslatedChannelReady(string translatedText)
+    {
+        if (channelIndicatorText != null)
+        {
+            channelIndicatorText.text = translatedText;
+        }
+    }
+
+    private void OnLanguageChanged(Locale newLocale)
+    {
+        UpdateChannelLocalization();
+    }
+
+    private void UpdateChannelLocalization()
+    {
+        var args = new Dictionary<string, string>
+        {
+            { "Number", (currentlyViewedChannel + 1).ToString() }
+        };
+
+        uiChannelIndicatorString.Arguments = new object[] { args };
+        uiChannelIndicatorString.TableReference = "UI_General";
+        uiChannelIndicatorString.TableEntryReference = "mag_channel_name";
+        uiChannelIndicatorString.RefreshString();
+    }
 
     private void OnEnable()
     {
@@ -80,9 +122,7 @@ public class Magnetic_EngineerUI : MonoBehaviour
 
         currentlyViewedChannel = channelIndex;
 
-        if (channelIndicatorText != null)
-            channelIndicatorText.text = $"CH-{currentlyViewedChannel + 1}";
-
+        UpdateChannelLocalization();
         UpdateNavigationButtons(maxUnlocked);
         UpdateVariableStatus(currentlyViewedChannel, maxUnlocked);
         LoadChannelEquation(currentlyViewedChannel);

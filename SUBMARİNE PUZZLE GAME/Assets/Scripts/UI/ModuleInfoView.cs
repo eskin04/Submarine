@@ -45,13 +45,13 @@ public class ModuleInfoView : View
     {
     }
 
-    public void SetWarningText(string text)
+    public void SetWarningText(string localizationKey)
     {
         if (warningText == null || _warningRect == null) return;
 
         _warningSequence?.Kill();
 
-        warningText.text = text;
+        warningText.text = LocalizationHelper.GetTranslatedText("UI_General", localizationKey);
 
         _warningRect.anchoredPosition = _originalPos - new Vector2(0, yOffset);
         warningText.alpha = 0f;
