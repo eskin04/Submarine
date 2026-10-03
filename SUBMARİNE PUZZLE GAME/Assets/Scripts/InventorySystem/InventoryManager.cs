@@ -19,6 +19,8 @@ public class InventoryManager : NetworkBehaviour
     [SerializeField] private GameObject handbookPrefab;
 
     private InventoryItemContainer[] containers;
+    private SyncVar<ulong> inventoryVersion = new SyncVar<ulong>();
+    public ulong InventoryVersion => inventoryVersion.value;
     private int currentSlotIndex = -1;
 
     private PlayerInventory playerInventory;
@@ -43,6 +45,21 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (!asServer) return;
+
+        InitializeContainers();
+        inventoryVersion.value = ItemLoot.NextStateVersion(this);
+    }
+
+    private void InitializeContainers()
+    {
+        containers = new InventoryItemContainer[inventorySize];
+        for (int i = 0; i < inventorySize; i++) containers[i] = new InventoryItemContainer();
+    }
+
     protected override void OnSpawned()
     {
         playerInventory = GetComponent<PlayerInventory>();
@@ -59,8 +76,9 @@ public class InventoryManager : NetworkBehaviour
 
         if (!isOwner) return;
 
-        containers = new InventoryItemContainer[inventorySize];
-        for (int i = 0; i < inventorySize; i++) containers[i] = new InventoryItemContainer();
+        // Host already allocated this same array on its server-side spawn.
+        // Remote owners retain their local UI membership until transfers are migrated.
+        if (!isServer) InitializeContainers();
 
         inventoryUI = InstanceHandler.GetInstance<InventoryUI>();
 

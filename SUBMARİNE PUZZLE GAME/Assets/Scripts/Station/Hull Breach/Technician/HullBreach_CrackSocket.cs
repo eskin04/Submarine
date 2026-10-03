@@ -1,5 +1,14 @@
 using UnityEngine;
 using PurrNet;
+using PurrNet.Packing;
+
+public struct HullSocketSnapshot : IPackedAuto
+{
+    public ItemSocketOccupancy Occupancy;
+    public int CrackID;
+    public CrackState State;
+    public float PlacementRotation;
+}
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(Collider))]
@@ -24,6 +33,23 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     public bool isCrackSpawned = false;
     public HullBreach_PlateItem slottedPlate;
     public bool isFixed = false;
+
+    // No presentation subscription yet: legacy crack/plate paths remain unchanged.
+    private SyncVar<HullSocketSnapshot> snapshot = new SyncVar<HullSocketSnapshot>();
+    public HullSocketSnapshot Snapshot => snapshot.value;
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (!asServer) return;
+
+        snapshot.value = new HullSocketSnapshot
+        {
+            Occupancy = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) },
+            CrackID = -1,
+            State = CrackState.Inactive
+        };
+    }
 
     private Interactable interactable;
     private Collider socketCollider;

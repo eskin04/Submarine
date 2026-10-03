@@ -20,6 +20,18 @@ public class HullBreach_ChargeStation : NetworkBehaviour
     [Header("Live State")]
     public HullBreach_DrillItem slottedDrill;
 
+    // Initialized foundation; legacy station behavior still uses slottedDrill.
+    private SyncVar<ItemSocketOccupancy> occupancy = new SyncVar<ItemSocketOccupancy>();
+    public ItemSocketOccupancy Occupancy => occupancy.value;
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (!asServer) return;
+
+        occupancy.value = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) };
+    }
+
     private Interactable interactable;
     private Collider stationCollider;
 

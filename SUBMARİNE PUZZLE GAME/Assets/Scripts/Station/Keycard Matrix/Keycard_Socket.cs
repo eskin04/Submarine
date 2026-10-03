@@ -13,6 +13,18 @@ public class Keycard_Socket : NetworkBehaviour
 
     public Keycard_Item slottedCard;
 
+    // Initialized foundation; legacy station behavior still uses slottedCard.
+    private SyncVar<ItemSocketOccupancy> occupancy = new SyncVar<ItemSocketOccupancy>();
+    public ItemSocketOccupancy Occupancy => occupancy.value;
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (!asServer) return;
+
+        occupancy.value = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) };
+    }
+
     private Interactable interactable;
     private Collider socketCollider;
 
