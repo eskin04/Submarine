@@ -1,26 +1,52 @@
 using PurrNet;
 using UnityEngine;
-using System.Collections;
 
 public class TutorialOrientationState : TutorialQuestBaseState
 {
-    public override void Enter(bool asServer)
-    {
-        base.Enter(asServer);
-    }
-
     protected override void OnQuestStart()
     {
-
-        RpcShowOrientationView();
-
         TutorialInputManager.Instance?.LockInitialInteractions();
+    }
+
+    protected override void OnQuestAudioFinished()
+    {
+        RpcShowOrientationView();
     }
 
     [ObserversRpc(runLocally: true)]
     private void RpcShowOrientationView()
     {
-        Debug.Log("[Tutorial UI] Oryantasyon Videosu ve Sözleşme gösteriliyor...");
+        InstanceHandler.GetInstance<GameViewManager>()?.ShowView<ContractView>(hideOthers: false);
 
+        ContractView.OnContractRead += HandleContractRead;
+        ContractView.OnContractSigned += HandleContractSigned;
+    }
+
+    private void HandleContractRead()
+    {
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.ReadContract);
+        }
+    }
+
+    private void HandleContractSigned()
+    {
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        {
+            view.OnActionPerformed(TutorialAction.SignContract);
+        }
+
+        InstanceHandler.GetInstance<GameViewManager>()?.HideView<ContractView>();
+    }
+
+    public override void Exit(bool asServer)
+    {
+        base.Exit(asServer);
+
+        ContractView.OnContractRead -= HandleContractRead;
+        ContractView.OnContractSigned -= HandleContractSigned;
+
+        InstanceHandler.GetInstance<GameViewManager>()?.HideView<ContractView>();
     }
 }

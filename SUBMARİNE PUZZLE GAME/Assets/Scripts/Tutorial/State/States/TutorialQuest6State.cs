@@ -36,7 +36,7 @@ public class TutorialQuest6State : TutorialQuestBaseState
 
         if (hullBreachImpulse != null)
         {
-            hullBreachImpulse.GenerateImpulse(.5f);
+            hullBreachImpulse.GenerateImpulse(.25f);
         }
     }
 

@@ -23,6 +23,7 @@ public class TutorialWaitState : StateNode
 
         MainGameState.startTutorial -= OnMainTutorialStarted;
 
+        if (this == null || machine == null) return;
         machine.StartCoroutine(WaitForNextFrameAndNextState());
     }
 
@@ -32,6 +33,10 @@ public class TutorialWaitState : StateNode
         machine.Next();
     }
 
+    protected override void OnDestroy()
+    {
+        MainGameState.startTutorial -= OnMainTutorialStarted;
+    }
 
 
     public override void Exit(bool asServer)

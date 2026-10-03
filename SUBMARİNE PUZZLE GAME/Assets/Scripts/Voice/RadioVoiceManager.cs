@@ -33,6 +33,7 @@ public class RadioVoiceManager : MonoBehaviour
     private bool isLoggedIn = false;
     private bool isConnectingToVivox = false;
     private string currentChannelName = "";
+    private bool isTransmitting = false;
 
     void Awake()
     {
@@ -315,7 +316,7 @@ public class RadioVoiceManager : MonoBehaviour
             if (view.ShouldBlockAction(TutorialAction.RadioTalk)) return;
         }
         OnRadioStateChanged?.Invoke(true);
-
+        isTransmitting = true;
         if (isRadioBroken)
         {
             if (_activeStaticEmitter != null)
@@ -348,16 +349,16 @@ public class RadioVoiceManager : MonoBehaviour
 
     void StopTransmission()
     {
-        if (TutorialInputManager.Instance != null && !TutorialInputManager.Instance.CanUseRadio.value)
+        if (TutorialInputManager.Instance != null && !TutorialInputManager.Instance.CanUseRadio.value && !isTransmitting)
         {
             return;
         }
-        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view) && !isTransmitting)
         {
             if (view.ShouldBlockAction(TutorialAction.RadioTalk)) return;
         }
         OnRadioStateChanged?.Invoke(false);
-
+        isTransmitting = false;
 
         if (isRadioBroken)
         {

@@ -20,7 +20,9 @@ public enum TutorialAction
     PickUpManual,
     OpenManual,
     TurnManualPage,
-    FixOverrideStation
+    FixOverrideStation,
+    ReadContract,
+    SignContract
 
 }
 

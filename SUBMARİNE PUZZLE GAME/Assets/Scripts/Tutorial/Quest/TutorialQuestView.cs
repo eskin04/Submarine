@@ -9,8 +9,8 @@ using FMODUnity;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System;
-using UnityEngine.Localization; // Eklendi
-using UnityEngine.Localization.Settings; // Eklendi
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class TutorialQuestView : View
 {
@@ -40,7 +40,7 @@ public class TutorialQuestView : View
     private Dictionary<TutorialAction, QuestTask> activeTasks = new Dictionary<TutorialAction, QuestTask>();
     private Dictionary<TutorialAction, TextMeshProUGUI> taskUIElements = new Dictionary<TutorialAction, TextMeshProUGUI>();
 
-    private int currentSubtitleIndex = -1; // Dil değişiminde mevcut altyazıyı yakalayabilmek için
+    private int currentSubtitleIndex = -1;
 
     void Awake()
     {
@@ -56,7 +56,7 @@ public class TutorialQuestView : View
     private void OnEnable()
     {
         TutorialManager.OnPlayerProgressUpdated += HandlePartnerProgress;
-        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged; // Dil değişimi takibi
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
     }
 
     private void OnDisable()
@@ -68,7 +68,6 @@ public class TutorialQuestView : View
     public override void OnShow() { }
     public override void OnHide() { }
 
-    // DİL DEĞİŞTİĞİ AN ÇALIŞACAK MERKEZİ GÜNCELLEYİCİ
     private void OnLanguageChanged(Locale newLocale)
     {
         RefreshAllTexts();
@@ -78,25 +77,21 @@ public class TutorialQuestView : View
     {
         if (currentQuestData == null) return;
 
-        // 1. Başlık Güncellemesi
         if (questTitleText != null && questTitleText.alpha > 0)
         {
             questTitleText.text = currentQuestData.localizedQuestTitle.GetLocalizedString();
         }
 
-        // 2. Aktif Altyazı Güncellemesi
         if (currentSubtitleIndex >= 0 && subtitleText != null && subtitleText.alpha > 0)
         {
             subtitleText.text = currentQuestData.localizedIntroSubtitles[currentSubtitleIndex].GetLocalizedString();
         }
 
-        // 3. Görevlerin Güncellemesi
         foreach (var action in activeTasks.Keys)
         {
             UpdateTaskUIText(action);
         }
 
-        // 4. Bekleme Ekranı Güncellemesi
         if (isWaitingForPartner && waitingStatusText != null && waitingStatusText.gameObject.activeSelf)
         {
             int partnerProgress = (myRole == PlayerRole.Engineer)
@@ -106,7 +101,6 @@ public class TutorialQuestView : View
         }
     }
 
-    // GÖREV METNİ OLUŞTURMA YARDIMCISI (DRY Prensibi)
     private void UpdateTaskUIText(TutorialAction actionType)
     {
         if (!activeTasks.ContainsKey(actionType) || !taskUIElements.ContainsKey(actionType)) return;
@@ -115,7 +109,6 @@ public class TutorialQuestView : View
         TextMeshProUGUI tmp = taskUIElements[actionType];
         int current = currentProgress[actionType];
 
-        // Temiz metni tablodan çekiyoruz
         string baseDesc = task.localizedTaskDescription.GetLocalizedString();
 
         if (current >= task.requiredAmount)
@@ -226,7 +219,6 @@ public class TutorialQuestView : View
 
             taskUIElements.Add(task.actionType, tmp);
 
-            // Metin atamasını ortak fonksiyondan yapıyoruz
             UpdateTaskUIText(task.actionType);
 
             if (task.isHiddenInitially) newTaskUI.SetActive(false);
@@ -297,7 +289,6 @@ public class TutorialQuestView : View
         QuestTask task = activeTasks[actionType];
         TextMeshProUGUI tmp = taskUIElements[actionType];
 
-        // Yeni metni ve renkleri güncelle
         UpdateTaskUIText(actionType);
 
         if (currentProgress[actionType] >= task.requiredAmount)

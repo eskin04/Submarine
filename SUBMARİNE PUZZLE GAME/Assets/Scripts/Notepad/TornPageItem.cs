@@ -242,9 +242,7 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
 
 
     }
-    // =========================================================================================
-    // IInventoryItem Implementation
-    // =========================================================================================
+
     public void OnEquip()
     {
         isEquippedLocally = true;

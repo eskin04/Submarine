@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 using DG.Tweening;
 using FMODUnity;
-using UnityEngine.UI;
 
 public class Handbook : NetworkBehaviour, IInventoryItem
 {
