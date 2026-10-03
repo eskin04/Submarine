@@ -1,138 +1,247 @@
-\# Technical Debt
+# Technical Debt
 
+This register records meaningful correctness, architecture, networking, performance and maintenance debt. It is not a stylistic checklist. All findings are open; no production changes were made.
 
+## Audit scope — 2026-10-03
 
-This document tracks technical debt discovered during repository analysis.
+Read `AGENTS.md` and every document under `docs/` from the main checkout before completing the audit. They were absent from this worktree; provenance and exact baseline are in `ARCHITECTURE.md`. Inspected all 217 C# files under `Assets/Scripts` (24,712 physical lines), including supporting types, views, controls, tutorial states, audio/voice and the embedded vendor Outline. Source hashes match the main checkout. Verified networking against installed PurrNet **1.19.1**, locked Git commit `266cb63efd3d858d6d2fce68c2b0b2364ca78c24`, and Unity **6000.3.10f1**.
 
+Evidence references below are repository-relative source paths and one-based lines at audit baseline. “Confirmed” means the implementation/control flow exists in source; it does not claim a reproduced playtest. Conditional risks name their triggering conditions. No Unity compile, build, profiler capture or multiplayer execution was performed. Source outside `Assets/Scripts` was inspected only to verify package semantics and relevant scene/prefab configuration.
 
+Severity: **Critical** can break networking/game state or cause major corruption/failure; **High** has significant cross-system correctness/maintenance impact; **Medium** is a meaningful targeted improvement; **Low** is useful cleanup without immediate priority. Networking/serialization risk below describes the **proposed refactoring**, not just the existing issue. Authority changes require a separate approved plan; do not silently convert the project to strict server authority.
 
-Do not use this file as a dumping ground for minor stylistic preferences.
+## Critical
 
+### C01 — Effective RPC permissions and command validation are inconsistent
 
+**Evidence:** `Assets/Prefabs/Managers/NetworkManager.prefab:58` resolves to installed PurrNet `Defaults/NetworkRules/Unsafe.asset`, with both require-server and require-owner bypasses enabled. The same manager rules GUID is present in Agreement, Tutorial, Thanks and playtest/station build scenes. `Assets/Scripts/Station/StationController.cs:156–219` exposes destruction, repair, penalty multiplier and timeout commands without sender/role/progression validation. `Assets/Scripts/Gambling/SlotMachine/SlotMachineBackend.cs:82–176` calculates random outcomes locally and accepts a client-supplied water adjustment. Tutorial progress/ready commands in `Assets/Scripts/Tutorial/State/TutorialManager.cs:50–83` trust a role integer rather than a session-bound player role.
 
-Only record issues that meaningfully affect:
+**Problem / impact:** Confirmed authorization gaps: RPC attributes alone do not protect these manager configurations. A connected caller can request repairs/destruction or supply rewards/penalties independently of completed gameplay; negative/non-finite values are not consistently rejected. Client-originated observer calls and local spawning also depend on Unsafe permissions, so simply switching presets would break existing flows.
 
+**Direction:** First document per-command actor, role, object, authority and permitted state. Add explicit trusted caller/context validation, finite/range checks and idempotent transitions in a separately approved authority plan. Choose intentionally whether slot-machine outcomes remain trusted local gameplay or become server-controlled; do not hide that decision inside extraction. Migrate callers before changing rules.
 
+**Verify:** Wrong owner/role, foreign object, replayed command, inactive round, negative/NaN/infinite penalty, altered slot reward, both host/remote roles and rule-preset migration. **Networking / serialization risk:** High / Low. **Status:** Open.
 
-\- maintainability
+### C02 — Inventory extraction has no server-side inventory state and transfers are non-atomic
 
-\- correctness
+**Evidence:** `Assets/Scripts/InventorySystem/InventoryManager.cs:46–77` creates containers and equips a slot only on the owner. `ExtractCurrentHeldItem:221–231` is a runLocally ServerRpc reading that local current slot; the remote player's server instance retains `currentSlotIndex == -1` and returns. Pickup at `355` accepts an object and slot with no trusted sender, bounds, possession, distance or availability check; drop at `493` similarly accepts object/parent/pose. Socket callers such as `Assets/Scripts/Station/Keycard Matrix/Keycard_Socket.cs:55–99` issue extraction and placement separately. Item ownership and parenting change inside these paths.
 
-\- architecture
+**Problem / impact:** Confirmed mismatch between owner-only inventory and replicated commands. A remote extraction can succeed locally while the server extraction does nothing. No common transaction prevents two players competing for an item, stale-slot placement, foreign-item transfer or prediction diverging from accepted state. `runLocally` does not make local slot data authoritative on the server.
 
-\- testability
+**Direction:** Define a validated transfer transaction with explicit player/item/slot/destination and accepted state. Separate local equipment/UI prediction from inventory bookkeeping and replicated physical state. Preserve current ownership and prediction until their migration is approved; avoid making sockets reach through `LocalPlayer` to perform remote mutations.
 
-\- networking
+**Verify:** Remote pickup → extract → socket → remove → drop, simultaneous pickup, invalid slots/items, rejection recovery, disconnect while holding and both role assignments. Check NetworkTransform enablement/owner and Rigidbody mode through every transition. **Networking / serialization risk:** High / Medium. **Status:** Open.
 
-\- performance
+### C03 — Hull plate placement removes every observing player's current item
 
-\- development speed
+**Evidence:** `Assets/Scripts/Station/Hull Breach/Technician/HullBreach_CrackSocket.cs:151–175` uses `[ObserversRpc(runLocally: true)]`, obtains `InventoryManager.LocalPlayer` and calls `RemoveCurrentItem()` on each observer. `Assets/Scripts/Station/Hull Breach/HullBreach_StationManager.cs:282–335` accepts client object/crack placement and completion without proving tool/plate possession and welding completion.
 
+**Problem / impact:** Confirmed cross-player mutation: when one player places a plate, another observer can lose its selected item as well. A server with no local inventory returns before initializing socket gameplay state. Placement is not tied to the initiating inventory transaction; completion can be requested without the expected minigame evidence.
 
+**Direction:** Consume only the identified placing player's item as part of an accepted transaction. Set socket gameplay state explicitly at its controlling side; observer effects should display that accepted state. Validate socket/crack/plate association and welding progression under the approved authority model.
 
-\---
+**Verify:** Both players hold different items; only placer loses the plate. Test remote placer, host placer, rejected/wrong plate, repeated completion and server without a local player if supported. **Networking / serialization risk:** High / Medium. **Status:** Open.
 
+### C04 — Notepad upload accepts unbounded allocation and unchecked chunk writes
 
+**Evidence:** `Assets/Scripts/Notepad/NotepadModule.cs:170–217`: `PrepareImageServerRpc` allocates `new byte[totalSize]`; `SendChunkServerRpc` copies client bytes with unchecked `startIndex`/length. Image dictionaries have no sender binding, quota, expiry or complete-chunk tracking; final-offset completion does not prove every chunk arrived. Client also supplies the target inventory.
 
-\# Severity Levels
+**Problem / impact:** Confirmed remote memory/exception and transfer-integrity risk. Oversized/negative lengths, out-of-range chunks, reused image IDs and abandoned uploads can exhaust memory, throw or create incomplete/cross-player page transfers.
 
+**Direction:** Bound bytes, concurrent uploads and decoded dimensions; bind upload ID/target to trusted sender; check offsets/lengths before copying; track received ranges, reject overlap/conflicts as appropriate, expire/cancel buffers and spawn only a complete validated image. Keep this as a focused protocol improvement rather than a general blob framework.
 
+**Verify:** Malformed sizes/offsets, reordered/missing/duplicate chunks, conflicting IDs, disconnect, quota limit and valid maximum-size transfer. **Networking / serialization risk:** High / Low. **Status:** Open.
 
-\## Critical
+## High
 
+### H01 — PurrNet destruction and subscription lifetimes are not consistently preserved
 
+**Evidence:** `Assets/Scripts/Station/StationController.cs:58`, `Assets/Scripts/Contract/ContractManager.cs:101` and `Assets/Scripts/Tutorial/State/States/TutorialWaitState.cs:36` override OnDestroy without base cleanup. Installed `NetworkIdentity.OnDestroy` performs despawn/ticker teardown. Inventory and other network components subscribe on spawn but clean up only on destruction; no project script implements OnDespawned. Inventory LocalPlayer is not cleared at destruction.
 
-Can cause major bugs, broken networking, data corruption or severe architectural instability.
+**Impact / direction:** Missing base behavior can bypass framework cleanup. Despawn without destruction/reuse can retain callbacks or stale local references. Align subscriptions with the applicable spawn/despawn or enable/disable lifetime, retain a matching delegate and clear owned references safely. Do not assume parameterless OnSpawned doubles on host: PurrNet runs it once. **Verify:** Spawn/despawn without destroy, respawn, scene unload and repeated host sessions; count callbacks and inspect registration cleanup. **Networking / serialization risk:** Medium / Low. **Status:** Open.
 
+### H02 — State-node side dispatch causes duplicate host subscriptions and peer-side gameplay
 
+**Evidence:** `Assets/Scripts/GameStates/MainGameState.cs:21–37` subscribes resume/quit before the asServer guard. Installed StateMachine invokes Enter(true), Enter(false), then Enter() on host: those two subscriptions therefore duplicate. Ordinary Unity `Update:57` processes Escape even when this node is not current. Restart/tutorial flags are not reset consistently on re-entry. `Assets/Scripts/Tutorial/State/States/TutorialQuest6State.cs:11–30` starts a delayed breakdown in parameterless Enter on each peer, calls an observer effect and SetBroken, with no server/side guard or exit cancellation.
 
-\## High
+**Impact / direction:** Duplicate quit effects, inactive-state input and multiple peer-originated impact/setup paths; client SyncVar write rejection does not automatically cancel the rest of a method. Make local and server work explicit using installed lifecycle semantics; use current-state update and cancel delayed work on exit. Make transitions idempotent. **Verify:** Host callback counts, remote effects, quick quest exit/re-entry and Escape outside gameplay. **Networking / serialization risk:** High / Low. **Status:** Open.
 
+### H03 — Persistent station/item state depends on transient observer RPC history
 
+**Evidence:** Nonbuffered setup/update calls in Airlock_StationManager, Magnetic_StationManager, Inversion_Relay_StationManager, Keycard_StationManager, PowerRoutingNetworkManager, SpatialSyncNetworkManager and Thermal_StationManager. `Keycard_Item.cs:29` initializes card data by RPC; hull socket crack/plate state is plain local fields. `Assets/Scripts/Notepad/TornPageItem.cs` transfers image chunks without a full new-observer snapshot. `Assets/Scripts/Station/RulesOfEngagement/RoE_StationManager.cs:67–93` requests delayed board/handbook setup but broadcasts to everyone and does not replay the entire active threat/rule/round state.
 
-Creates significant maintenance risk or strongly affects multiple systems.
+**Impact / direction:** A newly observing client can have synchronized flags but missing puzzle data, item content, path history or visuals. This is conditional on observer changes, not proof the lobby currently permits late joins. Define one coherent round/item snapshot and targeted observer initialization; use synchronized state or appropriate buffering only when it reconstructs the complete current state. Blindly buffering every effect would replay stale animations and incomplete history. **Verify:** Observer removal/re-addition, late join if allowed, board refresh without rebuilding existing peers, active-round snapshot and torn-page texture replay. **Networking / serialization risk:** High / Medium. **Status:** Open.
 
+### H04 — Authoritative state is mutated inside presentation RPCs
 
+**Evidence:** `Assets/Scripts/Contract/ContractManager.cs:227–259` performs the server scene load inside an ObserversRpc whose runLocally default is false. `Assets/Scripts/Station/Keycard Matrix/Keycard_Socket.cs:88–118` initializes slottedCard only inside such an observer body, while its server Update checks that field. Hull placement also depends on local inventory (C03). Installed RPC codegen dispatches the original body locally only when runLocally is true; host client delivery can conceal this dependency.
 
-\## Medium
+**Impact / direction:** Host/client functionality can depend on the host also being an observer/client. Dedicated-server game-state initialization and agreement progression are suspect if that topology is supported. Establish gameplay state before sending effects; keep scene loads and socket bookkeeping outside presentation callbacks. Preserve effect recipients/timing explicitly. **Verify:** Trace body execution on host, remote and server-only; document support decision, then test supported topologies. **Networking / serialization risk:** High / Low. **Status:** Open.
 
+### H05 — Round reset, command gating and completion invariants are incomplete
 
+**Evidence:** `RoE_StationManager.cs:48,106,286–295`: succesThreats persists across rounds; action count increments before null/destroyed validation. `LightsOut_StationManager.cs:309–390`: switch/lever commands lack consistent round guards, sequence duplicates can accumulate, success does not deactivate the round, delayed resets can restart a resolved station. Inversion server resets valve values but `Technician/Inversion_ValvePhysicalSwitch.cs:24,118` retains physical local state without equivalent reset. `FloodManager.cs:88–123,335–342` does not comprehensively reset session fields and AddPenalty can signal another game end after one has already occurred.
 
-Meaningful issue that should eventually be addressed.
+**Impact / direction:** Repeated rounds, stale/replayed controls and delayed routines can change penalties/results or restart completed puzzles. Give each feature a round epoch, bounded inputs, one completion transition and one reset contract covering logical and physical state. Extract a common helper only after comparing actual requirements. **Verify:** Complete/fail twice, replay old commands, repair during delayed reset, restart level and rerun every station twice. **Networking / serialization risk:** High / Medium. **Status:** Open.
 
+### H06 — Player/role matching and readiness assume stable session membership
 
+**Evidence:** `Assets/Scripts/GameStates/PlayerSpawningState.cs:69–88` pairs network players [0/1] with lobby members [0/1] without a stable identity join or complete bounds validation. `WaitForPlayersState.cs:11–46` collects ready PlayerIDs without a departure reconciliation/timeout path; ContractManager readiness similarly assumes expected participants remain available.
 
-\## Low
+**Impact / direction:** Different list ordering can assign the wrong role/owner; departures can stall transition or retain readiness for absent players. Two roles are intentional; the issue is identity and lifecycle handling, not an assumption that arbitrary player counts must be supported. Bind lobby identity to PurrNet PlayerID explicitly and reconcile joins/leaves/scene-ready epochs. **Verify:** Reversed member order, role swap, departure before ready/spawn, reconnect and stale ready message. **Networking / serialization risk:** High / Low. **Status:** Open.
 
+### H07 — Tutorial audio and delayed callbacks lack quest-scoped lifetime
 
+**Evidence:** `Assets/Scripts/Tutorial/Quest/TutorialQuestView.cs:181–194` stops/releases an instance already released after start; lifetime should be reconciled with FMOD's ownership semantics. Callback `394–407` reaches PurrNet InstanceHandler's unsynchronized dictionary and routes to the currently registered view, not the originating quest/audio instance. Replacing the queue does not bind old STOPPED/marker callbacks to the old quest. Delayed task callbacks around `300–315` access mutable current dictionaries; destruction does not comprehensively stop audio/cancel pending work.
 
-Useful improvement but not currently important.
+**Impact / direction:** Old audio/delayed work can unlock or complete a new quest, access cleared task data, or touch a destroyed view. FMOD callback-thread access to a mutable global registry is an additional race risk; ConcurrentQueue only protects the queue. Give each quest/audio instance an immutable callback context and generation token, perform Unity/registry work on the main thread, and explicitly own/cancel/release audio and tweens. **Verify:** Skip/reload/destroy during audio and task delay, old STOPPED after new quest starts, rapid transitions and FMOD handle/result checks. **Networking / serialization risk:** Medium / Low. **Status:** Open.
 
+### H08 — Vivox async session and message subscription lifetimes can diverge
 
+**Evidence:** `Assets/Scripts/Voice/RadioVoiceManager.cs:117–247` uses async-void initialization/leave, continues after some failures and does not cancel stale join work. Already-joined path returns without rebuilding all channel/subscription state. ChannelMessageReceived is subscribed without a matching session teardown. Transmission/receiving flags use single booleans; messages do not consistently bind channel/participant state. `Assets/Scripts/Voice/VivoxLobbyBridge.cs:31` remembers a lobby before join success, suppressing a retry for the same lobby.
 
-\---
+**Impact / direction:** Leave/join races, duplicate handlers, stale radio lights/mutes and failed recovery. Separate channel session from radio input/presentation; await error-reporting operations, cancel using a session generation, pair subscriptions with the exact service session, and track active senders if needed. **Verify:** Join failure/retry, leave while joining, repeated lobby visits, lost key-release, disable/re-enable and participant/channel changes. **Networking / serialization risk:** Medium / Low. **Status:** Open.
 
+### H09 — Event subscriptions leak or multiply across enable cycles
 
+**Evidence:** `Assets/Scripts/UtiltyEvents/StressManager.cs:45,62` subscribes and unsubscribes different lambda instances. `Station/LightsOut/Engineer/LightsOut_EngineerUI.cs:33–38`, `Station/RulesOfEngagement/Engineer/RoE_EngineerDisplay.cs:29–37`, `Technician/RoE_BoardItem.cs:14–19` and `RoE_TechnicianUI.cs:97–103` subscribe OnEnable but remove only OnDestroy. LocalRadioVisuals attaches only if its Singleton is available and later consults the current Singleton when removing handlers.
 
-\# Entry Template
+**Impact / direction:** Disabled UI continues receiving updates; re-enabling duplicates callbacks; service replacement leaves subscriptions attached to the old object. Match boundaries and retain named delegates/exact publisher references. Prefer an explicit ready/bind lifecycle over opportunistic Singleton lookup. **Verify:** Enable/disable three times, destroy publisher first, replace service and count one callback per signal. **Networking / serialization risk:** Low / Low. **Status:** Open.
 
+### H10 — Continuous state is sent through frame-rate-dependent reliable RPCs
 
+**Evidence:** `Assets/Scripts/FloodSystem/FloodManager.cs:166–171,304–314` broadcasts timer every server frame though display changes each second. `Station/Hull Breach/Technician/HullBreach_ChargeStation.cs:68,138` broadcasts charge each charging frame. `Station/ThermalRunaway/Engineer/Thermal_PhysicalSlider.cs:66` sends on drag callbacks. These calls use the installed ReliableOrdered default.
 
-\## \[Severity] Title
+**Impact / direction:** Traffic/work scales with rendering/input rate rather than networking cadence; reliable queues compete with actual gameplay commands under latency. Replicate a time origin, quantized charge or coalesced desired slider value at a deliberate rate and interpolate locally where appropriate. Do not switch transport reliability without checking required delivery semantics. **Verify:** Measure RPC rate/bytes at 30/60/144 FPS and latency/loss; confirm final values and timer behavior. **Networking / serialization risk:** Medium / Low. **Status:** Open.
 
+### H11 — Large classes combine network, rules, physical state and presentation
 
+**Evidence / scope:** Physical sizes are warning signals, not automatic violations:
 
-Affected files:
+| Class/file under `Assets/Scripts` | Lines | Responsibilities that currently change together |
+| --- | ---: | --- |
+| `InventorySystem/InventoryManager.cs` | 686 | Slots, input, UI, ownership, parenting, physics, starting items, transfers and RPCs. |
+| `Station/RulesOfEngagement/RoE_StationManager.cs` | 557 | Rule selection/evaluation, round/threat history, penalties, handbook/board, audio and replication. |
+| `Station/ThermalRunaway/Thermal_StationManager.cs` | 527 | Puzzle generation, timers, state, engineer/technician display and replication. |
+| `Station/RulesOfEngagement/Technician/RoE_TechnicianUI.cs` | 508 | Radar simulation/rendering, blips, selection, physical controls, UI and presentation state. |
+| `Notepad/NotepadModule.cs` | 469 | Input/drawing, page lifecycle, materials/textures, encoding, chunk protocol and item spawn. |
+| `Station/LightsOut/LightsOut_StationManager.cs` | 427 | Generation, wiring, sequence, repair/penalty, lighting, delayed reset and RPCs. |
+| `Tutorial/Quest/TutorialQuestView.cs` | 423 | Tasks/progress, input gating, audio callbacks, timers, tweening and UI. |
+| `Voice/RadioVoiceManager.cs` | 418 | Authentication/channel, input, station/tutorial gating, messages, audio and UI state. |
+| `Station/Hull Breach/HullBreach_StationManager.cs` | 409 | Crack generation, foundry/material state, item placement, minigame outcome and RPCs. |
+| `Station/Keycard Matrix/KeycardPuzzleGenerator.cs` | 398 | Generation, permutations, condition solving, randomness and logging. |
 
+FloodManager (345), SecurityLockdown_StationManager (334), Inversion_Relay_StationManager (302) and Keycard_StationManager (298) have similar mixed responsibilities despite smaller size.
 
+**Impact / direction:** SRP and dependency-inversion violations make rule changes require network/UI/scene knowledge and impede isolated tests. Extract deterministic rules, focused state and presentation behind existing Unity components, one feature at a time. A networking wrapper per script would add abstractions without necessarily improving cohesion. **Verify:** Preserve seeded outcomes, RPC flow, serialized bindings and visual behavior per extraction. **Networking / serialization risk:** High / High. **Status:** Open.
 
-\- path/to/file.cs
+### H12 — Global services/events hide dependencies and couple multiple station instances
 
+**Evidence:** `Assets/Scripts/System/GlobalEvents.cs` exposes mutable public static Actions; InventoryManager/Interactor/LiftManager/MainGameState/SettingsView provide similar process-wide signals. SecurityLockdown, LightsOut and SpatialSync publish station-wide static events. InstanceHandler lookups connect station/flood/tutorial logic directly to MainGameView/GameViewManager/LevelManager; InventoryManager.LocalPlayer and AudioManager/RadioVoiceManager Singletons provide implicit local context.
 
+**Impact / direction:** Dependencies are absent from construction/serialized configuration; initialization order or missing registration can throw, and multiple stations can update another instance's UI. Public delegates can be invoked/replaced externally. Scope gameplay signals to instances/session and expose events rather than mutable delegate fields where behavior permits; bind narrow explicit dependencies at composition points. Keep appropriate static pure helpers and deliberate session services. **Verify:** Two same-type stations, no local player/server-only if supported, scene reload, registration order and domain reload settings. **Networking / serialization risk:** Medium / High. **Status:** Open.
 
-Problem:
+## Medium
 
+### M01 — Puzzle generation and serialized configuration can fail without a safe inactive result
 
+**Evidence:** `Station/SecurityLockdown/SecurityLockdown_StationManager.cs:48–65,312` activates after generation can fail; unique-code generation has no attempt bound for impossible counts/ranges, and sequence/color arrays impose fixed size limits. `Station/Keycard Matrix/KeycardPuzzleGenerator.cs:63` can return final candidates after exhausting 5,000 failed attempts. `Station/Spatial_Sync/SpatialSyncNetworkManager.cs:112` logs exhausted attempts without a consistent failed/inactive transition. EngineerLockDown_Numpad allocates three materials while indexing configured step lights; PowerRoutingTechnicianVisuals indexes exactly four digits.
 
-Describe the issue.
+**Impact / direction:** Inspector/data changes can hang generation, create unsolvable rounds or index outside arrays. Validate configuration at authoring time and runtime, return explicit generation success/failure, cap searches and prevent activation on failure. Check Security digit length/int overflow, database IDs/coordinate casts and empty/duplicate data. **Verify:** Minimum/maximum/invalid configuration, impossible puzzle and seeded generation sample. **Networking / serialization risk:** Medium / Medium. **Status:** Open.
 
+### M02 — Duplicate UI/control/puzzle helpers drift across station families
 
+**Evidence:** EngineerLockDown and SecurityLockdown numpads/buttons repeat entry/display/button animation/audio; Magnetic_EngChannelButton and Magnetic_ChannelButton repeat channel controls; HullBreach_DrillItem and HullBreach_PlateModule repeat drilling progress; ContractManager and Tutorial/Quest/ContractView repeat paging/fades. Several station generators repeat shuffle and color mappings with differing random sources.
 
-Impact:
+**Impact / direction:** Fixes require parallel edits, and invariants/colors/input handling can diverge. Compare behavior first; share narrow formatting, palette, input-animation or seeded shuffle helpers where truly identical. Preserve station-specific validation and assets; do not introduce a universal puzzle controller. **Verify:** Both variants' input, animation, audio, role restrictions and localization. **Networking / serialization risk:** Medium / Medium. **Status:** Open.
 
+### M03 — Avoidable per-frame allocations and tween restarts in visual loops
 
+**Evidence:** `Station/LightsOut/Technician/LightsOut_WireVisual.cs:34–44,96–158` creates a mesh and rebuilds geometry/arrays/normals every LateUpdate, including ExecuteAlways, without complete resource teardown. `Station/RulesOfEngagement/Technician/RoE_TechnicianUI.cs:202–220` calls Ping on every frame a blip lies in the beam; RoE_RadarBlip.Ping kills/recreates a tween sequence. HullBreach_MapManager Update repeatedly scans slots/sockets; radar selection/highlight and FloodManager collection operations repeat unchanged work.
 
-Explain why it matters.
+**Impact / direction:** Garbage collection, unnecessary native/CPU work and animations restarting before completion. Rebuild on endpoint/configuration changes, reuse buffers and trigger ping on beam-entry/cadence; update unchanged display/highlight state only when dirty. No project-owned FixedUpdate loop was found; do not move UI/network work into FixedUpdate as a blanket optimization. **Verify:** Profiler allocations/CPU and unchanged geometry/radar behavior before/after on representative scenes. **Networking / serialization risk:** Low / Low. **Status:** Open.
 
+### M04 — Generated textures/materials and shared asset writes lack clear ownership
 
+**Evidence:** `Notepad/NotepadModule.cs:222–240,317` creates page textures/materials and uploads drawing changes; TornPageItem.cs:43–44 creates texture/material without corresponding cleanup. Multiple station visuals access Renderer.material(s), which may instantiate materials. RoE_TechnicianUI assigns the serialized radarMaterial directly to activeMaterial and modifies it, potentially sharing state between displays. Outline is vendor code with shared-mesh/cache behavior; changes there require upstream awareness.
 
-Suggested direction:
+**Impact / direction:** Repeated scene/item lifetimes can retain native resources; shared material mutation couples displays and can affect editor asset state. Define ownership/disposal, use property blocks when suitable, instance deliberately when necessary, and batch expensive texture writes/encoding after profiling. **Verify:** Repeated torn-page/scene cycles, native object counts and two radar displays with different states. **Networking / serialization risk:** Low / Medium. **Status:** Open.
 
+### M05 — Local module/camera/input state has no single teardown owner
 
+**Evidence:** `InteractionSystem/Interactions/ModuleInteraction.cs:61` cleans event subscription but does not reliably unwind an active module camera/player lock if disabled/destroyed. InventoryManager.cs:93,114 indexes current containers from camera events before checking initialization. Interactor stores interface references whose null behavior does not automatically match destroyed Unity objects. TornPageItem.cs:207–240 places locally after pickup disabled NetworkTransform, without a clearly paired restore/ownership transaction.
 
-Describe a reasonable improvement.
+**Impact / direction:** Player movement/camera/item state can remain stuck during interrupted interactions; pre-initialization events can index invalid slots. Torn-page placement/physics/parent state can disagree across peers (also C02/H03). Give active interaction a scoped enter/exit/teardown contract, validate ready state and use the inventory transaction for placement. Audit prefab ownership gates before assuming every remote MonoBehaviour processes local input. **Verify:** Disable/destroy mid-interaction, settings/quest overlap, item placement then pickup and two-peer transform consistency. **Networking / serialization risk:** Medium / Medium. **Status:** Open.
 
+### M06 — Prompt/focus presentation can silently drop updates
 
+**Evidence:** `UI/PromptPanel/PromptView.cs:86,132` clears an ID while its slot remains active during fade; a replacement can find no free slot and fade completion does not request another synchronization. ModuleInteraction hover changes are handled only when first entering hover, so direct A→B focus can retain the old outline.
 
-Networking risk:
+**Impact / direction:** Prompts or hover feedback can remain stale under rapid input. Represent slot availability/fading explicitly, queue a refresh on completion and update hover when identity changes. **Verify:** Replace every visible prompt during fades, rapid focus changes and hide/show interruption. **Networking / serialization risk:** None / Low. **Status:** Open.
 
+### M07 — Unity-facing serialized assumptions need explicit migration safeguards
 
+**Evidence:** Broad public mutable runtime/configuration fields, fixed array lengths and enum-index routing in station managers/controls; `Station/Spatial_Sync/SSStatusLightController.cs` declares `StatusLightController`, unlike its file name. Persistent scene/prefab references and UnityEvents connect these components; changing names/types/assemblies can invalidate existing wiring. Shared ScriptableObject configuration is not isolated runtime state by default.
 
-None / Low / Medium / High
+**Impact / direction:** Refactoring can produce missing components/references or changed saved data even when C# compiles. Inventory actual prefab/scene usage and script GUIDs before moving/renaming. Add constraints/OnValidate where useful; encapsulate mutable runtime state while preserving serialized names or supplying a deliberate migration. Investigate the class/file mismatch in Unity before any rename; do not claim all serialized references are currently broken. **Verify:** Scene/prefab missing-script/reference check, UnityEvent binding, representative saved/configured assets and editor validation. **Networking / serialization risk:** Medium / High. **Status:** Open.
 
+### M08 — Rule logic and asynchronous operations have few isolated test seams
 
+**Evidence:** No project-owned test suite/assembly definitions found under Assets/Scripts. KeycardPuzzleGenerator consumes Unity randomness/logging; RoE_RuleEvaluator depends on live ActiveThreat/manager and Unity assets; PowerRoutingCore constructs a hidden random source. Most round validation is embedded in NetworkBehaviours. Scene/channel methods use async void and static service access.
 
-Unity serialization risk:
+**Impact / direction:** SOLID dependency-inversion and responsibility problems force live-scene setup to verify deterministic rules, rejection and reset behavior. Expose seeded random/context inputs in focused plain rule code and awaitable session operations. Add meaningful invariant tests for accepted/rejected commands, generator solvability, round reset and cancellation; retain multiplayer tests for PurrNet semantics. Do not add interfaces that merely mirror every concrete method. **Verify:** Repeatable seeds and domain tests followed by host/client behavior checks. **Networking / serialization risk:** Medium / Medium. **Status:** Open.
 
+### M09 — Contracts and inheritance force responsibilities some implementers do not have
 
+**Evidence:** `InventorySystem/IInventorySystem.cs` defines IInventoryItem with CanOperate(bool), implemented as no-op by several items, and ILiftInteractable has no project-owned references beyond its declaration. Some physical controls inherit NetworkBehaviour only to reach another manager's RPC; ItemLoot similarly has little intrinsic replication. Empty mandatory view hooks add boilerplate.
 
-None / Low / Medium / High
+**Impact / direction:** Interface-segregation/clean-code issues obscure actual item capabilities; CanOperate sounds like a query but acts as a setter. Audit call sites and prefabs first, then use small capability contracts or optional hooks where they simplify real use. A no-op alone does not prove a Liskov violation, and removing NetworkBehaviour can affect identity/component references even without a local RPC. **Verify:** Every item capability, UnityEvents, prefab identity and parent/component assumptions. **Networking / serialization risk:** Medium / High. **Status:** Open.
 
+## Low
 
+### L01 — Disabled feature scaffolding and debugging paths obscure supported behavior
 
-Status:
+**Evidence:** Thermal_BottleneckButton and sections of Thermal_StationManager/panels contain commented-out command/generation paths. Several station Update methods include development key shortcuts; inspector testing flags and ContextMenu start methods can bypass normal state setup.
 
+**Direction:** Decide whether bottlenecks are intentionally deferred; document/remove obsolete scaffolding only after checking assets and product intent. Gate debug actions for development rather than leaving ambiguous runtime entry points. **Verify:** Build without accidental testing shortcuts and inspect serialized debug configuration. **Networking / serialization risk:** Low / Medium. **Status:** Open.
 
+### L02 — Naming and dead state increase the cost of understanding code
 
-Open
+**Evidence:** SetReparied, succesThreats, inconsistent RPC suffixes, mixed naming conventions, unused fields/parameters and commented alternate implementations recur. These become material when they hide contracts; punctuation/formatting alone is not registered as debt.
 
+**Direction:** Clean names and dead code during focused edits, retaining serialization/API/UnityEvent compatibility. Prefer intention-revealing methods and named constants for meaningful fixed protocol sizes. Do not perform a broad rename-only migration before correctness work. **Networking / serialization risk:** Low / Medium. **Status:** Open.
+
+### L03 — Embedded vendor utility needs a documented maintenance boundary
+
+**Evidence:** `InteractionSystem/Outline.cs` is QuickOutline by Chris Nolet; it is physically under project scripts but is vendor-origin code with global mesh/cache behavior.
+
+**Direction:** Record provenance/version/license and isolate project integration expectations. Investigate cache/mesh behavior if profiling or repeat-scene reproduction demonstrates a problem; do not rewrite this utility purely to reduce static usage. **Networking / serialization risk:** None / Medium if moved. **Status:** Open.
+
+## Prioritized refactoring proposal
+
+1. **Critical:** Plan the authority/permission boundary (C01), then inventory transaction (C02) and hull consumption (C03); bound and validate notepad upload independently (C04). These are behavior/protocol changes and must be reviewed as such. Do not change the Unsafe preset ahead of caller migration.
+2. **High:** Repair lifecycle/event pairing and host side dispatch first (H01/H02/H09); establish supported-topology execution and observer snapshots (H03/H04); enforce round/reset/membership invariants (H05/H06); bind tutorial/voice async work to its lifetime (H07/H08); reduce continuous RPC rates (H10). Extract large classes and instance-scoped dependencies in feature-sized steps (H11/H12), preserving serialization.
+3. **Medium:** Validate generator/configuration failure (M01), introduce narrow rule verification seams (M08), then share proven duplicate controls/helpers (M02). Profile/reduce visual allocations and define asset lifetime (M03/M04); fix interrupted interaction/prompt flows (M05/M06). Apply serialization safeguards and remove unsupported abstractions only with usage evidence (M07/M09).
+4. **Low:** Resolve inactive scaffolding/debug policy, clean names/dead state during nearby changes and document vendor boundaries (L01–L03).
+
+## Required verification before closing findings
+
+- Unity compilation/build using 6000.3.10f1 and the locked PurrNet package; no networking syntax substitutions from other frameworks.
+- Host + remote client with both engineer/technician assignments; count side/local/observer executions, validate unauthorized and replayed inputs, and compare final gameplay state.
+- Repeat station success/failure/reset, scene reload, disconnect during readiness/transfer/audio/channel join, and observer removal/re-addition. Confirm late-join policy explicitly. Dedicated-server tests are required only if that topology is supported, otherwise document the intentional limitation.
+- Inspect scene/prefab component GUIDs, serialized data and UnityEvent wiring after every extraction. Profile RPC frequency, allocations and native object lifetime for performance findings.
+- Use separate plans for ownership, authority, protocol, synchronization and serialized migration changes. A successful source refactor alone does not close runtime/network findings.
+
+## Audit category coverage
+
+| Requested category | Findings |
+| --- | --- |
+| Clean Code, duplication, unnecessary abstractions | H11, M02, M09, L01–L03 |
+| SOLID and responsibility separation | H11/H12, M08/M09; SRP, DIP and ISP issues are concrete. No blanket LSP/OCP accusation is made without a behavioral contract. |
+| Oversized classes / NetworkBehaviours | H11 size/responsibility table; size alone is not the criterion. |
+| Coupling, hidden dependencies, Singleton/static use | C03, H07, H11/H12, M05/M08 |
+| Networking/gameplay coupling, RPC, ownership, authority | C01–C04, H02–H06, H10/H11 |
+| Synchronization / host-client double execution | C02/C03, H02–H05; installed runLocally deduplication was checked, not assumed broken. |
+| Unity/PurrNet lifecycle and event subscription | H01/H02/H07–H09, M04/M05 |
+| Update/FixedUpdate performance | H10, M03/M04; no project-owned FixedUpdate loop found. |
+| Serialization / testability | H11/H12, M01/M07–M09 |
