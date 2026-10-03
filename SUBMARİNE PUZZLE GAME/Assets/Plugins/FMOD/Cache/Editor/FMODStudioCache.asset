@@ -664,7 +664,7 @@ MonoBehaviour:
   Path: Assets/FMODBanks/Desktop/Ambiance.bank
   Name: Ambiance
   StudioPath: bank:/Ambiance
-  lastModified: 639266662862545887
+  lastModified: 639266667880497584
   FileSizes: []
   Exists: 1
 --- !u!114 &-4578937136234424020
@@ -845,7 +845,7 @@ MonoBehaviour:
   Path: Assets/FMODBanks/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639266662862623076
+  lastModified: 639266667880507581
   FileSizes: []
   Exists: 1
 --- !u!114 &-2738853221733244567
@@ -1515,11 +1515,11 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 157342388454528012}
   cacheVersion: 131859
-  cacheTime: 639266662863852352
+  cacheTime: 639266667880794219
   SerializableEventsDict:
-  - key: event:/SFX/Player/FootSteps
-    index: 0
   - key: event:/Ambiance/Submarine
+    index: 0
+  - key: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
     index: 1
   - key: event:/SFX/SL/Correct
     index: 2
@@ -1527,89 +1527,89 @@ MonoBehaviour:
     index: 3
   - key: event:/SFX/Thermal/Switch
     index: 4
-  - key: event:/SFX/BlackOut/Wiring
-    index: 5
-  - key: event:/SFX/Roe/EvadeGlassCover
-    index: 6
-  - key: event:/SFX/Roe/Radar
-    index: 7
-  - key: event:/SFX/SL/Error
-    index: 8
-  - key: event:/SFX/BlackOut/BlackOutStart
-    index: 9
-  - key: event:/SFX/Handbook/BookClose
-    index: 10
-  - key: event:/SFX/SL/NumpadButton
-    index: 11
-  - key: event:/SFX/SL/LockDown
-    index: 12
-  - key: event:/SFX/BlackOut/CableRemoval
-    index: 13
-  - key: event:/SFX/Environment/EngineerDoorClose
-    index: 14
-  - key: event:/SFX/Thermal/Pump
-    index: 15
-  - key: event:/SFX/Handbook/ScrollPage
-    index: 16
-  - key: event:/SFX/BlackOut/CapClose
-    index: 17
-  - key: event:/SFX/OverrideProtocol/Wrong
-    index: 18
-  - key: event:/SFX/Environment/TechnicianDoor
-    index: 19
-  - key: event:/SFX/Handbook/BookOpen
-    index: 20
-  - key: event:/SFX/BlackOut/Switchs
-    index: 21
-  - key: event:/SFX/Roe/ButtonClick
-    index: 22
-  - key: event:/SFX/Roe/Torpido
-    index: 23
-  - key: event:/SFX/BlackOut/LeverReset
-    index: 24
-  - key: event:/SFX/BlackOut/Generator
-    index: 25
-  - key: event:/SFX/BlackOut/CapOpen
-    index: 26
-  - key: event:/SFX/Player/FlashLight
-    index: 27
-  - key: event:/SFX/BlackOut/MainSwitch
-    index: 28
-  - key: event:/SFX/SL/PanelClick
-    index: 29
-  - key: event:/SFX/Environment/TechnicianSwitch
-    index: 30
-  - key: event:/SFX/OverrideProtocol/Correct
-    index: 31
-  - key: event:/SFX/VoiceChat/RadioEnd
-    index: 32
-  - key: event:/SFX/ContractUISound/SignContract
-    index: 33
-  - key: event:/SFX/ContractUISound/PlayersReady
-    index: 34
-  - key: event:/SFX/ContractUISound/PageTurn
-    index: 35
-  - key: event:/SFX/VoiceChat/RadioStart
-    index: 36
-  - key: event:/SFX/MagneticInterference/brokenStaticEvent
-    index: 37
-  - key: event:/SFX/PowerRouting/SmallSwitch
-    index: 38
-  - key: event:/SFX/Elevator/ElevatorArrive
-    index: 39
-  - key: event:/SFX/Elevator/ElevatorMove
-    index: 40
-  - key: event:/SFX/VoiceOverannouncement/Quest1VoiceOver
-    index: 41
   - key: event:/SFX/VoiceOverannouncement/Quest2VoiceOver
-    index: 42
+    index: 5
+  - key: event:/SFX/BlackOut/Wiring
+    index: 6
+  - key: event:/SFX/Roe/EvadeGlassCover
+    index: 7
   - key: event:/SFX/VoiceOverannouncement/Quest5VoiceOver
-    index: 43
+    index: 8
   - key: event:/SFX/VoiceOverannouncement/Quest3VoiceOver
-    index: 44
+    index: 9
+  - key: event:/SFX/Roe/Radar
+    index: 10
+  - key: event:/SFX/SL/Error
+    index: 11
+  - key: event:/SFX/BlackOut/BlackOutStart
+    index: 12
   - key: event:/SFX/VoiceOverannouncement/Quest4VoiceOver
-    index: 45
+    index: 13
+  - key: event:/SFX/Handbook/BookClose
+    index: 14
+  - key: event:/SFX/SL/NumpadButton
+    index: 15
+  - key: event:/SFX/SL/LockDown
+    index: 16
+  - key: event:/SFX/BlackOut/CableRemoval
+    index: 17
+  - key: event:/SFX/Environment/EngineerDoorClose
+    index: 18
+  - key: event:/SFX/Thermal/Pump
+    index: 19
+  - key: event:/SFX/VoiceChat/RadioEnd
+    index: 20
+  - key: event:/SFX/Handbook/ScrollPage
+    index: 21
+  - key: event:/SFX/ContractUISound/SignContract
+    index: 22
+  - key: event:/SFX/MagneticInterference/brokenStaticEvent
+    index: 23
+  - key: event:/SFX/BlackOut/CapClose
+    index: 24
+  - key: event:/SFX/OverrideProtocol/Wrong
+    index: 25
+  - key: event:/SFX/Elevator/ElevatorArrive
+    index: 26
+  - key: event:/SFX/ContractUISound/PlayersReady
+    index: 27
+  - key: event:/SFX/Environment/TechnicianDoor
+    index: 28
+  - key: event:/SFX/Handbook/BookOpen
+    index: 29
+  - key: event:/SFX/BlackOut/Switchs
+    index: 30
+  - key: event:/SFX/Roe/ButtonClick
+    index: 31
+  - key: event:/SFX/Roe/Torpido
+    index: 32
   - key: event:/SFX/VoiceOverannouncement/Quest6VoiceOver
+    index: 33
+  - key: event:/SFX/BlackOut/LeverReset
+    index: 34
+  - key: event:/SFX/Player/FootSteps
+    index: 35
+  - key: event:/SFX/BlackOut/Generator
+    index: 36
+  - key: event:/SFX/BlackOut/CapOpen
+    index: 37
+  - key: event:/SFX/ContractUISound/PageTurn
+    index: 38
+  - key: event:/SFX/Player/FlashLight
+    index: 39
+  - key: event:/SFX/BlackOut/MainSwitch
+    index: 40
+  - key: event:/SFX/VoiceChat/RadioStart
+    index: 41
+  - key: event:/SFX/PowerRouting/SmallSwitch
+    index: 42
+  - key: event:/SFX/SL/PanelClick
+    index: 43
+  - key: event:/SFX/Environment/TechnicianSwitch
+    index: 44
+  - key: event:/SFX/Elevator/ElevatorMove
+    index: 45
+  - key: event:/SFX/OverrideProtocol/Correct
     index: 46
 --- !u!114 &157342388454528012
 MonoBehaviour:
@@ -1626,7 +1626,7 @@ MonoBehaviour:
   Path: Assets/FMODBanks/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639266662862652792
+  lastModified: 639266667880517589
   FileSizes:
   - Name: 
     Value: 3706
@@ -2296,7 +2296,7 @@ MonoBehaviour:
   Path: Assets/FMODBanks/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639266662862708580
+  lastModified: 639266667880529333
   FileSizes: []
   Exists: 1
 --- !u!114 &3593761632934317631
@@ -3499,6 +3499,6 @@ MonoBehaviour:
   Path: Assets/FMODBanks/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639266662863852352
+  lastModified: 639266667880794219
   FileSizes: []
   Exists: 1
