@@ -1,12 +1,12 @@
 # Inventory transfer consistency and Hull Breach placement
 
-Status: **Proposed implementation plan; no implementation performed.** Date: 2026-10-03.
+Status: **Step 1 characterization and Step 2 dormant foundation completed; authority activation not implemented. Dependency-safe sequence revised on 2026-10-04.** Original plan date: 2026-10-03.
 
 ## Problem
 
 This is a trusted two-player Engineer/Technician co-op game. Unsafe Network Rules are intentional and remain unchanged. The objective is consistent shared possession and socket state, not comprehensive cheat prevention. Local selection, item sway, tool input and hand/camera feedback remain responsive and owner-controlled.
 
-Today inventory slots exist only on the owner; replicated extraction reads that owner-only state on the host. Socket insertion often consists of separate extraction and placement requests. Hull plate placement clears the current slot of every observer's LocalPlayer instead of consuming the identified placing player's plate. Socket occupancy, physics, ownership and item presentation do not have one accepted transition. Current selected slots, object parents and activeSelf are used as indirect truth.
+At the characterized gameplay baseline, inventory membership exists only on the owner; replicated extraction reads that owner-only state on the host. Step 2 now allocates the existing containers on the host and initializes possession/inventory/socket versions, but legacy transfers do not maintain these records yet. Socket insertion still consists of separate extraction and placement requests. Hull plate placement clears the current slot of every observer's LocalPlayer instead of consuming the identified placing player's plate. Socket occupancy, physics, ownership and item presentation do not have one accepted transition. Current selected slots, object parents and activeSelf are used as indirect truth.
 
 The planned behavioral change is explicit: **the host commits shared transfers and Hull occupancy/completion; the owner controls local input and immediate held visuals.** This is a focused authority/protocol change, not a general cleanup or a Network Rules migration.
 
@@ -14,9 +14,9 @@ The planned behavioral change is explicit: **the host commits shared transfers a
 
 ### Instructions and baseline
 
-All seven required guidance documents were found, nonempty and read from this current worktree. No other checkout was accessed. This plan follows the required PLANS.md sections. Current review baseline: 1160fc735658513bd7dca31d45bbc6c83676816d; historical flow references below apply to unchanged production code.
+All seven required guidance documents were found, nonempty and read from this current worktree. No other checkout was accessed. This plan follows the required PLANS.md sections. Step 1 review baseline: 1160fc735658513bd7dca31d45bbc6c83676816d; historical flow references below describe the legacy gameplay methods. Step 2 foundation additions are present in the current worktree; no production files change during this sequence revision.
 
-Local project metadata identifies Unity 6000.3.10f1; local guidance identifies PurrNet 1.19.1, locked at `266cb63efd3d858d6d2fce68c2b0b2364ca78c24`. Historical source line references were recorded at commit `874539b72a7ad000af250a45bca8b42887742b8e`; the affected production files remain unchanged at the current review baseline. Installed package implementation was verified locally in Step 1 below; proposed new payloads still require compilation when implemented. Source analysis is not a reproduced multiplayer result. The user's gameplay clarification supersedes security-first wording in the earlier audit; Unsafe itself is not registered as a defect in this plan.
+Local project metadata identifies Unity 6000.3.10f1; local guidance identifies PurrNet 1.19.1, locked at `266cb63efd3d858d6d2fce68c2b0b2364ca78c24`. Historical source line references were recorded at commit `874539b72a7ad000af250a45bca8b42887742b8e`. Installed package implementation was verified locally in Step 1 below. Step 2 passed Unity's C# compiler and IL postprocessor pipeline, including PurrNet codegen, plus 20 generated-payload packing round trips; editor reload and two-peer lifecycle/gameplay tests were not observed. Future payload changes require fresh verification. Source analysis is not a reproduced multiplayer result. The user's gameplay clarification supersedes security-first wording in the earlier audit; Unsafe itself is not registered as a defect in this plan.
 
 ### Source aliases
 
@@ -306,7 +306,7 @@ Final completion identifies actor/tool and socket/crack/plate/context. Host chec
 
 ## Files Affected
 
-**Ten expected production files** after Step 1: WELD stays unchanged, while a narrow KEYMAN bridge is required by locally verified queued-RPC semantics. None changed during this review. No new component/framework/interface/service required; small data structs stay alongside existing components.
+**Ten expected production files** for the next coherent authority activation slice, using the aliases below. Five already contain Step 2 foundations. WELD stays unchanged, while a narrow KEYMAN bridge is required by locally verified queued-RPC semantics. No production files changed during this sequence revision. No new component/framework/interface/service required; small data structs stay alongside existing components.
 
 | Alias | Exact methods to change | Responsibility changes |
 | --- | --- | --- |
@@ -336,7 +336,7 @@ WELD/DRILL/WELDER/MODULE, PLAYER, UI/data/sway, lift, DISPENSER/Keycard data, No
 
 Host code never resolves remote inventory via LocalPlayer or host observer execution. Host-client callbacks apply idempotent display only. Remote owner selection is immediate; accepted reply clears exact captured slot. Out-of-order item/socket/selected records wait for compatible context instead of inventing state.
 
-Local package.json verifies PurrNet 1.19.1; packages-lock.json locks 266cb63efd3d858d6d2fce68c2b0b2364ca78c24 and project metadata identifies Unity 6000.3.10f1. Step 1 verified local lifecycle, RPC, parent and packing implementation. New structs/handle packing still require Unity compilation and round-trip checks during Step 2. Use exact lowercase RPC arguments; TargetRpc begins with PlayerID target and trailing RPCInfo is receive context. Dedicated server is not added as a product requirement.
+Local package.json verifies PurrNet 1.19.1; packages-lock.json locks 266cb63efd3d858d6d2fce68c2b0b2364ca78c24 and project metadata identifies Unity 6000.3.10f1. Step 1 verified local lifecycle, RPC, parent and packing implementation; Step 2's foundation structs passed compilation/codegen and packing round trips. New request/reply payloads and subsequent changes require their own verification. Use exact lowercase RPC arguments; TargetRpc begins with PlayerID target and trailing RPCInfo is receive context. Dedicated server is not added as a product requirement.
 
 ## Unity Serialization Risk
 
@@ -354,22 +354,99 @@ No voice/stress/role/level/random-event/notepad-protocol redesign or fresh secur
 
 ## Implementation Steps
 
-1. **Source/API characterization complete with corrections recorded above.** F01-F17 current host/remote paths and serialized assets inspected locally; instrumented two-peer runtime characterization remains in Verification.
-2. Compact possession with retained raw handles and narrow socket state; reuse containers, fresh versions and spawn bootstrap. Locally verified package APIs are the basis; compile/codegen and round-trip new payloads before proceeding further.
-3. Split pickup/drop preview and named host methods; inventory/item/destination versions, exact replies and post-commit foundry/lift events. No cache/second array.
-4. Convert extraction and charge/keycard callers coherently; eliminate extract-then-place and polling authority. KEYMAN gets six plain host bridges preserving existing RPC callers. PAGE gets only exact release call.
-5. Hull joint inventory/item/socket/crack placement; delete LocalPlayer observer consumption; preserve material/depth.
-6. Contextual final welding completion with actual existing point flags; WELD/tools unchanged; once-only Fixed/drainage.
-7. Selected accepted held display/latest-state replay; no second parent writer.
-8. Execute tests/review diff; release coherent slice without competing old/new writers.
+### Sequencing conflict and activation rule
+
+The former Step 3 activated host membership before former Steps 4 and 5 replaced all removal writers. This was not a safe independently playable commit. `ExtractCurrentHeldItem` clears owner-local state, while the remote inventory's host instance returns at currentSlotIndex == -1. Charge/keycard then independently place that item. `RpcPlacePlateInSocket` calls every observer's LocalPlayer.RemoveCurrentItem; PAGE also clears the selected slot instead of the exact page. None maintains Step 2 possession or versions.
+
+After an authoritative pickup, those calls could leave the host reporting Inventory while the item is physically in a socket/on a surface. A delayed drop could then validate obsolete membership; alternatively, legitimate subsequent pickup could be rejected. Teaching parameterless RemoveCurrentItem to update host state cannot recover the missing placer/item context and could make Hull's wrong-player removal authoritative.
+
+**Activation boundary:** before normal gameplay starts using authoritative membership/version validation, every production entry point that can acquire, remove, overwrite or reset accepted inventory membership must use the same exact host-written state. No owner/observer may directly clear accepted containers. This includes initialization/grants, socket removal, teardown/despawn and relevant public compatibility entry points, not only G-drop. Audit all writes/callers before the activation commit. A newly discovered bypass blocks that commit until its concrete operation is covered within the approved scope.
+
+Choose direct final migration for Charge/Keycard and Hull. An exact extraction adapter would still leave separate extraction/placement requests, failed-insertion orphan state, queued keycard updates and a later removal task. It does not produce a smaller safe playable slice. No temporary transfer adapters, shadow inventory, compatibility service, destination interface, request journal or migration feature flag are proposed.
+
+### Revised order and commit boundaries
+
+1. **Characterization/API verification — completed.** Keep F01-F17 and the local PurrNet corrections as historical source evidence. Refresh relevant callers/bindings before implementation; do not claim unperformed two-peer tests.
+2. **Dormant shared-state foundation — completed.** Existing host containers, compact possession/retained handles, one stamp mechanism, inventory/socket versions and Hull snapshot are initialized. They are not accepted gameplay truth yet. Step 2's item readiness permits later bootstrap; accepted starting/forced grants are wired in the next slice. Foundation compilation/codegen/packing passed, with runtime lifecycle verification remaining.
+3. **Coherent inventory authority activation — next production slice; one commit.** Combine the membership-affecting parts of former Steps 3, 4 and 5, plus minimum state application/lifecycle work from former Step 7. All preparation and caller replacements below belong to this commit; none is an independently playable partial activation.
+4. **Contextual welding completion — separate commit after activation.** Complete former Step 6: actor/tool/plate/crack/socket expected context, actual existing local point flags and explicit same-context re-evaluation, plain host drainage once, rejection/re-interaction handling. Preserve local responsiveness, WELD/tools and puzzle rules. It must not reintroduce inventory consumption or change accepted occupant membership.
+5. **Remote selected held presentation — separate commit after activation.** Finish the presentation-only portion of former Step 7: owner-selected retained handle, remote active HandPos rendering, owner-only UI suppression, unresolved selected-handle replay and visibility/interpolation tests. Membership reconstruction, exact local reconciliation and parent suppression cannot wait until this step; only remote selection/display finalization may wait. This step never authorizes a transfer or invokes owner item callbacks on observers.
+6. **Full multiplayer verification and release review.** Former Step 8, in addition to the checks required in each commit. Exercise the entire transfer/placement/welding/display cycle with both roles, latency, repeated rounds, observer re-add and disconnect. Do not declare the full refactor verified from compilation or source checks alone.
+
+### Slice 3 internal implementation order
+
+These phases are an implementation work order inside one commit, not optional migration modes or separately released commits. During preparation, legacy gameplay remains the only transfer writer; new concrete methods stay unwired. Replace all callers together before committing/running the activated slice in Play Mode. There is no runtime switch between competing authorities.
+
+**3A — exact operations and minimum local application.** In INV/LOOT, prepare named host pickup/drop/extract/page-release methods, sender/owner validation, exact item/source/destination checks, item/inventory versions, retained-handle requests/replies and one pending local action. Commit synchronously without yielding; issue one token to changed records before callbacks. Reuse containers as the host inverse index. Local previews never write accepted membership. Build current-state reconciliation, exact slot application, unresolved-handle readiness, spawn/despawn cleanup and held/Detached parent suppression now. Keep roots/ItemLoot available for state application and hide presentation without relying on root inactivity as membership. Preserve owner selection, UI, sway, camera and OnEquip/OnUnequip semantics. No generalized transfer executor or full-inventory UI synchronization.
+
+**3B — direct final source/destination operations.** Prepare Charge/Keycard Inventory -> Socket and Socket -> Inventory as single accepted host operations. In CHARGE/CARD, validate exact item/placing inventory/source slot/versions and occupied/empty destination; register initial socket occupancy on host after identities are ready. Remove extract-then-place calls and parent/activeSelf polling as gameplay authority. Accepted pickup releases the exact source socket in the same commit; charge stops and existing puzzle insert/remove callbacks execute once in order. Extract KEYMAN's six existing insert/remove bodies into plain host methods, keeping RPC wrappers for compatible callers; CARD uses the plain methods. Preserve charge cadence, card rules, dispenser/tester/generator behavior and public serialized fields as presentation mirrors.
+
+**3C — move Hull placement into activation.** Prepare HULL/CRACK's final Inventory -> Hull Socket joint operation now, not after pickup becomes authoritative. Capture placing inventory, exact plate/slot, item/inventory/socket versions and crack context. Validate sender, membership, registered crack/socket, active round, material/depth and empty occupancy before one commit of source release, Socket possession, ownership removal, occupant/snapshot and Active -> Plated. Observer placement applies physical plate/weld setup once for that accepted context and never calls LocalPlayer.RemoveCurrentItem. Reject loot/removal of plated/fixed Hull plates; no refund mechanic. Activate/reset/despawn of sockets and plate identities must stamp or clear only matching accepted context, preserving fixed visuals. Keep existing guarded Plated -> Fixed completion/drainage behavior during this slice, but route its narrow socket-state write through the same host snapshot/version so later completion cannot leave that snapshot contradictory. Full tool/context completion validation and retry handling stay in revised Step 4; WELD and drilling algorithms remain untouched.
+
+**3D — exact page release, grants and accepted callbacks.** PAGE identifies itself via ReleaseItemFromInventory(gameObject); INV captures that page's accepted source inventory/slot and versions, never whichever slot is selected later. Accepted release changes Inventory -> Detached, clears exactly that slot and stamps the same records, preserving the page's existing ownership/local surface pose/physics/NT contract. It does not use SetExtractedItemSettings or add a surface protocol. Capture context before local placement side effects; treat existing local placement as pending presentation and reconcile from current truth on rejection, without resurrecting an old selected item. Drawing, payload, texture, tutorial and surface algorithms remain outside scope except the minimum ordering/reconciliation required for this release.
+
+Standalone extraction is a separate final named Inventory -> Detached operation with captured item/source slot/versions; it retains its documented ownership/kinematic handoff. Preserve the parameterless public ExtractCurrentHeldItem signature as an owner-input wrapper that captures context locally and submits that operation; its host implementation never reads currentSlotIndex. It is no longer a socket insertion intermediate. Replace every known RemoveCurrentItem caller; preserve a public signature if required for compatibility, but it must have no observer/server selected-slot mutation path. Any retained owner-input wrapper captures exact context before submitting a final named operation; any unexpected non-owner invocation fails safely with a diagnostic. This wrapper is not a temporary second writer.
+
+Starting handbook and successful forced pickup use the same final pickup acceptance. Preserve existing spawning authority and full-slot fallback; wait for valid spawned identities and nonzero host stamps before one pending startup/grant is submitted. No zero-version acceptance, retry queue or notepad producer redesign. PLATE retires attempt-time isLooted/CmdNotifyTaken behavior; FOUNDRY tracks/releases only its exact current printed plate through the existing taken event after accepted pickup. Rejected/full pickup leaves foundry occupancy unchanged. Lift shared notifications and drop force run once after accepted host commit; tutorial/owner callbacks reconcile only the exact accepted context. No observer may independently free a source or apply shared force.
+
+**3E — wire and remove bypasses together.** Switch ordinary pickup/drop/lift, extraction, both socket families, Hull placement, PAGE release and starting/forced grants to the prepared methods in the same commit. Retire old runLocally mutation bodies and mutating observers, not their serialized method names/bindings. Verify all source/destination initialization, resets/despawns and callbacks have the same writer. Do not commit if any bypass remains. Begin from a fresh matching host/client session; do not import live legacy owner-only slots into an active authority model or reconcile them from LocalPlayer.
+
+### Exact first-slice files
+
+All paths below are under Assets/Scripts. These are the same ten files already approved, with no new service/component or asset:
+
+| File | Required activation responsibility |
+| --- | --- |
+| InventorySystem/InventoryManager.cs | Concrete host operations, exact requests/replies, containers/versions, owner preview/reconciliation, standalone extraction/page release, grants, legacy-entry replacement, lifecycle cleanup. |
+| InventorySystem/Item/ItemLoot.cs | Host possession/stamp writes, retained-handle readiness/current-state application, exact despawn cleanup; preserve existing serialized data. |
+| Station/Hull Breach/Technician/HullBreach_ChargeStation.cs | Final joint insertion/removal, host occupancy initialization, post-commit charge callbacks; retire polling and extraction intermediate. |
+| Station/Keycard Matrix/Keycard_Socket.cs | Final joint insertion/removal and initial occupancy, same-commit puzzle updates; retire polling and extraction intermediate. |
+| Station/Keycard Matrix/Keycard_StationManager.cs | Six narrow plain host insert/remove bridges; preserve wrappers and puzzle algorithms. |
+| Station/Hull Breach/HullBreach_StationManager.cs | Joint placing-inventory/plate/socket/crack commit and lifecycle context; minimum existing Fixed transition snapshot/stamp compatibility only. |
+| Station/Hull Breach/Technician/HullBreach_CrackSocket.cs | Accepted placement/snapshot application; eliminate observer consumption, context-safe weld initialization and narrow existing completion display compatibility. |
+| Station/Hull Breach/Technician/HullBreach_PlateItem.cs | Notify only accepted foundry pickup; remove attempt-time source release. |
+| Station/Hull Breach/Technician/HullBreach_FoundryController.cs | Exact printed source registration and accepted source callback. |
+| Notepad/TornPageItem.cs | Exact page membership-release call and minimum pending/rejection ordering; no drawing/payload/surface redesign. |
+
+If another production file is required, stop and revise scope before editing it. In particular, keep Lift, NotepadModule, dispenser, tools/WELD and UI assets read-only. Do not add automatic state adoption or a second authoritative collection to avoid this boundary.
+
+### Why this is the smallest coherent active slice
+
+Every acquisition and inventory-removal writer participates in the first active commit. Hull moves earlier because placement consumes inventory; preserving its observer removal would immediately invalidate the new model. Charge/Keycard go directly to their final joint operations because an extraction adapter cannot validate/commit the destination atomically. PAGE and standalone extraction receive their final narrow operations. Foundry and lift callbacks accompany the transfers they describe. Starting/forced grants and exact teardown cannot wait because they also create/remove accepted membership.
+
+Remote selection rendering and full welding validation do not themselves remove inventory membership, so they remain separate follow-up commits. Their minimum shared-state compatibility is included now; no later step is needed to repair an inventory contradiction introduced by activation. The slice is broader in file count than the rejected pickup/drop-only step, but adds fewer temporary states and protocols. Commit atomicity does not mean SyncVars arrive atomically: current-state application/replies still wait for compatible versions and resolved handles.
+
+**Temporary compatibility adapters: none.** Public input/RPC wrappers and KEYMAN's plain bridges are permanent, concrete compatibility boundaries using the final operations. There is no later adapter-removal phase. If implementation evidence requires a temporary adapter, stop for a plan revision specifying its exact item/slot/actor state writes and removal commit; do not introduce one implicitly.
+
+### Activation commit verification gate
+
+- Search the complete project-owned source for container assignments/Clear, RemoveCurrentItem, ExtractCurrentHeldItem, pickup/drop RPCs, possession/occupancy writes and placement callbacks. Every remaining caller must have a documented exact-context writer or presentation-only role. Check public methods against serialized bindings read-only.
+- Compile/codegen and round-trip all new request/reply payloads against the local PurrNet 1.19.1 package. No production activation commit with unresolved compilation or packing errors.
+- Verify exact item/source slot/destination, matching sender, fresh item/inventory/source-and-destination socket versions and nonzero readiness before mutation. Test duplicate/competing requests and each leave/return stale case. Check reentrant events cannot accept a second commit.
+- Exercise pickup -> drop/lift, pickup -> standalone extract -> pickup, pickup -> Charge/Keycard insert -> remove -> drop, pickup -> Hull place, and forced page pickup -> exact page release -> pickup where existing gameplay supports it. Compare host possession, inverse containers and socket occupancy after every accepted/rejected step, with roles swapped. Test slot changes/pending actions; another observer's held item must survive Hull placement.
+- Verify foundry full/rejected pickup, callback counts, charge stop, six keycard puzzle bridges, ownership propagation, once-only host force/lift notification, starting-item readiness, despawn/reset and pending rejection/current-state order. Preview may not free a source or consume a slot.
+- Report source checks and actual host/remote runtime tests separately. Compilation/source reasoning allows review of the complete slice, not a claim that multiplayer behavior passed. The commit has no intentionally unresolved inventory-writer contradiction; disclose remaining welding/remote-selected-display limitations until revised Steps 4/5 are complete.
+
+### Mapping from the previous sequence
+
+| Previous step | Revised placement |
+| --- | --- |
+| 1 characterization | 1, completed; historical evidence retained. |
+| 2 foundation | 2, completed and dormant; accepted grant wiring moves into 3. |
+| 3 pickup/drop | 3, combined activation boundary; never activated alone. |
+| 4 extraction, Charge/Keycard, page, KEYMAN | 3, final concrete operations in the same activation commit. |
+| 5 Hull placement | 3, moved earlier with pickup/drop and removal writers. |
+| 6 welding completion | 4; minimum same-snapshot Fixed-state compatibility already in 3. |
+| 7 held display/replay | Split: minimum exact current-state application/parent/lifecycle work in 3; remote selected rendering finalization in 5. |
+| 8 verification/release | 6, with compile/source/runtime checks also attached to each earlier slice. |
 
 ## Rollback Strategy
 
-Revert dependent production commits together, including callers/protocol records. No live old/new writer flag or partial socket-only rollback. No asset/save migration expected; restart both peers after revert. Keep characterization evidence. Implementation is not started.
+Revert the entire revised Step 3 activation commit across its ten files together, including callers/protocol records; this returns to the existing dormant Step 2 foundation with legacy gameplay as its sole transfer writer. Revert dependent completion/presentation commits first or together. Never roll back only pickup or a socket writer, and never reconstruct live legacy membership from local UI. No live old/new writer flag or partial socket-only rollback. No asset/save migration expected; restart both peers after revert. Keep characterization evidence. Authority activation is not implemented yet.
 
 ## Verification
 
-Unity 6.3/PurrNet 1.19.1 compile/codegen and host+remote tests, roles swapped, are required; none claimed passed now.
+Unity 6.3/PurrNet 1.19.1 compile/codegen and host+remote tests, roles swapped, are required for the active migration. Step 2 foundation compilation/codegen and packing round trips passed; no multiplayer/runtime test below is claimed passed. Revised Step 3's activation gate applies before any later completion/display step.
 
 | Test | Expected |
 | --- | --- |
@@ -414,4 +491,4 @@ Focused Edit Mode invariant checks for exact slot/version/destination are useful
 | Maintenance | Caches/eviction, generation reset, pose duplication, retries and masks | Membership/version invariants, current views and existing callbacks |
 | Defect coverage | Can solve defects with excess infrastructure | Preserves exact item/slot, single commit, occupancy, duplicates/stale/other-player protection and responsive visuals |
 
-**Simplify current plan.** Keep the detailed flow evidence, mandatory host bookkeeping, meaningful versions, occupancy and replay. Remove speculative generalized transaction/retry/cache/generation/point machinery. Implementation remains unstarted.
+**Keep the simplified architecture and combine its authority activation boundary.** Keep the detailed flow evidence, mandatory host bookkeeping, meaningful versions, occupancy and replay. Remove speculative generalized transaction/retry/cache/generation/point machinery. Step 2 is complete; the next production slice is revised Step 3 across all ten concrete transfer-boundary files, not the superseded pickup/drop-only step. This sequence revision changes documentation only and does not authorize production edits in this task.
