@@ -68,7 +68,6 @@ public class HullBreach_CrackSocket : NetworkBehaviour
 
     private Interactable interactable;
     private Collider socketCollider;
-    private int weldedPointsCount = 0;
     private HullWeldContext weldingContext;
     private HullBreach_DrillItem weldingDrill;
     private bool fixedPresentationApplied;
@@ -196,7 +195,6 @@ public class HullBreach_CrackSocket : NetworkBehaviour
 
     public void OnPointWelded()
     {
-        weldedPointsCount++;
         ReevaluateWeldingCompletion();
     }
 
@@ -462,7 +460,6 @@ public class HullBreach_CrackSocket : NetworkBehaviour
             item.SetVisible(true);
             if (newPlacement)
             {
-                weldedPointsCount = 0;
                 foreach (var point in item.GetComponentsInChildren<HullBreach_WeldPoint>(true)) point.Initialize(this);
             }
             interactable.SetDisplayName("Use Drill to Weld");

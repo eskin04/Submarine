@@ -1,6 +1,19 @@
 # Technical Debt
 
-This register records meaningful correctness, architecture, networking, performance and maintenance debt. It is not a stylistic checklist. All findings are open; no production changes were made.
+This register records meaningful correctness, architecture, networking, performance and maintenance debt. It is not a stylistic checklist. Baseline evidence below is historical; statuses and scoped resolutions are updated as implementation is verified.
+
+## Inventory/Hull resolution update — 2026-10-04
+
+Revised Steps 1–5 are implemented and the user reports passing two-peer runtime verification with roles swapped and no console errors. Step 6 source/package/serialization review found no remaining in-scope legacy inventory writer or second host authority. This review used only the current worktree. Codex did not perform new multiplayer runtime tests. Full evidence and limitations are in `docs/plans/INVENTORY_HULL_BREACH_TRANSFER.md`.
+
+- **C02 resolved for the scoped transfer defect:** existing host containers, compact ItemPossession, exact actor/item/slot, one stamp mechanism, source/destination version checks, synchronous host commits and exact reconciliation replace owner-only extraction and split insertion. Charge/Keycard use direct Inventory <-> Socket operations. Public removal/extraction APIs are owner-input wrappers, not independent writers.
+- **C03 resolved for the scoped Hull defect:** placing inventory alone releases its exact plate; observers display accepted socket state. Contextual tool/plate/crack/socket completion and Plated -> Fixed guard provide once-only drainage. Existing local point flags/partial progress remain trusted co-op gameplay; no anti-cheat simulation was added.
+- **H01 partially addressed:** inventory/item/foundry/socket spawn/despawn cleanup now covers introduced associations and subscriptions; unrelated NetworkIdentity destruction/lifecycle issues remain open.
+- **H03/H04 partially addressed:** possession, occupancy, Hull context and remote selected display no longer depend on mutating observer history. Keycard myData, notepad content, other station snapshots and Contract scene progression remain outside this fix. Observer re-add/content replay is not certified by the supplied tests.
+- **M05 partially addressed:** Charge/Keycard one-shot rejection ends interaction; page release identifies the page rather than the selected slot. General module teardown and page surface/physics/payload replication remain open.
+- **H10/H11/H12, M04/M08/M09 and unrelated entries remain open.** Charge RPC cadence, large mixed-responsibility components, global services, native resources, test seams and interface cleanup were not redesigned. ItemLoot now needs its NetworkBehaviour for real possession synchronization; the old minimal-networking observation in M09 is historical.
+
+Remaining release follow-ups are artificial latency and leave-return stale cases, observer re-add/spawn ordering, disconnect/despawn/scene reload, starting/forced-overflow lifecycle and collection during a foundry scale tween. Dedicated-server support and host migration are not introduced. Unsafe is intentional; no rule migration or unrelated security work is required by this resolution. The broader committed diff contains unrelated connection/audio/editor asset/settings changes that must be reviewed or separated from inventory merge scope.
 
 ## Audit scope — 2026-10-03
 
@@ -30,7 +43,7 @@ Severity: **Critical** can break networking/game state or cause major corruption
 
 **Direction:** Define a validated transfer transaction with explicit player/item/slot/destination and accepted state. Separate local equipment/UI prediction from inventory bookkeeping and replicated physical state. Preserve current ownership and prediction until their migration is approved; avoid making sockets reach through `LocalPlayer` to perform remote mutations.
 
-**Verify:** Remote pickup → extract → socket → remove → drop, simultaneous pickup, invalid slots/items, rejection recovery, disconnect while holding and both role assignments. Check NetworkTransform enablement/owner and Rigidbody mode through every transition. **Networking / serialization risk:** High / Medium. **Status:** Open.
+**Verify:** Remote pickup → extract → socket → remove → drop, simultaneous pickup, invalid slots/items, rejection recovery, disconnect while holding and both role assignments. Check NetworkTransform enablement/owner and Rigidbody mode through every transition. **Networking / serialization risk:** High / Medium. **Status:** Resolved for scoped transfers; supplied runtime passes and remaining lifecycle tests are separated in the update above.
 
 ### C03 — Hull plate placement removes every observing player's current item
 
@@ -40,7 +53,7 @@ Severity: **Critical** can break networking/game state or cause major corruption
 
 **Direction:** Consume only the identified placing player's item as part of an accepted transaction. Set socket gameplay state explicitly at its controlling side; observer effects should display that accepted state. Validate socket/crack/plate association and welding progression under the approved authority model.
 
-**Verify:** Both players hold different items; only placer loses the plate. Test remote placer, host placer, rejected/wrong plate, repeated completion and server without a local player if supported. **Networking / serialization risk:** High / Medium. **Status:** Open.
+**Verify:** Both players hold different items; only placer loses the plate. Test remote placer, host placer, rejected/wrong plate, repeated completion and server without a local player if supported. **Networking / serialization risk:** High / Medium. **Status:** Resolved for scoped placement/contextual completion; dedicated-server support remains unestablished.
 
 ### C04 — Notepad upload accepts unbounded allocation and unchecked chunk writes
 
