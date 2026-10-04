@@ -34,6 +34,11 @@ public class InventoryManager : NetworkBehaviour
     private IInteractable currentFocusedInteractable;
     private ItemSway itemSwayScript;
     private bool isHeldItemHidden = false;
+    private ItemLoot hiddenInteractionItem;
+    private GameObject interactionOffsetItem;
+    private Transform interactionOffsetParent;
+    private Tween interactionMoveTween;
+    private Tween interactionRotateTween;
     private ItemLoot equippedPresentation;
     private ItemLoot remoteHeldPresentation;
     public static InventoryManager LocalPlayer { get; private set; }
@@ -104,6 +109,7 @@ public class InventoryManager : NetworkBehaviour
 
     protected override void OnDestroy()
     {
+        EndOwnedInteraction();
         forcedPage = null;
         ItemLoot.OnLootAttempt -= HandleLootAttempt;
         LiftManager.OnDropItemToLıft -= HandleLiftDrop;
@@ -116,6 +122,7 @@ public class InventoryManager : NetworkBehaviour
 
     protected override void OnDespawned(bool asServer)
     {
+        EndOwnedInteraction();
         ClearRemoteHeldPresentation();
         if (asServer && containers != null)
         {
@@ -140,6 +147,7 @@ public class InventoryManager : NetworkBehaviour
 
     protected override void OnDespawned()
     {
+        EndOwnedInteraction();
         StopAllCoroutines();
         forcedPage = null;
         resolvingPageDelivery = false;
@@ -159,17 +167,33 @@ public class InventoryManager : NetworkBehaviour
 
     private void SetInteractItemParent()
     {
+        if (!isActiveAndEnabled || !playerInventory || !ReferenceEquals(PlayerInventory.LocalBinding, playerInventory)) return;
+        CancelInteractionOffsets();
         if (containers == null || currentSlotIndex < 0 || currentSlotIndex >= containers.Length) return;
         var container = containers[currentSlotIndex];
         if (!container.IsEmpty && container.PhysicalObject != null)
         {
             var itemObj = container.PhysicalObject;
+            interactionOffsetItem = itemObj;
+            interactionOffsetParent = playerInventory.InteractCameraTrans;
             itemObj.transform.SetParent(playerInventory.InteractCameraTrans);
             ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
             if (lootComponent)
             {
-                itemObj.transform.DOLocalMove(lootComponent.Data.positionOffsetInInteract, 0.5f);
-                itemObj.transform.DOLocalRotate(Vector3.zero, 0.5f);
+                interactionMoveTween = OwnInteractionOffset(DOVirtual.Vector3(itemObj.transform.localPosition,
+                    lootComponent.Data.positionOffsetInInteract, 0.5f, value =>
+                    {
+                        if (CanWriteInteractionOffset(itemObj)) itemObj.transform.localPosition = value;
+                        else CancelInteractionOffsets();
+                    }).OnComplete(() => interactionMoveTween = null), false);
+                Vector3 itemRotation = itemObj.transform.localEulerAngles;
+                Vector3 targetRotation = itemRotation + new Vector3(Mathf.DeltaAngle(itemRotation.x, 0),
+                    Mathf.DeltaAngle(itemRotation.y, 0), Mathf.DeltaAngle(itemRotation.z, 0));
+                interactionRotateTween = OwnInteractionOffset(DOVirtual.Vector3(itemRotation, targetRotation, 0.5f, value =>
+                    {
+                        if (CanWriteInteractionOffset(itemObj)) itemObj.transform.localEulerAngles = value;
+                        else CancelInteractionOffsets();
+                    }).OnComplete(() => interactionRotateTween = null), true);
             }
             else
             {
@@ -181,13 +205,12 @@ public class InventoryManager : NetworkBehaviour
 
     private void SetNormalItemParent()
     {
-        if (containers == null || currentSlotIndex < 0 || currentSlotIndex >= containers.Length) return;
-        var container = containers[currentSlotIndex];
-        if (!container.IsEmpty && container.PhysicalObject != null)
+        var itemObj = interactionOffsetItem;
+        CancelInteractionOffsets();
+        interactionOffsetItem = null;
+        interactionOffsetParent = null;
+        if (itemObj && IsInteractionItemOwned(itemObj) && playerInventory && playerInventory.HandPosition)
         {
-
-            var itemObj = container.PhysicalObject;
-            DOTween.Kill(itemObj.transform);
             itemObj.transform.SetParent(playerInventory.HandPosition);
             ItemLoot lootComponent = itemObj.GetComponent<ItemLoot>();
             if (lootComponent)
@@ -203,15 +226,71 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
+    private bool IsInteractionItemOwned(GameObject itemObj)
+    {
+        if (!itemObj) return false;
+        var loot = itemObj.GetComponent<ItemLoot>();
+        return loot ? IsAcceptedHeldItem(loot) : GetCurrentHeldObject() == itemObj;
+    }
+
+    private bool CanWriteInteractionOffset(GameObject itemObj)
+    {
+        return itemObj && itemObj == interactionOffsetItem && interactionOffsetParent &&
+            itemObj.transform.parent == interactionOffsetParent && IsInteractionItemOwned(itemObj);
+    }
+
+    private void CancelInteractionOffsets()
+    {
+        interactionMoveTween?.Kill(false);
+        interactionRotateTween?.Kill(false);
+        interactionMoveTween = null;
+        interactionRotateTween = null;
+    }
+
+    private Tween OwnInteractionOffset(Tween tween, bool rotation)
+    {
+        return tween.OnKill(() =>
+        {
+            if (rotation)
+            {
+                if (ReferenceEquals(interactionRotateTween, tween)) interactionRotateTween = null;
+            }
+            else if (ReferenceEquals(interactionMoveTween, tween)) interactionMoveTween = null;
+        });
+    }
+
+    internal void EndModuleInteraction(IInteractable interaction)
+    {
+        if (currentInteractable != null && !ReferenceEquals(currentInteractable, interaction)) return;
+        SetNormalItemParent();
+        if (isHeldItemHidden && IsAcceptedHeldItem(hiddenInteractionItem) &&
+            GetCurrentHeldObject() == hiddenInteractionItem.gameObject)
+            hiddenInteractionItem.SetVisible(true);
+        hiddenInteractionItem = null;
+        isHeldItemHidden = false;
+        currentInteractable = null;
+    }
+
+    private void EndOwnedInteraction()
+    {
+        var player = playerInventory ? playerInventory : GetComponent<PlayerInventory>();
+        ModuleInteraction.EndInteractionForPlayer(player);
+        EndModuleInteraction(currentInteractable);
+        currentFocusedInteractable = null;
+    }
+
+    private void OnDisable() => EndOwnedInteraction();
+
 
     private void Interactor_OnInteractableChanged(IInteractable ınteractable)
     {
-
+        if (!isActiveAndEnabled || !ReferenceEquals(PlayerInventory.LocalBinding, playerInventory)) return;
         currentFocusedInteractable = ınteractable;
     }
 
     private void Interactor_OnInteract(IInteractable ınteractable)
     {
+        if (!isActiveAndEnabled || !ReferenceEquals(PlayerInventory.LocalBinding, playerInventory)) return;
         currentInteractable = ınteractable;
         MonoBehaviour monoObj = ınteractable as MonoBehaviour;
         if (monoObj == null) return;
@@ -226,6 +305,7 @@ public class InventoryManager : NetworkBehaviour
 
         if (!containers[currentSlotIndex].IsEmpty)
         {
+            hiddenInteractionItem = containers[currentSlotIndex].PhysicalObject.GetComponent<ItemLoot>();
             SetCurrentItemVisibility(false);
             isHeldItemHidden = true;
         }
@@ -242,16 +322,10 @@ public class InventoryManager : NetworkBehaviour
         FinishPending();
         PublishSelectedItem();
         if (containers == null || currentSlotIndex < 0) return;
-        if (currentInteractable != null && !currentInteractable.IsInteracting())
+        if (currentInteractable != null &&
+            (!(currentInteractable is UnityEngine.Object interactionObject) || !interactionObject || !currentInteractable.IsInteracting()))
         {
-
-            if (isHeldItemHidden)
-            {
-                SetCurrentItemVisibility(true);
-                isHeldItemHidden = false;
-            }
-            currentInteractable = null;
-
+            EndModuleInteraction(currentInteractable);
         }
         if (currentInteractable != null && currentInteractable.IsInteracting()) return;
 

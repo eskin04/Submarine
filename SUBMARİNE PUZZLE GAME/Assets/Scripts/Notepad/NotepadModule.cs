@@ -48,6 +48,9 @@ public class NotepadModule : NetworkBehaviour
     private bool isInteracting = false;
     private bool isAnimating = false;
     private Tween pageTurnTween;
+    private Tween coverTween;
+    private Vector3 coverPresentationRotation;
+    private ModuleInteraction moduleInteraction;
     private bool isDrawingCursorActive = false;
     private int remainingPages = 4;
     private Interactable interactableComponent;
@@ -91,6 +94,7 @@ public class NotepadModule : NetworkBehaviour
     {
         // Interactable componentini Awake'de alıyoruz
         interactableComponent = GetComponent<Interactable>();
+        moduleInteraction = GetComponent<ModuleInteraction>();
     }
     private void Start()
     {
@@ -99,12 +103,15 @@ public class NotepadModule : NetworkBehaviour
 
     private void OnEnable()
     {
+        moduleInteraction.OnTerminalInteractionEnded += ResetNotebookPresentation;
         TutorialInputManager.OnNotebookInteractStateChanged += HandleNotebookInteractState;
         SubscribeUploadLifetime();
     }
 
     private void OnDisable()
     {
+        EndNotebookPresentation();
+        moduleInteraction.OnTerminalInteractionEnded -= ResetNotebookPresentation;
         TutorialInputManager.OnNotebookInteractStateChanged -= HandleNotebookInteractState;
         ClearUploadLifetime();
     }
@@ -504,6 +511,7 @@ public class NotepadModule : NetworkBehaviour
 
     protected override void OnDespawned()
     {
+        EndNotebookPresentation();
         ClearUploadLifetime();
         // No source operation survives network identity loss.
         localUploadId = null;
@@ -512,6 +520,7 @@ public class NotepadModule : NetworkBehaviour
 
     protected override void OnDestroy()
     {
+        EndNotebookPresentation();
         ClearUploadLifetime();
         base.OnDestroy();
     }
@@ -685,7 +694,9 @@ public class NotepadModule : NetworkBehaviour
 
     public void OnNotebookInteract()
     {
-        if (isInteracting) return;
+        if (isInteracting || !isActiveAndEnabled || !moduleInteraction || !moduleInteraction.HasInteraction) return;
+        CancelPresentationTweens();
+        NormalizePagePresentation();
         indicator?.Hide();
         if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var tutorialView))
             tutorialView.OnActionPerformed(TutorialAction.InteractNotebook);
@@ -694,19 +705,26 @@ public class NotepadModule : NetworkBehaviour
 
         PlaySound(openSound);
 
-        DOVirtual.Vector3(Vector3.zero, coverOpenRotation, flipDuration, (v) =>
+        coverTween = OwnPresentationTween(DOVirtual.Vector3(coverPresentationRotation, coverOpenRotation, flipDuration, (v) =>
         {
+            coverPresentationRotation = v;
             cover.localEulerAngles = v;
         })
         .SetEase(Ease.OutSine)
-        .OnComplete(() => isAnimating = false);
+        .OnComplete(() => { coverTween = null; isAnimating = false; }), true);
     }
 
     public void OnNotebookStopInteract()
     {
+        if (!isActiveAndEnabled || (moduleInteraction && moduleInteraction.IsTerminalCleanup))
+        {
+            ResetNotebookPresentation();
+            return;
+        }
         if (!isInteracting) return;
-
-        Debug.Log("Notebook interaction ended");
+        CancelPresentationTweens();
+        NormalizePagePresentation();
+        lastDrawPosition = -Vector2.one;
         if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var tutorialView))
             tutorialView.OnActionPerformed(TutorialAction.CloseNotebook);
         isAnimating = true;
@@ -721,12 +739,63 @@ public class NotepadModule : NetworkBehaviour
 
         PlaySound(closeSound);
 
-        DOVirtual.Vector3(coverOpenRotation, Vector3.zero, flipDuration, (v) =>
+        coverTween = OwnPresentationTween(DOVirtual.Vector3(coverPresentationRotation, Vector3.zero, flipDuration, (v) =>
          {
+             coverPresentationRotation = v;
              cover.localEulerAngles = v;
          })
          .SetEase(Ease.InSine)
-         .OnComplete(() => isAnimating = false);
+         .OnComplete(() => { coverTween = null; isAnimating = false; }), true);
+    }
+
+    private void EndNotebookPresentation()
+    {
+        if (moduleInteraction) moduleInteraction.InterruptInteraction();
+        ResetNotebookPresentation();
+    }
+
+    private void CancelPresentationTweens()
+    {
+        coverTween?.Kill(false);
+        pageTurnTween?.Kill(false);
+        coverTween = null;
+        pageTurnTween = null;
+    }
+
+    private Tween OwnPresentationTween(Tween tween, bool isCover)
+    {
+        return tween.OnKill(() =>
+        {
+            if (isCover)
+            {
+                if (ReferenceEquals(coverTween, tween)) coverTween = null;
+            }
+            else if (ReferenceEquals(pageTurnTween, tween)) pageTurnTween = null;
+        });
+    }
+
+    private void ResetNotebookPresentation()
+    {
+        CancelPresentationTweens();
+        isInteracting = false;
+        isAnimating = false;
+        lastDrawPosition = -Vector2.one;
+        if (isDrawingCursorActive)
+        {
+            isDrawingCursorActive = false;
+            CursorManager.OnClearCustomCursor?.Invoke();
+        }
+        coverPresentationRotation = Vector3.zero;
+        if (cover) cover.localEulerAngles = Vector3.zero;
+        NormalizePagePresentation();
+    }
+
+    private void NormalizePagePresentation()
+    {
+        if (pageMeshes == null) return;
+        for (int i = 0; i < pageMeshes.Length; i++)
+            if (pageMeshes[i] && pageMeshes[i].activeSelf)
+                pageMeshes[i].transform.localEulerAngles = i < currentPageIndex ? pageFlippedRotation : Vector3.zero;
     }
 
     private void HandlePageScrolling()
@@ -751,12 +820,12 @@ public class NotepadModule : NetworkBehaviour
 
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
-                pageTurnTween = DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+                pageTurnTween = OwnPresentationTween(DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
                 {
                     pageToFlip.localEulerAngles = v;
                 })
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => { pageTurnTween = null; isAnimating = false; });
+                .OnComplete(() => { pageTurnTween = null; isAnimating = false; }), false);
 
                 currentPageIndex = nextActive;
             }
@@ -773,12 +842,12 @@ public class NotepadModule : NetworkBehaviour
                 currentPageIndex = prevActive;
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
-                pageTurnTween = DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+                pageTurnTween = OwnPresentationTween(DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
                 {
                     pageToFlip.localEulerAngles = v;
                 })
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => { pageTurnTween = null; isAnimating = false; });
+                .OnComplete(() => { pageTurnTween = null; isAnimating = false; }), false);
             }
         }
     }
