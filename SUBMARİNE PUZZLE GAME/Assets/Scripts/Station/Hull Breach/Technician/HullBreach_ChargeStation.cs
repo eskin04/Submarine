@@ -74,16 +74,21 @@ public class HullBreach_ChargeStation : NetworkBehaviour
 
     public void HandleInteraction()
     {
-        if (slottedDrill == null)
+        try
         {
-            TryInsertDrill();
+            if (slottedDrill == null) TryInsertDrill();
+        }
+        finally
+        {
+            // This is a one-shot socket action, including rejected or unready requests.
+            interactable.StopInteract();
         }
     }
 
     private void TryInsertDrill()
     {
         var inv = InventoryManager.LocalPlayer;
-        if (inv && inv.PlaceInChargeStation(this)) interactable.StopInteract();
+        if (inv) inv.PlaceInChargeStation(this);
     }
 
 

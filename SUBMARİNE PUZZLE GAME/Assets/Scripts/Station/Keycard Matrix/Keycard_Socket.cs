@@ -65,19 +65,22 @@ public class Keycard_Socket : NetworkBehaviour
     }
     public void HandleInteraction()
     {
-        if (stationManager == null || !stationManager.isRoundActive)
-            return;
-
-        if (slottedCard == null)
+        try
         {
-            TryInsertCard();
+            if (stationManager == null || !stationManager.isRoundActive) return;
+            if (slottedCard == null) TryInsertCard();
+        }
+        finally
+        {
+            // Submission success is not the lifetime of this one-shot interaction.
+            interactable.StopInteract();
         }
     }
 
     private void TryInsertCard()
     {
         var inv = InventoryManager.LocalPlayer;
-        if (inv && inv.PlaceInKeycardSocket(this)) interactable.StopInteract();
+        if (inv) inv.PlaceInKeycardSocket(this);
     }
 
 
@@ -115,13 +118,20 @@ public class Keycard_Socket : NetworkBehaviour
         if (asServer) ResetServer();
         base.OnDespawned(asServer);
     }
-    internal bool CanAcceptServer(ItemLoot item, ulong expected)
+    internal bool CanAcceptServer(ItemLoot item, ulong expected, out string rejectionReason)
     {
-        return isServer && isSpawned && expected != 0 && Occupancy.Version == expected &&
-            !Occupancy.Occupant.Identity.HasValue && item.GetComponent<Keycard_Item>() &&
-            stationManager != null && stationManager.isRoundActive.value && type != SocketType.Dispenser &&
-            ((type == SocketType.Technician && socketIndex >= 0 && socketIndex < 4) ||
-             type == SocketType.Engineer || (type == SocketType.Tester && socketIndex >= 0 && socketIndex < 2));
+        rejectionReason = null;
+        if (!isServer || !isSpawned) rejectionReason = "socket is not spawned on the host";
+        else if (expected == 0 || Occupancy.Version != expected) rejectionReason = "socket version is unready or stale";
+        else if (Occupancy.Occupant.Identity.HasValue) rejectionReason = "socket is occupied";
+        else if (!item || !item.GetComponent<Keycard_Item>()) rejectionReason = "item is not a keycard";
+        else if (!stationManager || !stationManager.isRoundActive.value) rejectionReason = "station round is inactive or missing";
+        // Empty dispenser slots accepted returned cards before the transfer migration.
+        else if (!(type == SocketType.Dispenser || type == SocketType.Engineer ||
+            (type == SocketType.Technician && socketIndex >= 0 && socketIndex < 4) ||
+            (type == SocketType.Tester && socketIndex >= 0 && socketIndex < 2)))
+            rejectionReason = "socket type or puzzle index is invalid";
+        return rejectionReason == null;
     }
 
     internal bool CanReleaseServer(ItemLoot item, ulong expected)

@@ -119,7 +119,11 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     // ==========================================
     public void OnSocketInteracted()
     {
-        if (stationManager == null || !stationManager.isRoundActive.value || !isCrackSpawned) return;
+        if (stationManager == null || !stationManager.isRoundActive.value || !isCrackSpawned)
+        {
+            interactable.StopInteract();
+            return;
+        }
 
         if (slottedPlate == null)
         {
@@ -148,6 +152,8 @@ public class HullBreach_CrackSocket : NetworkBehaviour
 
     private void TryInsertPlate()
     {
+        // Plate insertion is one-shot; early local rejection must also end interaction.
+        interactable.StopInteract();
         InventoryManager inv = InventoryManager.LocalPlayer;
         if (inv == null) return;
         GameObject heldItemObj = inv.GetCurrentHeldObject();
@@ -156,7 +162,6 @@ public class HullBreach_CrackSocket : NetworkBehaviour
         HullBreach_PlateItem heldPlate = heldItemObj.GetComponent<HullBreach_PlateItem>();
         if (heldPlate != null)
         {
-            interactable.StopInteract();
             inv.PlaceInHullSocket(this);
         }
     }

@@ -935,7 +935,8 @@ public class InventoryManager : NetworkBehaviour
     {
         var obj = GetCurrentHeldObject();
         var item = obj ? obj.GetComponent<ItemLoot>() : null;
-        if (!socket || !BeginPending(item, FindItemSlot(obj), InventoryTransferOperation.ChargeInsertion, socket, socket.Occupancy.Version)) return false;
+        if (!socket || !item || !item.GetComponent<HullBreach_DrillItem>() ||
+            !BeginPending(item, FindItemSlot(obj), InventoryTransferOperation.ChargeInsertion, socket, socket.Occupancy.Version)) return false;
         ItemIdentityHandle.TryCreate(item, out var handle);
         if (isServer) TryPlaceChargeServer(owner.Value, handle, pendingSlot, pendingItemVersion, pendingInventoryVersion, pendingDestination, pendingSocketVersion);
         else PlaceChargeServerRpc(handle, pendingSlot, pendingItemVersion, pendingInventoryVersion, pendingDestination, pendingSocketVersion);
@@ -972,7 +973,8 @@ public class InventoryManager : NetworkBehaviour
     {
         var obj = GetCurrentHeldObject();
         var item = obj ? obj.GetComponent<ItemLoot>() : null;
-        if (!socket || !BeginPending(item, FindItemSlot(obj), InventoryTransferOperation.KeycardInsertion, socket, socket.Occupancy.Version)) return false;
+        if (!socket || !item || !item.GetComponent<Keycard_Item>() ||
+            !BeginPending(item, FindItemSlot(obj), InventoryTransferOperation.KeycardInsertion, socket, socket.Occupancy.Version)) return false;
         ItemIdentityHandle.TryCreate(item, out var handle);
         if (isServer) TryPlaceKeycardServer(owner.Value, handle, pendingSlot, pendingItemVersion, pendingInventoryVersion, pendingDestination, pendingSocketVersion);
         else PlaceKeycardServerRpc(handle, pendingSlot, pendingItemVersion, pendingInventoryVersion, pendingDestination, pendingSocketVersion);
@@ -989,8 +991,22 @@ public class InventoryManager : NetworkBehaviour
     {
         var item = handle.Resolve<ItemLoot>(this);
         var socket = destination.Resolve<Keycard_Socket>(this);
-        bool accepted = socket && socket.sceneId == sceneId && ValidateHeldServer(sender, item, slot, version, inventory) &&
-            socket.CanAcceptServer(item, socketVersion);
+        string rejectionReason = null;
+        bool accepted = false;
+        if (!socket) rejectionReason = "socket identity did not resolve";
+        else if (socket.sceneId != sceneId) rejectionReason = "socket belongs to a different scene";
+        else if (!ValidateHeldServer(sender, item, slot, version, inventory)) rejectionReason = "sender, exact membership or source versions did not match";
+        else accepted = socket.CanAcceptServer(item, socketVersion, out rejectionReason);
+        if (!accepted)
+        {
+            // One diagnostic per rejected request, never per frame. Keep the actual validation intact.
+            Debug.LogWarning($"[Keycard transfer rejected] reason={rejectionReason}; commit=false; " +
+                $"sender={sender}, owner={owner}, inventory={sceneId}/{id}, slot={slot}; " +
+                $"item={handle.Scene}/{handle.Identity}, itemVersion={version}/{(item ? item.Possession.Version : 0)}, " +
+                $"inventoryVersion={inventory}/{InventoryVersion}; " +
+                $"socket={destination.Scene}/{destination.Identity}, socketVersion={socketVersion}/{(socket ? socket.Occupancy.Version : 0)}, " +
+                $"socketType={(socket ? socket.type.ToString() : "unresolved")}");
+        }
         if (accepted)
         {
             committing = true;
