@@ -34,7 +34,7 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     public HullBreach_PlateItem slottedPlate;
     public bool isFixed = false;
 
-    // No presentation subscription yet: legacy crack/plate paths remain unchanged.
+    // Host snapshot drives socket presentation without observer-side consumption.
     private SyncVar<HullSocketSnapshot> snapshot = new SyncVar<HullSocketSnapshot>();
     public HullSocketSnapshot Snapshot => snapshot.value;
 
@@ -42,6 +42,7 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     {
         base.OnSpawned(asServer);
         if (!asServer) return;
+        if (stationManager) stationManager.RegisterSocket(this);
 
         snapshot.value = new HullSocketSnapshot
         {
@@ -156,7 +157,7 @@ public class HullBreach_CrackSocket : NetworkBehaviour
         if (heldPlate != null)
         {
             interactable.StopInteract();
-            stationManager.CmdTryPlacePlate(currentCrackID, heldItemObj, this);
+            inv.PlaceInHullSocket(this);
         }
     }
 
@@ -165,40 +166,10 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     // ==========================================
 
     [ObserversRpc(runLocally: true)]
-    public void RpcActivateCrack(int crackID)
-    {
-        currentCrackID = crackID;
-        isCrackSpawned = true;
-        isFixed = false;
-        slottedPlate = null;
-        UpdateSocketVisualsAndInteraction();
-    }
+    public void RpcActivateCrack(int crackID) { ApplySnapshot(); }
 
     [ObserversRpc(runLocally: true)]
-    public void RpcPlacePlateInSocket(GameObject plateObj, float randomZRot)
-    {
-        InventoryManager inv = InventoryManager.LocalPlayer;
-        if (inv == null) return;
-        inv.RemoveCurrentItem();
-        slottedPlate = plateObj.GetComponent<HullBreach_PlateItem>();
-
-        plateObj.transform.SetParent(this.transform);
-        plateObj.transform.localPosition = Vector3.zero;
-        plateObj.transform.localRotation = Quaternion.Euler(0, 0, randomZRot);
-        plateObj.SetActive(true);
-
-
-
-
-        weldedPointsCount = 0;
-        HullBreach_WeldPoint[] points = plateObj.GetComponentsInChildren<HullBreach_WeldPoint>();
-        foreach (var point in points)
-        {
-            point.Initialize(this);
-        }
-        interactable.SetDisplayName("Use Drill to Weld");
-        UpdateSocketVisualsAndInteraction();
-    }
+    public void RpcPlacePlateInSocket(GameObject plateObj, float randomZRot) { ApplySnapshot(); }
 
     public void OnPointWelded()
     {
@@ -288,5 +259,125 @@ public class HullBreach_CrackSocket : NetworkBehaviour
                 main.startSpeedMultiplier = originalSpeedMultiplier;
             }
         }
+    }
+    private ulong displayedSocketVersion;
+    private ItemIdentityHandle displayedPlate;
+    private int displayedCrackID = -1;
+
+    private void Update() { ApplySnapshot(); }
+
+    internal void ResetServer()
+    {
+        if (!isServer || !isSpawned) return;
+        var old = Snapshot.Occupancy.Occupant.Resolve<ItemLoot>(this);
+        if (stationManager) stationManager.ForgetSocketServer(Snapshot.CrackID);
+        snapshot.value = new HullSocketSnapshot { CrackID = -1, State = CrackState.Inactive,
+            Occupancy = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) } };
+        if (old && old.Possession.Location == ItemSharedLocation.Socket && old.Possession.Context.Matches(this))
+            Destroy(old.gameObject);
+        ApplySnapshot();
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        if (asServer)
+        {
+            ResetServer();
+            if (stationManager) stationManager.allSockets.Remove(this);
+        }
+        displayedSocketVersion = 0;
+        displayedPlate = default;
+        displayedCrackID = -1;
+        base.OnDespawned(asServer);
+    }
+
+    internal void ActivateCrackServer(int crack)
+    {
+        if (!isServer) return;
+        var previous = Snapshot.Occupancy.Occupant.Resolve<ItemLoot>(this);
+        snapshot.value = new HullSocketSnapshot { CrackID = crack, State = CrackState.Active,
+            Occupancy = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) } };
+        if (previous && previous.Possession.Location == ItemSharedLocation.Socket &&
+            previous.Possession.Context.Matches(this)) Destroy(previous.gameObject);
+        ApplySnapshot();
+    }
+
+    internal void PlacePlateServer(ItemLoot item, float rotation, ulong stamp)
+    {
+        ItemIdentityHandle.TryCreate(item, out var handle);
+        var current = Snapshot;
+        current.Occupancy = new ItemSocketOccupancy { Occupant = handle, Version = stamp };
+        current.State = CrackState.Plated; current.PlacementRotation = rotation;
+        var nt = item.GetComponent<NetworkTransform>();
+        if (nt) { nt.RemoveOwnership(); nt.StopIgnoringParentChanges(); }
+        item.transform.SetParent(transform);
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.Euler(0, 0, rotation);
+        item.SetPhysicalState(ItemSharedLocation.Socket);
+        snapshot.value = current;
+        ApplySnapshot();
+    }
+
+    internal void MarkFixedServer()
+    {
+        if (!isServer || Snapshot.State != CrackState.Plated) return;
+        var current = Snapshot; current.State = CrackState.Fixed;
+        current.Occupancy.Version = ItemLoot.NextStateVersion(this);
+        snapshot.value = current;
+        ApplySnapshot();
+    }
+
+    internal void ForgetPlateServer(ItemLoot item, ulong stamp)
+    {
+        if (!isServer || !Snapshot.Occupancy.Occupant.Matches(item)) return;
+        var current = Snapshot;
+        current.Occupancy = new ItemSocketOccupancy { Version = stamp };
+        // A lost plate reopens the same crack; a fixed crack stays fixed.
+        if (current.State == CrackState.Plated)
+        {
+            current.State = CrackState.Active;
+            stationManager?.ForgetPlateServer(current.CrackID);
+        }
+        snapshot.value = current;
+        ApplySnapshot();
+    }
+
+    internal void RefreshPresentation() { displayedSocketVersion = 0; ApplySnapshot(); }
+
+    private void ApplySnapshot()
+    {
+        var current = Snapshot;
+        if (current.Occupancy.Version == 0 || current.Occupancy.Version == displayedSocketVersion) return;
+        var item = current.Occupancy.Occupant.Resolve<ItemLoot>(this);
+        if (current.Occupancy.Occupant.Identity.HasValue && (!item || item.Possession.Location != ItemSharedLocation.Socket ||
+            !item.Possession.Context.Matches(this))) return;
+        currentCrackID = current.CrackID;
+        isCrackSpawned = current.State != CrackState.Inactive;
+        isFixed = current.State == CrackState.Fixed;
+        slottedPlate = item ? item.GetComponent<HullBreach_PlateItem>() : null;
+        bool newPlacement = item && (!displayedPlate.Equals(current.Occupancy.Occupant) || displayedCrackID != current.CrackID);
+        if (item)
+        {
+            item.SetPhysicalState(ItemSharedLocation.Socket);
+            item.transform.SetParent(transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.Euler(0, 0, current.PlacementRotation);
+            item.SetVisible(true);
+            if (newPlacement)
+            {
+                weldedPointsCount = 0;
+                foreach (var point in item.GetComponentsInChildren<HullBreach_WeldPoint>(true)) point.Initialize(this);
+            }
+            interactable.SetDisplayName("Use Drill to Weld");
+        }
+        displayedPlate = current.Occupancy.Occupant;
+        displayedCrackID = current.CrackID;
+        displayedSocketVersion = current.Occupancy.Version;
+        if (isFixed)
+        {
+            foreach (var col in GetComponentsInChildren<Collider>()) col.enabled = false;
+            RpcOnCrackFixed();
+        }
+        else UpdateSocketVisualsAndInteraction();
     }
 }

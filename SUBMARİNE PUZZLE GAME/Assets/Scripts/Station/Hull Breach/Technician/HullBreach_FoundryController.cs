@@ -29,6 +29,8 @@ public class HullBreach_FoundryController : NetworkBehaviour
     // Backend Timer
     private float printTimer = 0f;
     private PlateMaterial currentlyPrintingMaterial = PlateMaterial.None;
+    private HullBreach_PlateItem currentPrintedPlate;
+    internal bool IsCurrentPlate(HullBreach_PlateItem plate) => isServer && currentPrintedPlate == plate && hasPlateInSlot.value;
 
     private void Update()
     {
@@ -76,6 +78,8 @@ public class HullBreach_FoundryController : NetworkBehaviour
             HullBreach_PlateItem plateScript = newPlateObj.GetComponent<HullBreach_PlateItem>();
             if (plateScript != null)
             {
+                currentPrintedPlate = plateScript;
+                plateScript.SourceFoundry = this;
                 plateScript.OnPlateTakenServer += HandlePlateLooted;
             }
 
@@ -85,7 +89,7 @@ public class HullBreach_FoundryController : NetworkBehaviour
             newPlateObj.transform.localScale = Vector3.zero;
             newPlateObj.transform.DOScale(Vector3.one, animDuration).SetEase(animEase);
 
-            // PurrNet.NetworkManager.Instantiate(newPlateObj); 
+            // PurrNet.NetworkManager.Instantiate(newPlateObj);
         }
 
         RpcOnPrintFinished(currentlyPrintingMaterial);
@@ -94,12 +98,29 @@ public class HullBreach_FoundryController : NetworkBehaviour
 
     private void HandlePlateLooted(HullBreach_PlateItem takenPlate)
     {
+        if (!IsCurrentPlate(takenPlate)) return;
+        currentPrintedPlate = null;
         takenPlate.OnPlateTakenServer -= HandlePlateLooted;
         RpcOnPlateTaken();
 
         hasPlateInSlot.value = false;
 
         Debug.Log($"<color=green>[FOUNDRY]</color> {takenPlate.gameObject.name} alındı, abonelik temizlendi ve makine üretime açıldı.");
+    }
+
+    internal void ForgetPlateServer(HullBreach_PlateItem plate)
+    {
+        if (!isServer || currentPrintedPlate != plate) return;
+        plate.OnPlateTakenServer -= HandlePlateLooted;
+        plate.SourceFoundry = null;
+        currentPrintedPlate = null;
+        hasPlateInSlot.value = false;
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        if (asServer && currentPrintedPlate) ForgetPlateServer(currentPrintedPlate);
+        base.OnDespawned(asServer);
     }
 
     private GameObject GetPlatePrefab(PlateMaterial material)

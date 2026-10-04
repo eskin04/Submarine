@@ -38,6 +38,9 @@ public class Keycard_StationManager : NetworkBehaviour
 
     private void GeneratePuzzle()
     {
+        // Clear only this station's accepted socket occupants; held cards are untouched.
+        foreach (var socket in FindObjectsByType<Keycard_Socket>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (socket.stationManager == this) socket.ResetServer();
 
         allCards.Clear();
         correctSolutionSequence.Clear();
@@ -86,8 +89,11 @@ public class Keycard_StationManager : NetworkBehaviour
 
 
     [ServerRpc(requireOwnership: false)]
-    public void TechnicianInsertCardRPC(int cardID, int socketIndex)
+    public void TechnicianInsertCardRPC(int cardID, int socketIndex) { TechnicianInsertCardServer(cardID, socketIndex); }
+
+    public void TechnicianInsertCardServer(int cardID, int socketIndex)
     {
+        if (!isServer) return;
         if (!isRoundActive) return;
         if (socketIndex < 0 || socketIndex > 3) return;
 
@@ -98,8 +104,11 @@ public class Keycard_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void TechnicianRemoveCardRPC(int socketIndex)
+    public void TechnicianRemoveCardRPC(int socketIndex) { TechnicianRemoveCardServer(socketIndex); }
+
+    public void TechnicianRemoveCardServer(int socketIndex)
     {
+        if (!isServer) return;
         if (!isRoundActive) return;
         if (socketIndex < 0 || socketIndex > 3) return;
 
@@ -123,8 +132,11 @@ public class Keycard_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void EngineerInsertCardRPC(int cardID)
+    public void EngineerInsertCardRPC(int cardID) { EngineerInsertCardServer(cardID); }
+
+    public void EngineerInsertCardServer(int cardID)
     {
+        if (!isServer) return;
         if (!isRoundActive) return;
 
         engineerSocket = cardID;
@@ -135,8 +147,11 @@ public class Keycard_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void EngineerRemoveCardRPC()
+    public void EngineerRemoveCardRPC() { EngineerRemoveCardServer(); }
+
+    public void EngineerRemoveCardServer()
     {
+        if (!isServer) return;
         if (!isRoundActive) return;
 
         engineerSocket = -1;
@@ -145,8 +160,11 @@ public class Keycard_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void TesterInsertCardRPC(int cardID, int socketIndex)
+    public void TesterInsertCardRPC(int cardID, int socketIndex) { TesterInsertCardServer(cardID, socketIndex); }
+
+    public void TesterInsertCardServer(int cardID, int socketIndex)
     {
+        if (!isServer) return;
         if (!isRoundActive.value || socketIndex < 0 || socketIndex > 1) return;
 
 
@@ -155,8 +173,11 @@ public class Keycard_StationManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void TesterRemoveCardRPC(int socketIndex)
+    public void TesterRemoveCardRPC(int socketIndex) { TesterRemoveCardServer(socketIndex); }
+
+    public void TesterRemoveCardServer(int socketIndex)
     {
+        if (!isServer) return;
         if (!isRoundActive.value || socketIndex < 0 || socketIndex > 1) return;
 
         testerSockets[socketIndex] = -1;
@@ -235,7 +256,6 @@ public class Keycard_StationManager : NetworkBehaviour
             engineerUI.UpdateSocketVisual(cardID, condition);
         }
     }
-
 
 
     [ServerRpc(requireOwnership: false)]
