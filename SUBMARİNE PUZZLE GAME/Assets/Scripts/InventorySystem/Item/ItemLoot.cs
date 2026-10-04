@@ -61,6 +61,7 @@ public class ItemLoot : NetworkBehaviour
     private SyncVar<ItemPossession> possession = new SyncVar<ItemPossession>();
     public ItemPossession Possession => possession.value;
     public bool IsPossessionInitialized => isSpawned && possession.value.Version != 0;
+    internal bool IsPresentationVisible { get; private set; }
 
     private ItemPossession displayedPossession;
     private Renderer[] renderers;
@@ -92,12 +93,13 @@ public class ItemLoot : NetworkBehaviour
         possession.value = new ItemPossession { Location = location, Context = handle, Slot = slot, Version = version };
     }
 
-    internal void SetVisible(bool visible)
+    internal void SetVisible(bool visible, bool showCanvases = true)
     {
+        IsPresentationVisible = visible;
         for (int i = 0; i < renderers.Length; i++)
             if (renderers[i]) renderers[i].enabled = visible && rendererVisibility[i];
         for (int i = 0; i < canvases.Length; i++)
-            if (canvases[i]) canvases[i].enabled = visible && canvasVisibility[i];
+            if (canvases[i]) canvases[i].enabled = visible && showCanvases && canvasVisibility[i];
     }
 
     internal void PreviewPickup(Transform hand)
@@ -137,13 +139,14 @@ public class ItemLoot : NetworkBehaviour
     {
         bool world = location == ItemSharedLocation.World;
         bool detached = location == ItemSharedLocation.Detached;
+        // Establish the physics writer before NT re-enable can publish/apply a pose.
+        if (body) { body.isKinematic = !world || !isServer; body.useGravity = world && isServer; }
         if (networkTransform)
         {
             if (world) networkTransform.StopIgnoringParentChanges();
             else networkTransform.StartIgnoringParentChanges();
             networkTransform.enabled = world || detached;
         }
-        if (body) { body.isKinematic = !world || !isServer; body.useGravity = world; }
         if (lootCollider) lootCollider.enabled = world || detached ||
             (location == ItemSharedLocation.Socket && !GetComponent<HullBreach_PlateItem>());
         CanBeLooted = world || detached ||
@@ -162,7 +165,12 @@ public class ItemLoot : NetworkBehaviour
         if (!isServer && current.Location == ItemSharedLocation.World &&
             displayedPossession.Location == ItemSharedLocation.Inventory && owner.HasValue) return;
         var holder = current.Location == ItemSharedLocation.Inventory ? current.Context.Resolve<InventoryManager>(this) : null;
-        if (current.Location == ItemSharedLocation.Inventory && holder == null) return;
+        if (current.Location == ItemSharedLocation.Inventory && holder == null)
+        {
+            // Retain possession/identity while its inventory has not spawned yet.
+            SetVisible(false);
+            return;
+        }
         if (displayedPossession.Location == ItemSharedLocation.Inventory)
             displayedPossession.Context.Resolve<InventoryManager>(this)?.ApplyItemRelease(this, displayedPossession.Slot);
         if (holder != null) holder.ApplyItemHeld(this, current.Slot);
@@ -176,6 +184,25 @@ public class ItemLoot : NetworkBehaviour
             SetVisible(true);
         }
         displayedPossession = current;
+        if (!isServer && current.Location == ItemSharedLocation.World && networkTransform)
+        {
+            // OnEnable resets PurrNet 1.19.1's delta baseline to the local pose.
+            // A full drop update received while NT was disabled can be lost by
+            // that reset. Get a fresh absolute pose once, after enabling NT.
+            RequestWorldTransformServerRpc(current.Version);
+        }
+    }
+
+    [ServerRpc(requireOwnership: false)]
+    private void RequestWorldTransformServerRpc(ulong version, RPCInfo info = default)
+    {
+        // Presentation repair only; never mutate possession or replay a transfer.
+        if (!isServer || !IsPossessionInitialized || Possession.Location != ItemSharedLocation.World ||
+            Possession.Version != version || owner.HasValue || !networkTransform ||
+            !networkTransform.isSpawned || !networkTransform.enabled || !networkTransform.IsObserver(info.sender)) return;
+        // Reset the writer's delta baseline too. The targeted overload sends a
+        // full pose without updating _lastSentDelta in PurrNet 1.19.1.
+        networkTransform.ForceSync();
     }
 
     protected override void OnDespawned(bool asServer)
@@ -209,7 +236,13 @@ public class ItemLoot : NetworkBehaviour
     protected override void OnSpawned(bool asServer)
     {
         base.OnSpawned(asServer);
-        if (!asServer) return;
+        if (!asServer)
+        {
+            // Prefabs start dynamic. Do not simulate a replica while its initial
+            // possession/socket snapshot is still resolving.
+            if (!isServer && body) { body.isKinematic = true; body.useGravity = false; }
+            return;
+        }
 
         // Also replaces a retained stamp when a pooled identity is spawned again.
         possession.value = new ItemPossession

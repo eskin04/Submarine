@@ -22,6 +22,8 @@ public class InventoryManager : NetworkBehaviour
 
     private InventoryItemContainer[] containers;
     private SyncVar<ulong> inventoryVersion = new SyncVar<ulong>();
+    // Owner selection is a visual hint only; possession remains host-written truth.
+    private SyncVar<ItemIdentityHandle> selectedItem = new SyncVar<ItemIdentityHandle>(ownerAuth: true);
     public ulong InventoryVersion => inventoryVersion.value;
     private int currentSlotIndex = -1;
 
@@ -32,6 +34,7 @@ public class InventoryManager : NetworkBehaviour
     private ItemSway itemSwayScript;
     private bool isHeldItemHidden = false;
     private ItemLoot equippedPresentation;
+    private ItemLoot remoteHeldPresentation;
     public static InventoryManager LocalPlayer { get; private set; }
 
     [Serializable]
@@ -73,6 +76,7 @@ public class InventoryManager : NetworkBehaviour
         if (isOwner)
         {
             LocalPlayer = this;
+            selectedItem.value = default;
         }
 
 
@@ -110,6 +114,7 @@ public class InventoryManager : NetworkBehaviour
 
     protected override void OnDespawned(bool asServer)
     {
+        ClearRemoteHeldPresentation();
         if (asServer && containers != null)
         {
             for (int slot = 0; slot < containers.Length; slot++)
@@ -225,8 +230,13 @@ public class InventoryManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!isOwner) return;
+        if (!isOwner)
+        {
+            ApplyRemoteHeldPresentation();
+            return;
+        }
         FinishPending();
+        PublishSelectedItem();
         if (containers == null || currentSlotIndex < 0) return;
         if (currentInteractable != null && !currentInteractable.IsInteracting())
         {
@@ -314,6 +324,7 @@ public class InventoryManager : NetworkBehaviour
         if (inventoryUI) inventoryUI.HighlightSlot(index);
 
         RefreshActiveSlot();
+        PublishSelectedItem();
         if (pendingOperation == InventoryTransferOperation.Pickup && pendingItem && pendingItem.Possession.Version == pendingItemVersion)
             pendingItem.SetVisible(index == pendingSlot);
     }
@@ -379,6 +390,57 @@ public class InventoryManager : NetworkBehaviour
             if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
                 promptView.RemovePrompt("item_drop");
         }
+    }
+
+    private void PublishSelectedItem()
+    {
+        if (!isSpawned || !isOwner) return;
+        var obj = GetCurrentHeldObject();
+        var item = obj ? obj.GetComponent<ItemLoot>() : null;
+        ItemIdentityHandle handle = default;
+        if (item && item.IsPossessionInitialized && item.Possession.Location == ItemSharedLocation.Inventory &&
+            item.Possession.Context.Matches(this)) ItemIdentityHandle.TryCreate(item, out handle);
+        // SyncVar compares values: unchanged selection produces no per-frame traffic.
+        selectedItem.value = handle;
+    }
+
+    private bool IsAcceptedHeldItem(ItemLoot item)
+    {
+        return isSpawned && item && item.IsPossessionInitialized &&
+            item.Possession.Location == ItemSharedLocation.Inventory && item.Possession.Context.Matches(this);
+    }
+
+    private void ClearRemoteHeldPresentation()
+    {
+        // A transferred item is now World/Socket/Detached presentation, not ours to hide.
+        if (IsAcceptedHeldItem(remoteHeldPresentation)) remoteHeldPresentation.SetVisible(false, false);
+        remoteHeldPresentation = null;
+    }
+
+    private void ApplyRemoteHeldPresentation()
+    {
+        if (!isSpawned || isOwner) return;
+        var item = selectedItem.value.Resolve<ItemLoot>(this);
+        if (!IsAcceptedHeldItem(item)) item = null;
+        if (remoteHeldPresentation != item) ClearRemoteHeldPresentation();
+        if (!item) return;
+        if (remoteHeldPresentation == item)
+        {
+            // Another inventory's rejected preview may have hidden this accepted item.
+            if (!item.IsPresentationVisible) item.SetVisible(true, false);
+            return;
+        }
+        if (!playerInventory) playerInventory = GetComponent<PlayerInventory>();
+        var hand = playerInventory.HandPosition;
+        if (!hand || !item.Data) return;
+
+        item.SetPhysicalState(ItemSharedLocation.Inventory);
+        // Held parent changes are already suppressed by the accepted physical profile.
+        item.transform.SetParent(hand);
+        item.transform.localPosition = item.Data.positionOffset;
+        item.transform.localRotation = Quaternion.Euler(item.Data.rotationOffset);
+        item.SetVisible(true, false);
+        remoteHeldPresentation = item;
     }
 
 
@@ -885,6 +947,11 @@ public class InventoryManager : NetworkBehaviour
 
     internal void ApplyItemRelease(ItemLoot item, int slot)
     {
+        if (!isOwner)
+        {
+            if (remoteHeldPresentation == item) ClearRemoteHeldPresentation();
+            return;
+        }
         if (!isOwner || containers == null || slot < 0 || slot >= containers.Length) return;
         if (!isServer && containers[slot].PhysicalObject == item.gameObject) containers[slot].Clear();
         if (containers[slot].PhysicalObject == null && inventoryUI) inventoryUI.ClearSlot(slot);
@@ -904,10 +971,10 @@ public class InventoryManager : NetworkBehaviour
         item.SetPhysicalState(ItemSharedLocation.Inventory);
         if (!isOwner)
         {
-            item.transform.SetParent(GetComponent<PlayerInventory>().HandPosition);
-            item.transform.localPosition = item.Data.positionOffset;
-            item.transform.localRotation = Quaternion.Euler(item.Data.rotationOffset);
-            item.SetVisible(false);
+            item.SetVisible(false, false);
+            // Reapplication must also reconstruct the selected item after state replay.
+            if (remoteHeldPresentation == item) remoteHeldPresentation = null;
+            ApplyRemoteHeldPresentation();
             return;
         }
         if (containers == null || slot < 0 || slot >= containers.Length) return;
