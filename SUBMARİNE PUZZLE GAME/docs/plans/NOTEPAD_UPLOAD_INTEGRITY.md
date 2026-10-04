@@ -1,6 +1,6 @@
 # C04 — Notepad upload integrity and lifetime
 
-Reviewed on current local main, commit 028874b, 2026-10-04. All required repository guidance and the original plan were read. This replaces the earlier conditional design. Only this plan is changed; no production implementation was performed. The Unity encoder characterization below was completed.
+Reviewed on current local main, commit 028874b, 2026-10-04. All required repository guidance and the original plan were read. This replaces the earlier conditional design. The approved implementation now changes NotepadModule.cs and a narrow InventoryManager.cs bootstrap surface; implementation verification status is recorded below. The Unity encoder characterization was completed before coding.
 
 ## Actual payload and evidence
 
@@ -100,9 +100,41 @@ TornPageItem/ItemLoot/PurrNet/assets remain read-only. No new despawn API. Prese
 
 Removed: dual caps/speculative 1024 support, separate leases, retained Finalizing/terminal states, AwaitingDelivery ledger/commit polling, tokens/generations, lifetime stamps/despawn callback, absolute timer, TornPage decode API and cleanup of handed-off items. Retain only real asynchronous pre-handoff readiness and inventory-owned bootstrap.
 
-## Verification and readiness
+## Verification scope and completed characterization
 
-The Unity encoder measurement above is complete. When separately authorized, implement incrementally and compile against installed APIs. Required regressions (not run): host/client swapped; representative pages and cap boundaries; invalid/null/overflow/misaligned chunks; identical/conflicting duplicates; final-first/out-of-order/missing-middle; foreign sender/target; repeated prepare/stale chunks; simultaneous players/same-sender second notebook Busy; disconnect/reconnect/replacement; module/target teardown/scene reload/session restart; 5/10 FPS/stalls/expiry and duplicate nonrenewal; corrupt JPEG/dimension bomb/decode failure; delayed spawn; busy inventory; empty/full accepted pickup/World fallback; rejection/despawn before submission; producer teardown immediately before/after handoff; accepted commit survives; all buffers/maps/table entries/coroutines/subscriptions/bootstrap pointers settle. Review serialization, authority/RPC semantics and prohibited-scope diff.
+The Unity encoder measurement above is complete. The original regression design included host/client swapped; representative pages and cap boundaries; invalid/null/overflow/misaligned chunks; identical/conflicting duplicates; final-first/out-of-order/missing-middle; foreign sender/target; repeated prepare/stale chunks; simultaneous players/same-sender second notebook Busy; disconnect/reconnect/replacement; module/target teardown/scene reload/session restart; 5/10 FPS/stalls/expiry and duplicate nonrenewal; corrupt JPEG/dimension bomb/decode failure; delayed spawn; busy inventory; empty/full accepted pickup/World fallback; rejection/despawn before submission; producer teardown immediately before/after handoff; accepted commit survives; all buffers/maps/table entries/coroutines/subscriptions/bootstrap pointers settle. Completed compile, Editor and manual multiplayer evidence is recorded below. Cases not explicitly covered by that evidence remain additional stress/fault-injection coverage, not claimed runtime passes or a blocker to the accepted C04 resolution.
 
-**Readiness: YES.** Actual Unity 6000.3.10f1 JPEG50 size/SOF/decode characterization passes with useful margin below 256 KiB. No remaining characterization gate blocks implementation. This is readiness to begin coding, not verification of the unimplemented refactor: compile/protocol/multiplayer regressions remain required. Stop this task after measurement and plan update.
+**Characterization: complete.** Actual Unity 6000.3.10f1 JPEG50 size/SOF/decode characterization passes with useful margin below the retained 256 KiB limit. The former readiness-to-begin-coding gate is superseded by the completed implementation and runtime verification below.
 
+## Implementation status — 2026-10-04
+
+Implemented on the current local main checkout. Production changes are limited to NotepadModule.cs and narrow InventoryManager.cs forced-page bootstrap integration; TornPageItem and accepted transfer/overflow commit methods remain unchanged.
+
+- Admission validates GUID, positive declared size <=262144, supported 512 configuration, connected RPC sender and exact live owner inventory before allocation. Shared session records allow one per sender/two per manager. Preparation acknowledgement precedes chunks; new concurrent requests reject without replacing old records.
+- StoreChunk checks canonical 1000-byte slots with subtraction-safe bounds. Identical duplicates do not change coverage/time; conflicts cancel. Full receipt count, not last offset, detaches chunk writes and triggers finalization.
+- One server record retains buffer/bitmap until full coverage, then one bounded page-readiness continuation. Update checks 30-second unscaled inactivity and exact target reference/handle/owner/scene/manager; paired departure/session/despawn/disable/destroy hooks clean owned work. There is no completed-operation history or producer inventory-commit ledger.
+- JPEG SOF0 dimensions are bounded before LoadImage; successful 512x512 decode is required before one spawn. The unhanded page is temporarily nonlootable using the existing ItemLoot flag already honored by pickup validation. Readiness checks replace the fixed DOTween delay; existing TornPage initialization/distribution remains unchanged.
+- TryBeginForcedPageDelivery synchronously takes one exact page/version before returning true. Only then does Notepad release its page reference, buffer/admission, consume the source and report tutorial success. Inventory submits once through existing pickup/ForcedOverflow after owner pending/waiting/resolving work is idle. It settles its pointer through the existing exact Reply or item/owner/connection lifetime loss. A bounded owner readiness wait can explicitly abandon before submission, leaving the World page; it never rolls back or retries an accepted transfer.
+- Local source page remains locked while pending. Disable cancels/stops local byte sending but keeps only source intent metadata until ordered success/cancellation feedback; immediately restoring it could duplicate an already handed-off page. Identity/session loss drops that intent. No buffer, retry/history or reconnect persistence is retained.
+
+Verification complete for the implementation step: normal Unity 6000.3.10f1 compilation and PurrNet.Codegen.PostProcessor passed after the final production changes. Temporary Editor reflection harness passed 289 chunk/completeness/JPEG-header assertions, including all 263 maximum-size slots in reverse order. No standalone ILPP executable was used. The temporary script, its metadata and newly created Editor folder/metadata were removed. Editor-generated material/FMOD cache changes were restored to the initially clean baseline. git diff --check passes. Manual multiplayer verification was subsequently completed by the user as recorded below; Codex did not independently rerun those multiplayer tests.
+
+The C04 implementation source comparison confirmed serialized fields, drawing/initialization/audio/public notebook methods, ForcePickupClientRpc, WaitForPickup, BeginPending/BeginPickup and accepted TryPickupServer/TryForcedFallbackServer were unchanged. A subsequent focused navigation correction restores remaining-page rotations after successful tearing and cancels an outstanding page-turn tween before resetting the view; it does not alter upload bounds/chunks or TornPage/inventory delivery. Source review covers exact host/client target routing, independent quotas, sender isolation, expiry/disconnect/replacement/teardown cleanup and no producer cleanup after handoff. These remain source-level checks; the supplied multiplayer results are listed separately below.
+
+## Manual multiplayer verification and resolution — 2026-10-04
+
+**C04 status: RESOLVED / RUNTIME VERIFIED.** The user confirms the following manual multiplayer results on the current local main checkout:
+
+| Runtime check | Result |
+| --- | --- |
+| Host draw -> tear -> TornPage delivery | PASS |
+| Client draw -> tear -> TornPage delivery | PASS |
+| Near-simultaneous host/client tears | PASS |
+| Exact target inventory delivery | PASS |
+| Full-inventory World fallback | PASS |
+| Page tear/navigation presentation regression | Fixed and manually retested PASS |
+| Host/client page navigation after tears | PASS |
+| One TornPage per tear | PASS |
+| Console errors during verification | NONE |
+
+The intermittent notebook issue where it is visibly held but drawing/navigation input is inactive occurs before upload. It remains an open H01/M05 interaction/lifecycle investigation, with its exact trigger unconfirmed by the qualified note in docs/TECH_DEBT.md. It does not keep C04 open. H03 observer image replay, general starting-item lifecycle and M05 module/surface placement also remain separate findings. No production changes or additional runtime tests were made for this documentation closure.

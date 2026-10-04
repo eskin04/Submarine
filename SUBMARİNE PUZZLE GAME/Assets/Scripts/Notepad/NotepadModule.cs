@@ -4,6 +4,9 @@ using DG.Tweening;
 using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using PurrNet.Modules;
+using PurrNet.Transports;
 
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(ModuleInteraction))]
@@ -44,12 +47,45 @@ public class NotepadModule : NetworkBehaviour
     private int currentPageIndex = 0;
     private bool isInteracting = false;
     private bool isAnimating = false;
+    private Tween pageTurnTween;
     private bool isDrawingCursorActive = false;
     private int remainingPages = 4;
     private Interactable interactableComponent;
 
     private Texture2D[] pageTextures;
     private Vector2 lastDrawPosition = -Vector2.one;
+
+    private const int UploadChunkSize = 1000;
+    private const int MaxUploadBytes = 262144;
+    private const int PageResolution = 512;
+    private const double UploadIdleSeconds = 30;
+    private const string UploadPrompt = "notepad_upload";
+
+    // At most two active operations per exact session, shared by notebook instances.
+    private static readonly List<PageUpload> activeUploads = new List<PageUpload>();
+    private readonly List<PageUpload> uploads = new List<PageUpload>();
+    private NetworkManager uploadManager;
+    private string localUploadId;
+    private int localUploadPage;
+    private bool localUploadAdmitted;
+    private bool localCancelRequested;
+    private double localLastProgress;
+    private Coroutine localSend;
+
+    private sealed class PageUpload
+    {
+        public NetworkManager Manager;
+        public PlayerID Sender;
+        public string Id;
+        public InventoryManager Target;
+        public ItemIdentityHandle TargetHandle;
+        public byte[] Buffer;
+        public BitArray Received;
+        public int ReceivedCount;
+        public double LastProgress;
+        public GameObject Page;
+        public Coroutine Readiness;
+    }
 
     private void Awake()
     {
@@ -64,11 +100,13 @@ public class NotepadModule : NetworkBehaviour
     private void OnEnable()
     {
         TutorialInputManager.OnNotebookInteractStateChanged += HandleNotebookInteractState;
+        SubscribeUploadLifetime();
     }
 
     private void OnDisable()
     {
         TutorialInputManager.OnNotebookInteractStateChanged -= HandleNotebookInteractState;
+        ClearUploadLifetime();
     }
 
     private void HandleNotebookInteractState(bool isInteractable)
@@ -90,6 +128,8 @@ public class NotepadModule : NetworkBehaviour
 
     private void Update()
     {
+        CheckUploadLifetimes();
+        if (localUploadId != null) return;
         if (!isInteracting || isAnimating) return;
 
         HandlePageScrolling();
@@ -99,122 +139,427 @@ public class NotepadModule : NetworkBehaviour
 
     private void HandlePageTearing()
     {
-        if (Input.GetKeyDown(KeyCode.E) && remainingPages > 0)
+        if (!Input.GetKeyDown(KeyCode.E) || remainingPages <= 0 || !pageMeshes[currentPageIndex].activeSelf) return;
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView) &&
+            questView.ShouldBlockAction(TutorialAction.RipPage)) return;
+        var inventory = InventoryManager.LocalPlayer;
+        if (!isSpawned || !inventory || !inventory.isOwner || !localPlayer.HasValue || textureResolution != PageResolution)
         {
-            if (pageMeshes[currentPageIndex].activeSelf == false) return;
-            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var questView))
+            ShowUploadProblem("Notebook upload unavailable");
+            return;
+        }
+        var data = pageTextures[currentPageIndex].EncodeToJPG(50);
+        if (data == null || data.Length == 0 || data.Length > MaxUploadBytes)
+        {
+            ShowUploadProblem("Page image exceeds upload limit");
+            return;
+        }
+        localUploadId = Guid.NewGuid().ToString();
+        localUploadPage = currentPageIndex;
+        localUploadAdmitted = false;
+        localCancelRequested = false;
+        localLastProgress = Time.realtimeSinceStartupAsDouble;
+        localSend = StartCoroutine(SendImageInChunksRoutine(data, inventory, localUploadId));
+    }
+
+    private IEnumerator SendImageInChunksRoutine(byte[] data, InventoryManager inventory, string imageId)
+    {
+        // Yield first so synchronous host rejection cannot leave a stale coroutine handle.
+        yield return null;
+        if (isServer) PrepareUpload(localPlayer.Value, imageId, data.Length, inventory);
+        else PrepareImageServerRpc(imageId, data.Length, inventory);
+        while (localUploadId == imageId && !localUploadAdmitted) yield return null;
+        for (int offset = 0; localUploadId == imageId && !localCancelRequested && offset < data.Length; offset += UploadChunkSize)
+        {
+            int length = Math.Min(UploadChunkSize, data.Length - offset);
+            var chunk = new byte[length];
+            Array.Copy(data, offset, chunk, 0, length);
+            if (isServer) ReceiveUploadChunk(localPlayer.Value, imageId, chunk, offset);
+            else SendChunkServerRpc(imageId, chunk, offset);
+            localLastProgress = Time.realtimeSinceStartupAsDouble;
+            yield return null;
+        }
+        localSend = null;
+    }
+
+    [ServerRpc(requireOwnership: false, runLocally: false)]
+    private void PrepareImageServerRpc(string imageId, int totalSize, InventoryManager targetInventory, RPCInfo info = default)
+    {
+        if (info.asServer && info.manager == networkManager) PrepareUpload(info.sender, imageId, totalSize, targetInventory);
+    }
+
+    private void PrepareUpload(PlayerID sender, string imageId, int totalSize, InventoryManager target)
+    {
+        if (!isServer || !isSpawned || !isActiveAndEnabled || !IsConnected(networkManager, sender)) return;
+        if (imageId == null || imageId.Length != 36 || !Guid.TryParseExact(imageId, "D", out _))
+        {
+            Debug.LogWarning("Notepad upload rejected: invalid ID.", this);
+            return;
+        }
+        string rejection = null;
+        if (totalSize <= 0 || totalSize > MaxUploadBytes || textureResolution != PageResolution) rejection = "Invalid page size/configuration";
+        else if (!IsValidTarget(target, sender, networkManager) || !ItemIdentityHandle.TryCreate(target, out _)) rejection = "Page target unavailable";
+        else
+        {
+            int count = 0;
+            foreach (var existing in activeUploads)
             {
-                if (questView.ShouldBlockAction(TutorialAction.RipPage)) return;
-
-                questView.OnActionPerformed(TutorialAction.RipPage);
+                if (existing.Manager != networkManager) continue;
+                count++;
+                if (existing.Sender == sender) { rejection = "Notebook upload busy"; break; }
             }
+            if (rejection == null && count >= 2) rejection = "Notebook upload busy";
+        }
+        if (rejection != null)
+        {
+            Debug.LogWarning("Notepad upload rejected: " + rejection, this);
+            SendUploadOutcome(sender, imageId, false, false, rejection);
+            return;
+        }
+        ItemIdentityHandle.TryCreate(target, out var targetHandle);
+        var upload = new PageUpload { Manager = networkManager, Sender = sender, Id = imageId,
+            Target = target, TargetHandle = targetHandle, Buffer = new byte[totalSize],
+            Received = new BitArray((totalSize + UploadChunkSize - 1) / UploadChunkSize), LastProgress = Time.realtimeSinceStartupAsDouble };
+        uploads.Add(upload);
+        activeUploads.Add(upload);
+        SendUploadOutcome(sender, imageId, true, false, null);
+    }
 
-            isAnimating = true;
-            PlaySound(pageFlipSound);
+    [ServerRpc(requireOwnership: false, runLocally: false)]
+    private void SendChunkServerRpc(string imageId, byte[] chunk, int offset, RPCInfo info = default)
+    {
+        if (info.asServer && info.manager == networkManager) ReceiveUploadChunk(info.sender, imageId, chunk, offset);
+    }
 
-            Texture2D currentTex = pageTextures[currentPageIndex];
-            byte[] compressedData = currentTex.EncodeToJPG(50);
+    private void ReceiveUploadChunk(PlayerID sender, string imageId, byte[] chunk, int offset)
+    {
+        var upload = FindUpload(sender, imageId);
+        if (upload == null || upload.Received == null) return;
+        if (!IsUploadAlive(upload)) { EndUpload(upload, false, "Page target lifetime ended"); return; }
+        var result = StoreChunk(upload, chunk, offset);
+        if (result == ChunkResult.Invalid || result == ChunkResult.Conflict)
+        { EndUpload(upload, false, result == ChunkResult.Conflict ? "Conflicting page chunk" : "Malformed page chunk"); return; }
+        if (result == ChunkResult.Duplicate) return;
+        upload.LastProgress = Time.realtimeSinceStartupAsDouble;
+        if (result != ChunkResult.Complete) return;
+        upload.Received = null; // Detach chunk writes before any decode or yield.
+        FinalizeUpload(upload);
+    }
 
-            pageMeshes[currentPageIndex].SetActive(false);
-            remainingPages--;
+    private enum ChunkResult { Invalid, Conflict, Duplicate, Progress, Complete }
 
-            if (remainingPages > 0)
-            {
-                int nextActive = FindNextActivePage(currentPageIndex);
-                if (nextActive != -1)
-                {
-                    currentPageIndex = nextActive;
-                }
+    private static ChunkResult StoreChunk(PageUpload upload, byte[] chunk, int offset)
+    {
+        if (!IsCanonicalChunk(upload.Buffer.Length, offset, chunk)) return ChunkResult.Invalid;
+        int slot = offset / UploadChunkSize;
+        if (upload.Received[slot])
+        {
+            for (int i = 0; i < chunk.Length; i++)
+                if (upload.Buffer[offset + i] != chunk[i]) return ChunkResult.Conflict;
+            return ChunkResult.Duplicate;
+        }
+        Array.Copy(chunk, 0, upload.Buffer, offset, chunk.Length);
+        upload.Received[slot] = true;
+        upload.ReceivedCount++;
+        return upload.ReceivedCount == upload.Received.Length ? ChunkResult.Complete : ChunkResult.Progress;
+    }
 
-            }
+    private static bool IsCanonicalChunk(int total, int offset, byte[] chunk)
+    {
+        return total > 0 && total <= MaxUploadBytes && chunk != null && chunk.Length > 0 &&
+            offset >= 0 && offset < total && offset % UploadChunkSize == 0 &&
+            chunk.Length <= total - offset && chunk.Length == Math.Min(UploadChunkSize, total - offset);
+    }
 
-            StartCoroutine(SendImageInChunksRoutine(compressedData, InventoryManager.LocalPlayer));
-
-            if (isDrawingCursorActive)
-            {
-                CursorManager.OnClearCustomCursor?.Invoke();
-                isDrawingCursorActive = false;
-            }
-
-            DOVirtual.DelayedCall(0.3f, () => isAnimating = false);
+    private void FinalizeUpload(PageUpload upload)
+    {
+        if (!IsUploadAlive(upload) || !ValidatePageImage(upload.Buffer)) { EndUpload(upload, false, "Invalid page image/target"); return; }
+        if (!tornPagePrefab || !tornPagePrefab.GetComponent<TornPageItem>() ||
+            !tornPagePrefab.GetComponent<ItemLoot>() || !tornPagePrefab.GetComponent<NetworkTransform>())
+        { EndUpload(upload, false, "Page prefab unavailable"); return; }
+        try
+        {
+            upload.Page = Instantiate(tornPagePrefab, transform.position, transform.rotation);
+            // Existing pickup validation honors this flag. No other accepted pickup may race producer cleanup.
+            upload.Page.GetComponent<ItemLoot>().CanBeLooted = false;
+            upload.Readiness = StartCoroutine(HandoffWhenReady(upload));
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning("Notepad page setup failed: " + exception.Message, this);
+            EndUpload(upload, false, "Page setup failed");
         }
     }
 
-    private IEnumerator SendImageInChunksRoutine(byte[] imageData, InventoryManager targetInventory)
+    private IEnumerator HandoffWhenReady(PageUpload upload)
     {
-        int chunkSize = 1000;
-        int totalChunks = Mathf.CeilToInt((float)imageData.Length / chunkSize);
-
-        string uniqueImageId = System.Guid.NewGuid().ToString();
-
-        PrepareImageServerRpc(uniqueImageId, imageData.Length, targetInventory);
-
+        // A real spawn boundary replaces the unrelated fixed DOTween delay.
         yield return null;
-
-        for (int i = 0; i < totalChunks; i++)
+        while (uploads.Contains(upload))
         {
-            int length = Mathf.Min(chunkSize, imageData.Length - i * chunkSize);
-            byte[] chunk = new byte[length];
-            System.Array.Copy(imageData, i * chunkSize, chunk, 0, length);
-
-            SendChunkServerRpc(uniqueImageId, chunk, i * chunkSize);
-
+            if (!IsUploadAlive(upload) || !upload.Page) { EndUpload(upload, false, "Page lifetime ended"); yield break; }
+            var page = upload.Page.GetComponent<TornPageItem>();
+            var item = upload.Page.GetComponent<ItemLoot>();
+            var nt = upload.Page.GetComponent<NetworkTransform>();
+            if (page && page.isServer && item && item.IsPossessionInitialized && nt && nt.isSpawned)
+            {
+                try
+                {
+                    nt.GiveOwnership(upload.Sender);
+                    page.SetImageDataAndDistribute(upload.Buffer);
+                    if (upload.Target.TryBeginForcedPageDelivery(item))
+                    {
+                        item.CanBeLooted = true;
+                        // Inventory owns this exact item now. Producer cleanup must never destroy it.
+                        upload.Page = null;
+                        EndUpload(upload, true, null);
+                    }
+                    else EndUpload(upload, false, "Page delivery busy/unavailable");
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning("Notepad page initialization failed: " + exception.Message, this);
+                    EndUpload(upload, false, "Page initialization failed");
+                }
+                yield break;
+            }
             yield return null;
         }
     }
 
-
-    private Dictionary<string, byte[]> incomingImages = new Dictionary<string, byte[]>();
-    private Dictionary<string, InventoryManager> imageOwners = new Dictionary<string, InventoryManager>();
-
-    [ServerRpc(requireOwnership: false)]
-    private void PrepareImageServerRpc(string imageId, int totalSize, InventoryManager targetInventory)
+    private static bool ValidatePageImage(byte[] bytes)
     {
-        incomingImages[imageId] = new byte[totalSize];
-        imageOwners[imageId] = targetInventory;
+        if (!HasSupportedJpegDimensions(bytes)) return false;
+        Texture2D decoded = null;
+        try
+        {
+            decoded = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            return decoded.LoadImage(bytes) && decoded.width == PageResolution && decoded.height == PageResolution;
+        }
+        catch (Exception) { return false; }
+        finally { if (decoded) Destroy(decoded); }
     }
 
-    [ServerRpc(requireOwnership: false)]
-    private void SendChunkServerRpc(string imageId, byte[] chunk, int startIndex)
+    private static bool HasSupportedJpegDimensions(byte[] bytes)
     {
-        if (!incomingImages.ContainsKey(imageId)) return;
-
-        System.Array.Copy(chunk, 0, incomingImages[imageId], startIndex, chunk.Length);
-
-        if (startIndex + chunk.Length >= incomingImages[imageId].Length)
+        if (bytes == null || bytes.Length < 4 || bytes.Length > MaxUploadBytes || bytes[0] != 255 || bytes[1] != 216) return false;
+        int offset = 2;
+        bool foundFrame = false;
+        while (offset < bytes.Length)
         {
-            byte[] completeImageData = incomingImages[imageId];
-            InventoryManager ownerInventory = imageOwners[imageId];
-
-            incomingImages.Remove(imageId);
-            imageOwners.Remove(imageId);
-
-            SpawnTornPageWithImage(completeImageData, ownerInventory);
-        }
-    }
-
-    private void SpawnTornPageWithImage(byte[] completeData, InventoryManager targetInventory)
-    {
-        GameObject tornPage = Instantiate(tornPagePrefab, transform.position, transform.rotation);
-
-        var netObj = tornPage.GetComponent<NetworkTransform>();
-        if (netObj != null && targetInventory != null)
-            netObj.GiveOwnership(targetInventory.owner);
-
-        TornPageItem tornItem = tornPage.GetComponent<TornPageItem>();
-
-        if (tornItem != null)
-        {
-            tornItem.SetImageDataAndDistribute(completeData);
-        }
-
-        if (targetInventory != null)
-        {
-            DOVirtual.DelayedCall(0.1f, () =>
+            if (bytes[offset++] != 255) return false;
+            while (offset < bytes.Length && bytes[offset] == 255) offset++;
+            if (offset >= bytes.Length) return false;
+            int marker = bytes[offset++];
+            if (marker == 218) return foundFrame; // Decode validates the scan itself.
+            if (marker == 217 || marker == 0) return false;
+            if (offset > bytes.Length - 2) return false;
+            int length = bytes[offset] * 256 + bytes[offset + 1];
+            if (length < 2 || length > bytes.Length - offset) return false;
+            if (marker >= 192 && marker <= 207 && marker != 196 && marker != 200 && marker != 204)
             {
-                if (tornPage != null) targetInventory.ForcePickupClientRpc(tornPage);
-            });
+                // Actual Unity JPEG50 uses baseline SOF0. Reject unsupported/multiple frames before decode.
+                if (marker != 192 || foundFrame || length < 8 || bytes[offset + 2] != 8 ||
+                    bytes[offset + 3] * 256 + bytes[offset + 4] != PageResolution ||
+                    bytes[offset + 5] * 256 + bytes[offset + 6] != PageResolution) return false;
+                foundFrame = true;
+            }
+            offset += length;
         }
+        return false;
+    }
+
+    private PageUpload FindUpload(PlayerID sender, string imageId)
+    {
+        foreach (var upload in uploads) if (upload.Sender == sender && upload.Id == imageId) return upload;
+        return null;
+    }
+
+    private static bool IsConnected(NetworkManager manager, PlayerID sender)
+    {
+        return manager && manager.isServer && manager.TryGetModule<PlayersManager>(true, out var players) && players.IsPlayerConnected(sender);
+    }
+
+    private bool IsValidTarget(InventoryManager target, PlayerID sender, NetworkManager manager)
+    {
+        return target && target.isServer && target.isSpawned && target.isActiveAndEnabled &&
+            target.networkManager == manager && target.sceneId == sceneId && target.owner == sender && target.InventoryVersion != 0;
+    }
+
+    private bool IsUploadAlive(PageUpload upload)
+    {
+        return isServer && isSpawned && isActiveAndEnabled && networkManager == upload.Manager &&
+            IsConnected(upload.Manager, upload.Sender) && IsValidTarget(upload.Target, upload.Sender, upload.Manager) &&
+            upload.TargetHandle.Resolve<InventoryManager>(this) == upload.Target &&
+            Time.realtimeSinceStartupAsDouble - upload.LastProgress < UploadIdleSeconds;
+    }
+
+    private void CheckUploadLifetimes()
+    {
+        for (int i = uploads.Count - 1; i >= 0; i--)
+            if (!IsUploadAlive(uploads[i])) EndUpload(uploads[i], false, "Page upload expired/lifetime ended");
+        if (localUploadId != null && !localCancelRequested &&
+            Time.realtimeSinceStartupAsDouble - localLastProgress >= UploadIdleSeconds) RequestLocalCancellation();
+    }
+
+    private void EndUpload(PageUpload upload, bool handedOff, string reason)
+    {
+        if (!uploads.Remove(upload)) return;
+        activeUploads.Remove(upload);
+        if (upload.Readiness != null) StopCoroutine(upload.Readiness);
+        upload.Readiness = null;
+        if (upload.Page)
+        {
+            var item = upload.Page.GetComponent<ItemLoot>();
+            // Defensive preservation of any accepted possession, even during shutdown.
+            if (!item || !item.IsPossessionInitialized || item.Possession.Location == ItemSharedLocation.World)
+                Destroy(upload.Page);
+            else handedOff = true;
+        }
+        upload.Page = null;
+        upload.Buffer = null;
+        upload.Received = null;
+        if (!handedOff) Debug.LogWarning("Notepad upload cancelled: " + reason, this);
+        if (IsConnected(upload.Manager, upload.Sender) && isSpawned)
+            SendUploadOutcome(upload.Sender, upload.Id, false, handedOff, reason);
+    }
+
+    private void SendUploadOutcome(PlayerID sender, string imageId, bool admitted, bool handedOff, string reason)
+    {
+        if (localPlayer == sender) ApplyUploadOutcome(imageId, admitted, handedOff, reason);
+        else UploadOutcomeTargetRpc(sender, imageId, admitted, handedOff, reason);
+    }
+
+    [TargetRpc]
+    private void UploadOutcomeTargetRpc(PlayerID target, string imageId, bool admitted, bool handedOff, string reason)
+    {
+        ApplyUploadOutcome(imageId, admitted, handedOff, reason);
+    }
+
+    private void ApplyUploadOutcome(string imageId, bool admitted, bool handedOff, string reason)
+    {
+        if (localUploadId != imageId) return;
+        if (admitted)
+        {
+            localUploadAdmitted = true;
+            localLastProgress = Time.realtimeSinceStartupAsDouble;
+            pageMeshes[localUploadPage].SetActive(false);
+            PlaySound(pageFlipSound);
+            if (isDrawingCursorActive) { CursorManager.OnClearCustomCursor?.Invoke(); isDrawingCursorActive = false; }
+            return;
+        }
+        if (localSend != null) StopCoroutine(localSend);
+        localSend = null;
+        localUploadId = null;
+        localUploadAdmitted = false;
+        if (handedOff)
+        {
+            remainingPages--;
+            SelectRemainingPageAfterTear(localUploadPage);
+            if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view)) view.OnActionPerformed(TutorialAction.RipPage);
+            if (InstanceHandler.TryGetInstance<PromptView>(out var prompts)) prompts.RemovePrompt(UploadPrompt);
+        }
+        else
+        {
+            if (pageMeshes[localUploadPage]) pageMeshes[localUploadPage].SetActive(true);
+            currentPageIndex = localUploadPage;
+            ShowUploadProblem(reason ?? "Page upload cancelled");
+        }
+    }
+
+    private void ShowUploadProblem(string reason)
+    {
+        if (isInteracting && InstanceHandler.TryGetInstance<PromptView>(out var prompts))
+            prompts.AddPrompt(UploadPrompt, "E", reason, PromptGroup.Module);
+    }
+
+    private void RequestLocalCancellation()
+    {
+        if (localUploadId == null || localCancelRequested || !isSpawned) return;
+        localCancelRequested = true;
+        if (isServer && localPlayer.HasValue)
+        {
+            var upload = FindUpload(localPlayer.Value, localUploadId);
+            if (upload != null) EndUpload(upload, false, "Local upload cancelled");
+            else ApplyUploadOutcome(localUploadId, false, false, "Page upload cancelled");
+        }
+        else CancelUploadServerRpc(localUploadId);
+    }
+
+    [ServerRpc(requireOwnership: false, runLocally: false)]
+    private void CancelUploadServerRpc(string imageId, RPCInfo info = default)
+    {
+        if (!info.asServer || info.manager != networkManager) return;
+        var upload = FindUpload(info.sender, imageId);
+        if (upload != null) EndUpload(upload, false, "Notebook closed by teardown");
+        // Already queued successful outcome is delivered first by ReliableOrdered.
+        else if (IsConnected(networkManager, info.sender)) SendUploadOutcome(info.sender, imageId, false, false, "Page upload cancelled");
+    }
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        SubscribeUploadLifetime();
+    }
+
+    protected override void OnDespawned()
+    {
+        ClearUploadLifetime();
+        // No source operation survives network identity loss.
+        localUploadId = null;
+        base.OnDespawned();
+    }
+
+    protected override void OnDestroy()
+    {
+        ClearUploadLifetime();
+        base.OnDestroy();
+    }
+
+    private void SubscribeUploadLifetime()
+    {
+        if (!isSpawned || !isActiveAndEnabled || uploadManager == networkManager) return;
+        uploadManager = networkManager;
+        uploadManager.onPlayerLeft += OnUploadPlayerLeft;
+        uploadManager.onServerConnectionState += OnUploadServerState;
+        uploadManager.onClientConnectionState += OnUploadClientState;
+    }
+
+    private void OnUploadPlayerLeft(PlayerID sender, bool asServer)
+    {
+        if (!asServer) return;
+        for (int i = uploads.Count - 1; i >= 0; i--)
+            if (uploads[i].Sender == sender) EndUpload(uploads[i], false, "Sender disconnected");
+    }
+
+    private void OnUploadServerState(ConnectionState state)
+    {
+        if (state == ConnectionState.Disconnected) ClearUploadLifetime();
+    }
+
+    private void OnUploadClientState(ConnectionState state)
+    {
+        if (state != ConnectionState.Disconnected) return;
+        ClearUploadLifetime();
+        localUploadId = null;
+    }
+
+    private void ClearUploadLifetime()
+    {
+        if (uploadManager)
+        {
+            uploadManager.onPlayerLeft -= OnUploadPlayerLeft;
+            uploadManager.onServerConnectionState -= OnUploadServerState;
+            uploadManager.onClientConnectionState -= OnUploadClientState;
+        }
+        uploadManager = null;
+        for (int i = uploads.Count - 1; i >= 0; i--) EndUpload(uploads[i], false, "Notebook teardown");
+        RequestLocalCancellation();
+        if (localSend != null) StopCoroutine(localSend);
+        localSend = null;
+        // Keep only source intent until ordered cancel/success feedback on disable.
+        // Restoring immediately could duplicate a page whose handoff already succeeded.
+        if (InstanceHandler.TryGetInstance<PromptView>(out var prompts)) prompts.RemovePrompt(UploadPrompt);
     }
 
     private void InitializeDrawingPages()
@@ -406,12 +751,12 @@ public class NotepadModule : NetworkBehaviour
 
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
-                DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
+                pageTurnTween = DOVirtual.Vector3(Vector3.zero, pageFlippedRotation, flipDuration, (v) =>
                 {
                     pageToFlip.localEulerAngles = v;
                 })
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => isAnimating = false);
+                .OnComplete(() => { pageTurnTween = null; isAnimating = false; });
 
                 currentPageIndex = nextActive;
             }
@@ -428,14 +773,35 @@ public class NotepadModule : NetworkBehaviour
                 currentPageIndex = prevActive;
                 Transform pageToFlip = pageMeshes[currentPageIndex].transform;
 
-                DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
+                pageTurnTween = DOVirtual.Vector3(pageFlippedRotation, Vector3.zero, flipDuration, (v) =>
                 {
                     pageToFlip.localEulerAngles = v;
                 })
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => isAnimating = false);
+                .OnComplete(() => { pageTurnTween = null; isAnimating = false; });
             }
         }
+    }
+
+    private void SelectRemainingPageAfterTear(int tornPageIndex)
+    {
+        // A turn and tear can start in the same input frame. Stop that writer before resetting the view.
+        if (pageTurnTween != null)
+        {
+            pageTurnTween.Kill();
+            pageTurnTween = null;
+            isAnimating = false;
+        }
+        int next = FindNextActivePage(tornPageIndex);
+        if (next == -1) next = FindPrevActivePage(tornPageIndex);
+        if (next == -1) return;
+
+        currentPageIndex = next;
+        // Restore the same stack as a completed navigation: preceding pages turned, current/later pages open.
+        for (int i = 0; i < pageMeshes.Length; i++)
+            if (pageMeshes[i].activeSelf)
+                pageMeshes[i].transform.localEulerAngles = i < next ? pageFlippedRotation : Vector3.zero;
+        lastDrawPosition = -Vector2.one;
     }
 
     private int FindNextActivePage(int currentIndex)

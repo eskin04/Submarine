@@ -5,6 +5,7 @@ using PurrLobby;
 using DG.Tweening;
 using System.Collections;
 using PurrNet.Packing;
+using PurrNet.Modules;
 
 [RequireComponent(typeof(PlayerInventory))]
 public class InventoryManager : NetworkBehaviour
@@ -103,6 +104,7 @@ public class InventoryManager : NetworkBehaviour
 
     protected override void OnDestroy()
     {
+        forcedPage = null;
         ItemLoot.OnLootAttempt -= HandleLootAttempt;
         LiftManager.OnDropItemToLıft -= HandleLiftDrop;
         Interactor.OnInteract -= Interactor_OnInteract;
@@ -139,6 +141,8 @@ public class InventoryManager : NetworkBehaviour
     protected override void OnDespawned()
     {
         StopAllCoroutines();
+        forcedPage = null;
+        resolvingPageDelivery = false;
         pendingItem = null; pendingOperation = InventoryTransferOperation.None; transferReplied = false; waitingForPickup = false; resolvingForcedPickup = false;
         equippedPresentation?.GetComponent<IInventoryItem>()?.OnUnequip();
         equippedPresentation = null;
@@ -572,6 +576,98 @@ public class InventoryManager : NetworkBehaviour
         StartCoroutine(SendForcedPickupWhenReady(networkedTornPage.GetComponent<ItemLoot>()));
     }
 
+    private ItemLoot forcedPage;
+    private ulong forcedPageVersion;
+    private bool resolvingPageDelivery;
+
+    // Synchronous responsibility handoff only. Membership still uses existing accepted transfers.
+    internal bool TryBeginForcedPageDelivery(ItemLoot page)
+    {
+        if (!isServer || !isSpawned || !isActiveAndEnabled || !owner.HasValue || forcedPage ||
+            !page || !page.IsPossessionInitialized || page.networkManager != networkManager ||
+            page.owner != owner || page.Possession.Location != ItemSharedLocation.World ||
+            !ItemIdentityHandle.TryCreate(page, out var handle)) return false;
+        forcedPage = page;
+        forcedPageVersion = page.Possession.Version;
+        StartCoroutine(SendPageDelivery(handle, forcedPageVersion, owner.Value));
+        return true;
+    }
+
+    private IEnumerator SendPageDelivery(ItemIdentityHandle handle, ulong version, PlayerID recipient)
+    {
+        yield return null; // Producer has relinquished cleanup before any submission can occur.
+        if (IsPageDeliveryAlive(handle, version, recipient))
+        {
+            if (isOwner) StartCoroutine(ResolvePageDelivery(handle, version));
+            else TargetPageDelivery(recipient, handle, version);
+        }
+        while (IsPageDeliveryAlive(handle, version, recipient)) yield return null;
+        if (forcedPage && handle.Matches(forcedPage) && forcedPageVersion == version) forcedPage = null;
+    }
+
+    private bool IsPageDeliveryAlive(ItemIdentityHandle handle, ulong version, PlayerID recipient)
+    {
+        return isSpawned && isActiveAndEnabled && owner == recipient && forcedPage && handle.Matches(forcedPage) &&
+            forcedPageVersion == version && forcedPage.Possession.Version == version &&
+            forcedPage.Possession.Location == ItemSharedLocation.World && forcedPage.owner == recipient &&
+            networkManager.TryGetModule<PlayersManager>(true, out var players) && players.IsPlayerConnected(recipient);
+    }
+
+    [TargetRpc]
+    private void TargetPageDelivery(PlayerID target, ItemIdentityHandle handle, ulong version)
+    {
+        if (isOwner) StartCoroutine(ResolvePageDelivery(handle, version));
+    }
+
+    private IEnumerator ResolvePageDelivery(ItemIdentityHandle handle, ulong version)
+    {
+        if (!isOwner || resolvingPageDelivery) { AbandonPageDelivery(handle, version); yield break; }
+        resolvingPageDelivery = true;
+        double started = Time.realtimeSinceStartupAsDouble;
+        ItemLoot page = null;
+        while (isSpawned && isActiveAndEnabled && isOwner)
+        {
+            page = handle.Resolve<ItemLoot>(this);
+            if (page && page.Possession.Version > version) break;
+            if (page && page.IsPossessionInitialized && page.Possession.Version == version && page.owner == owner &&
+                InventoryVersion != 0 && pendingOperation == InventoryTransferOperation.None && !waitingForPickup && !resolvingForcedPickup)
+            {
+                resolvingPageDelivery = false;
+                if (page.Possession.Location == ItemSharedLocation.World)
+                {
+                    // Pick a CURRENT empty slot/overflow only after existing owner work is idle.
+                    TryForcePickup(page.gameObject);
+                    yield break;
+                }
+                break;
+            }
+            if (Time.realtimeSinceStartupAsDouble - started >= 30) break;
+            yield return null;
+        }
+        resolvingPageDelivery = false;
+        AbandonPageDelivery(handle, version);
+    }
+
+    private void AbandonPageDelivery(ItemIdentityHandle handle, ulong version)
+    {
+        if (!isSpawned || !isOwner) return;
+        if (isServer) EndPageDelivery(owner.Value, handle, version);
+        else AbandonPageDeliveryServerRpc(handle, version);
+    }
+
+    [ServerRpc(runLocally: false)]
+    private void AbandonPageDeliveryServerRpc(ItemIdentityHandle handle, ulong version, RPCInfo info = default)
+    {
+        if (info.asServer && info.manager == networkManager) EndPageDelivery(info.sender, handle, version);
+    }
+
+    private void EndPageDelivery(PlayerID sender, ItemIdentityHandle handle, ulong version)
+    {
+        if (!isServer || owner != sender || !forcedPage || !handle.Matches(forcedPage) || forcedPageVersion != version) return;
+        Debug.LogWarning("Forced page delivery ended before submission; page remains in World.", this);
+        forcedPage = null;
+    }
+
     private bool TryForcePickup(GameObject itemObj)
     {
         if (!isOwner || itemObj == null) return false;
@@ -871,6 +967,13 @@ public class InventoryManager : NetworkBehaviour
     internal void Reply(PlayerID sender, InventoryTransferOperation operation, ItemIdentityHandle handle, int slot, ulong version,
         ulong inventory, ItemIdentityHandle destination, ulong socketVersion, bool accepted, bool lift = false)
     {
+        if (forcedPage && handle.Matches(forcedPage) && version == forcedPageVersion && owner == sender &&
+            (operation == InventoryTransferOperation.Pickup || operation == InventoryTransferOperation.ForcedOverflow))
+        {
+            // Settle bootstrap on the existing exact response; never undo its accepted commit.
+            forcedPage = null;
+            if (!accepted) Debug.LogWarning("Forced page transfer rejected; page retains accepted World state.", this);
+        }
         var item = handle.Resolve<ItemLoot>(this);
         var reply = new InventoryTransferReply { Operation = operation, Item = handle, Slot = slot,
             ExpectedItem = version, ExpectedInventory = inventory, Destination = destination, ExpectedSocket = socketVersion,
