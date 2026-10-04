@@ -17,26 +17,36 @@ public class PlayerSpawningState : StateNode
     [SerializeField] private Transform technicianSpawnPoint;
     [SerializeField] private List<Transform> fallbackSpawnPoints = new List<Transform>();
 
+    private const int RequiredPlayerCount = 2;
+    private bool _playersSpawned;
 
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
         if (!asServer) return;
 
-        // DeSpawnPlayers();
+        TrySpawnPlayers();
+    }
 
+    public override void StateUpdate(bool asServer)
+    {
+        base.StateUpdate(asServer);
+        if (!asServer) return;
+
+        TrySpawnPlayers();
+    }
+
+    private void TrySpawnPlayers()
+    {
+        if (_playersSpawned || networkManager.playerCount < RequiredPlayerCount)
+            return;
+
+        // Keep this guard across state re-entry and set it before any spawn callbacks can run.
+        _playersSpawned = true;
         SpawnPlayerSimple();
-        // bool isGameStarted = LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsGameStarted;
-        // if (!isGameStarted)
-        {
-            // LoadingScreenManager.Instance?.SetGameStarted(true);
-        }
         SetView();
         SetLevelView();
-
-
         machine.Next();
-
     }
     [ObserversRpc(runLocally: true)]
     private void SetView()
@@ -69,7 +79,9 @@ public class PlayerSpawningState : StateNode
         Debug.Log($"[PlayerSpawningState] Spawning players for {networkManager.playerCount} players.");
         var dataHolder = FindFirstObjectByType<LobbyDataHolder>();
 
-        if (dataHolder == null || !dataHolder.CurrentLobby.IsValid)
+        if (dataHolder == null || !dataHolder.CurrentLobby.IsValid ||
+            dataHolder.CurrentLobby.Members == null ||
+            dataHolder.CurrentLobby.Members.Count < RequiredPlayerCount)
         {
             SpawnDefault();
             return;

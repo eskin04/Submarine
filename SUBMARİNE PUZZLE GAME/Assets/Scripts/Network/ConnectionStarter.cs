@@ -39,7 +39,7 @@ public class ConnectionStarter : MonoBehaviour
         _voiceManager = FindFirstObjectByType<RadioVoiceManager>();
 
         _lobbyDataHolder = FindFirstObjectByType<LobbyDataHolder>();
-        if (!_lobbyDataHolder)
+        if (!_lobbyDataHolder && !IsMultiplayerPlayModeClient())
             PurrLogger.LogError($"Failed to get {nameof(LobbyDataHolder)} component.", this);
 
 
@@ -99,10 +99,20 @@ public class ConnectionStarter : MonoBehaviour
 
     private void Start()
     {
-        if (_networkManager == null || _networkManager.isServer || _networkManager.isClient)
+        if (_networkManager == null)
         {
             PurrLogger.LogError($"Failed to start connection. {nameof(NetworkManager)} is null!", this);
 
+            return;
+        }
+
+        if (_networkManager.isServer || _networkManager.isClient)
+            return;
+
+        if (IsMultiplayerPlayModeClient() &&
+            (!_lobbyDataHolder || !_lobbyDataHolder.CurrentLobby.IsValid))
+        {
+            StartCoroutine(StartClient());
             return;
         }
 
@@ -155,6 +165,23 @@ public class ConnectionStarter : MonoBehaviour
     }
 
 
+
+    private bool IsMultiplayerPlayModeClient()
+    {
+#if UNITY_EDITOR
+        // Virtual clients have no persistent lobby object when starting directly in a game scene.
+        if (_networkManager == null || !(_networkManager.transport is UDPTransport) ||
+            Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor)
+            return false;
+
+        foreach (var tag in Unity.Multiplayer.PlayMode.CurrentPlayer.Tags)
+        {
+            if (tag == "Client")
+                return true;
+        }
+#endif
+        return false;
+    }
 
     private IEnumerator StartClient()
     {
