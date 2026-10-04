@@ -38,16 +38,73 @@ public class PlayerSpawningState : StateNode
 
     private void TrySpawnPlayers()
     {
-        if (_playersSpawned || networkManager.playerCount < RequiredPlayerCount)
+        if (_playersSpawned)
             return;
 
-        // Keep this guard across state re-entry and set it before any spawn callbacks can run.
-        _playersSpawned = true;
-        SpawnPlayerSimple();
+#if UNITY_EDITOR
+        if (IsSoloHostEditor())
+        {
+            if (!TrySpawnSoloHost())
+                return;
+        }
+        else
+#endif
+        {
+            if (networkManager.playerCount < RequiredPlayerCount)
+                return;
+
+            // Keep this guard across state re-entry and set it before any spawn callbacks can run.
+            _playersSpawned = true;
+            SpawnPlayerSimple();
+        }
         SetView();
         SetLevelView();
         machine.Next();
     }
+
+#if UNITY_EDITOR
+    private static bool IsSoloHostEditor()
+    {
+        if (!Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor)
+            return false;
+
+        foreach (var tag in Unity.Multiplayer.PlayMode.CurrentPlayer.Tags)
+        {
+            if (tag == "SoloHost")
+                return true;
+        }
+        return false;
+    }
+
+    private bool TrySpawnSoloHost()
+    {
+        if (!networkManager.isLocalPlayerReady)
+            return false;
+
+        var hostPlayer = networkManager.localPlayer;
+        for (int i = 0; i < networkManager.players.Count; i++)
+        {
+            if (networkManager.players[i] != hostPlayer)
+                continue;
+
+            var role = PlayerRole.Engineer;
+            var dataHolder = FindFirstObjectByType<LobbyDataHolder>();
+            if (dataHolder != null && dataHolder.CurrentLobby.IsValid &&
+                dataHolder.CurrentLobby.Members != null && dataHolder.CurrentLobby.Members.Count > i)
+            {
+                var lobbyRole = dataHolder.CurrentLobby.Members[i].Role;
+                if (lobbyRole == PlayerRole.Engineer || lobbyRole == PlayerRole.Technician)
+                    role = lobbyRole;
+            }
+
+            _playersSpawned = true;
+            SpawnByRole(hostPlayer, role);
+            return true;
+        }
+        return false;
+    }
+#endif
+
     [ObserversRpc(runLocally: true)]
     private void SetView()
     {
