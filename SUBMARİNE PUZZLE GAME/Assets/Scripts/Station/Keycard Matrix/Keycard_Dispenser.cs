@@ -42,11 +42,20 @@ public class Keycard_Dispenser : NetworkBehaviour
             Rigidbody rb = newCardObj.GetComponent<Rigidbody>();
             if (rb != null) rb.isKinematic = true;
 
-            newCardObj.transform.localScale = Vector3.zero;
-
-            newCardObj.transform.DOScale(Vector3.one, animDuration)
-                .SetDelay(i * delayBetweenCards)
-                .SetEase(animEase);
+            // Socket/held cards disable NT. Never spawn their networked root at
+            // zero scale: the host-only tween would leave observers invisible.
+            newCardObj.transform.localScale = Vector3.one;
+            if (newCardObj.transform.childCount > 0)
+            {
+                // The existing prefab has one visual-model child. Animate that
+                // child locally, leaving identity, collider and shared scale stable.
+                Transform visual = newCardObj.transform.GetChild(0);
+                Vector3 visualScale = visual.localScale;
+                visual.localScale = Vector3.zero;
+                visual.DOScale(visualScale, animDuration)
+                    .SetDelay(i * delayBetweenCards)
+                    .SetEase(animEase);
+            }
 
             Keycard_Socket socketScript = targetSlot.GetComponent<Keycard_Socket>();
             RpcInitializeSocket(socketScript, itemScript);

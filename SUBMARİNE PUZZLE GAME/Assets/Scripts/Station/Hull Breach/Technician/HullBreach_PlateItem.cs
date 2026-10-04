@@ -10,13 +10,7 @@ public class HullBreach_PlateItem : NetworkBehaviour, IInventoryItem
 
     public Action<HullBreach_PlateItem> OnPlateTakenServer;
 
-    private ItemLoot myLoot;
     private bool isLooted = false;
-
-    private void Awake()
-    {
-        myLoot = GetComponent<ItemLoot>();
-    }
 
     internal HullBreach_FoundryController SourceFoundry { get; set; }
 
