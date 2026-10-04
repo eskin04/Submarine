@@ -10,6 +10,20 @@ public struct HullSocketSnapshot : IPackedAuto
     public float PlacementRotation;
 }
 
+public struct HullWeldContext : IPackedAuto
+{
+    public ItemIdentityHandle Socket;
+    public ItemIdentityHandle Plate;
+    public ItemIdentityHandle Inventory;
+    public ItemIdentityHandle Tool;
+    public int CrackID;
+    public int ToolSlot;
+    public ulong SocketVersion;
+    public ulong PlateVersion;
+    public ulong InventoryVersion;
+    public ulong ToolVersion;
+}
+
 [RequireComponent(typeof(Interactable))]
 [RequireComponent(typeof(Collider))]
 public class HullBreach_CrackSocket : NetworkBehaviour
@@ -55,6 +69,9 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     private Interactable interactable;
     private Collider socketCollider;
     private int weldedPointsCount = 0;
+    private HullWeldContext weldingContext;
+    private HullBreach_DrillItem weldingDrill;
+    private bool fixedPresentationApplied;
     private float originalRateMultiplier;
     private float originalSpeedMultiplier;
 
@@ -131,23 +148,24 @@ public class HullBreach_CrackSocket : NetworkBehaviour
         }
         else if (!isFixed && moduleInteraction != null)
         {
+            if (!CaptureWeldingContext())
+            {
+                interactable.StopInteract();
+                return;
+            }
             moduleInteraction.enabled = true;
             moduleInteraction.Interact();
-            HullBreach_DrillItem drill = GetPlayerEquippedDrill();
-            if (drill != null)
-            {
-                drill.StartMinigame(slottedPlate.transform);
-            }
+            weldingDrill.StartMinigame(slottedPlate.transform);
+            // Completed points cannot notify again after a same-context rejection.
+            ReevaluateWeldingCompletion();
         }
     }
 
     public void OnStopInteract()
     {
-        if (moduleInteraction != null && moduleInteraction.enabled)
-        {
-            HullBreach_DrillItem drill = GetPlayerEquippedDrill();
-            if (drill != null) drill.StopMinigame();
-        }
+        if (weldingDrill != null) weldingDrill.StopMinigame();
+        weldingDrill = null;
+        weldingContext = default;
     }
 
     private void TryInsertPlate()
@@ -179,22 +197,81 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     public void OnPointWelded()
     {
         weldedPointsCount++;
-        if (weldedPointsCount >= 4)
+        ReevaluateWeldingCompletion();
+    }
+
+    private bool CaptureWeldingContext()
+    {
+        var inventory = InventoryManager.LocalPlayer;
+        var drill = GetPlayerEquippedDrill();
+        var tool = drill ? drill.GetComponent<ItemLoot>() : null;
+        var plate = slottedPlate ? slottedPlate.GetComponent<ItemLoot>() : null;
+        var current = Snapshot;
+        if (!inventory || !inventory.isOwner || !drill || !drill.isOwner || !tool || !plate ||
+            !stationManager || !stationManager.isRoundActive.value || current.State != CrackState.Plated ||
+            current.Occupancy.Version == 0 || inventory.InventoryVersion == 0 ||
+            !current.Occupancy.Occupant.Matches(plate) || plate.Possession.Version != current.Occupancy.Version ||
+            plate.Possession.Location != ItemSharedLocation.Socket || !plate.Possession.Context.Matches(this) ||
+            tool.Possession.Version == 0 || tool.Possession.Location != ItemSharedLocation.Inventory ||
+            !tool.Possession.Context.Matches(inventory) ||
+            !ItemIdentityHandle.TryCreate(this, out var socketHandle) ||
+            !ItemIdentityHandle.TryCreate(inventory, out var inventoryHandle) ||
+            !ItemIdentityHandle.TryCreate(tool, out var toolHandle)) return false;
+
+        weldingContext = new HullWeldContext
         {
-            stationManager.CmdFixCrack(currentCrackID);
-        }
+            Socket = socketHandle, Plate = current.Occupancy.Occupant,
+            Inventory = inventoryHandle, Tool = toolHandle,
+            CrackID = current.CrackID, SocketVersion = current.Occupancy.Version,
+            PlateVersion = plate.Possession.Version, ToolSlot = tool.Possession.Slot,
+            ToolVersion = tool.Possession.Version, InventoryVersion = inventory.InventoryVersion
+        };
+        weldingDrill = drill;
+        return true;
+    }
+
+    public void ReevaluateWeldingCompletion()
+    {
+        var current = Snapshot;
+        var plate = slottedPlate ? slottedPlate.GetComponent<ItemLoot>() : null;
+        var inventory = weldingContext.Inventory.Resolve<InventoryManager>(this);
+        var tool = weldingContext.Tool.Resolve<ItemLoot>(this);
+        if (!interactable.IsInteracting() || !inventory || !inventory.isOwner || !inventory.owner.HasValue ||
+            !weldingDrill || !weldingDrill.isOwner || !tool || !plate || !stationManager ||
+            !stationManager.isRoundActive.value || !weldingContext.Socket.Matches(this) ||
+            current.State != CrackState.Plated || current.CrackID != weldingContext.CrackID ||
+            current.Occupancy.Version != weldingContext.SocketVersion ||
+            !current.Occupancy.Occupant.Equals(weldingContext.Plate) || !weldingContext.Plate.Matches(plate) ||
+            plate.Possession.Version != weldingContext.PlateVersion ||
+            tool.Possession.Version != weldingContext.ToolVersion ||
+            inventory.InventoryVersion != weldingContext.InventoryVersion ||
+            inventory.GetCurrentHeldObject() != tool.gameObject) return;
+
+        // A stale point callback/counter is not evidence about the currently placed plate.
+        var points = plate.GetComponentsInChildren<HullBreach_WeldPoint>(true);
+        if (points.Length != 4) return;
+        foreach (var point in points) if (!point.isWelded) return;
+
+        if (isServer) stationManager.TryFixCrackServer(inventory.owner.Value, this, weldingContext);
+        else CompleteWeldingServerRpc(weldingContext);
+    }
+
+    [ServerRpc(requireOwnership: false, runLocally: false)]
+    private void CompleteWeldingServerRpc(HullWeldContext context, RPCInfo info = default)
+    {
+        if (isServer && stationManager) stationManager.TryFixCrackServer(info.sender, this, context);
     }
 
     public void RpcOnCrackFixed()
     {
+        if (fixedPresentationApplied) return;
+        fixedPresentationApplied = true;
         isFixed = true;
 
-        if (moduleInteraction != null && moduleInteraction.enabled)
+        if (moduleInteraction != null && moduleInteraction.enabled && interactable.IsInteracting())
         {
             moduleInteraction.StopInteract();
             interactable.SetInteractable(false);
-            HullBreach_DrillItem drill = GetPlayerEquippedDrill();
-            if (drill != null) drill.StopMinigame();
         }
 
         UpdateSocketVisualsAndInteraction();
@@ -267,6 +344,7 @@ public class HullBreach_CrackSocket : NetworkBehaviour
     }
     private ulong displayedSocketVersion;
     private ItemIdentityHandle displayedPlate;
+    private ulong displayedPlateVersion;
     private int displayedCrackID = -1;
 
     private void Update() { ApplySnapshot(); }
@@ -292,7 +370,11 @@ public class HullBreach_CrackSocket : NetworkBehaviour
         }
         displayedSocketVersion = 0;
         displayedPlate = default;
+        displayedPlateVersion = 0;
         displayedCrackID = -1;
+        if (moduleInteraction != null && interactable.IsInteracting()) moduleInteraction.StopInteract();
+        else OnStopInteract();
+        fixedPresentationApplied = false;
         base.OnDespawned(asServer);
     }
 
@@ -355,12 +437,22 @@ public class HullBreach_CrackSocket : NetworkBehaviour
         if (current.Occupancy.Version == 0 || current.Occupancy.Version == displayedSocketVersion) return;
         var item = current.Occupancy.Occupant.Resolve<ItemLoot>(this);
         if (current.Occupancy.Occupant.Identity.HasValue && (!item || item.Possession.Location != ItemSharedLocation.Socket ||
-            !item.Possession.Context.Matches(this))) return;
+            !item.Possession.Context.Matches(this) ||
+            (current.State == CrackState.Plated && item.Possession.Version != current.Occupancy.Version))) return;
+        if (weldingContext.SocketVersion != 0 && (current.CrackID != weldingContext.CrackID ||
+            current.Occupancy.Version != weldingContext.SocketVersion ||
+            !current.Occupancy.Occupant.Equals(weldingContext.Plate)))
+        {
+            if (moduleInteraction != null && interactable.IsInteracting()) moduleInteraction.StopInteract();
+            else OnStopInteract();
+        }
+        if (current.State != CrackState.Fixed) fixedPresentationApplied = false;
         currentCrackID = current.CrackID;
         isCrackSpawned = current.State != CrackState.Inactive;
         isFixed = current.State == CrackState.Fixed;
         slottedPlate = item ? item.GetComponent<HullBreach_PlateItem>() : null;
-        bool newPlacement = item && (!displayedPlate.Equals(current.Occupancy.Occupant) || displayedCrackID != current.CrackID);
+        bool newPlacement = item && (!displayedPlate.Equals(current.Occupancy.Occupant) ||
+            displayedCrackID != current.CrackID || displayedPlateVersion != item.Possession.Version);
         if (item)
         {
             item.SetPhysicalState(ItemSharedLocation.Socket);
@@ -376,6 +468,7 @@ public class HullBreach_CrackSocket : NetworkBehaviour
             interactable.SetDisplayName("Use Drill to Weld");
         }
         displayedPlate = current.Occupancy.Occupant;
+        displayedPlateVersion = item ? item.Possession.Version : 0;
         displayedCrackID = current.CrackID;
         displayedSocketVersion = current.Occupancy.Version;
         if (isFixed)

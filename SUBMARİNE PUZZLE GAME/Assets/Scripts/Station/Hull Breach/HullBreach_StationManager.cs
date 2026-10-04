@@ -155,9 +155,9 @@ public class HullBreach_StationManager : NetworkBehaviour
     #region SERVER BACKEND LOGIC
 
 
-    [ServerRpc(requireOwnership: false)]
-    private void UpdateWaterLevelServerRpc(float fillAmount)
+    private void UpdateWaterLevelServer(float fillAmount)
     {
+        if (!isServer) return;
         GlobalEvents.OnAddFloodPenalty?.Invoke(fillAmount);
     }
 
@@ -345,26 +345,50 @@ public class HullBreach_StationManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void CmdFixCrack(int crackID)
     {
-        if (!isRoundActive.value) return;
+        // Preserve the public signature, but an ID alone cannot identify a weld context.
+        Debug.LogWarning("Use the contextual Hull welding completion request.");
+    }
 
-        int crackIndex = activeCracks.FindIndex(c => c.crackID == crackID);
-        if (crackIndex == -1) return;
+    internal bool TryFixCrackServer(PlayerID sender, HullBreach_CrackSocket socket, HullWeldContext context)
+    {
+        if (!isServer || !isSpawned || !isRoundActive.value || !socket || !socket.isSpawned ||
+            !allSockets.Contains(socket) || socket.stationManager != this || socket.sceneId != sceneId ||
+            !context.Socket.Matches(socket) || context.SocketVersion == 0 || context.PlateVersion == 0 ||
+            socket.Snapshot.State != CrackState.Plated || socket.Snapshot.CrackID != context.CrackID ||
+            socket.Snapshot.Occupancy.Version != context.SocketVersion ||
+            !socket.Snapshot.Occupancy.Occupant.Equals(context.Plate)) return false;
+
+        var plate = context.Plate.Resolve<ItemLoot>(this);
+        var inventory = context.Inventory.Resolve<InventoryManager>(this);
+        var tool = context.Tool.Resolve<ItemLoot>(this);
+        var drill = tool ? tool.GetComponent<HullBreach_DrillItem>() : null;
+        if (!plate || !plate.isSpawned || !plate.GetComponent<HullBreach_PlateItem>() ||
+            plate.sceneId != sceneId || plate.Possession.Location != ItemSharedLocation.Socket ||
+            !plate.Possession.Context.Matches(socket) || plate.Possession.Version != context.PlateVersion ||
+            plate.Possession.Version != context.SocketVersion ||
+            !inventory || inventory.sceneId != sceneId || !tool || tool.sceneId != sceneId ||
+            !drill || !drill.isSpawned || drill.owner != sender ||
+            tool.owner != sender || !inventory.ValidateHeldServer(sender, tool, context.ToolSlot,
+                context.ToolVersion, context.InventoryVersion)) return false;
+
+        int crackIndex = activeCracks.FindIndex(c => c.crackID == context.CrackID);
+        if (crackIndex == -1) return false;
 
         CrackData crack = activeCracks[crackIndex];
 
-        if (crack.state != CrackState.Plated) return;
+        if (crack.state != CrackState.Plated || crack.floorIndex != socket.floorIndex ||
+            crack.zone != socket.zone || crack.spawnPointIndex != socket.spawnPointIndex) return false;
 
         crack.state = CrackState.Fixed;
         activeCracks[crackIndex] = crack;
 
-        Debug.Log($"<color=green>[SERVER]</color> Çatlak ID {crackID} tamamen kaynaklandı ve onarıldı!");
+        Debug.Log($"<color=green>[SERVER]</color> Çatlak ID {context.CrackID} tamamen kaynaklandı ve onarıldı!");
 
-        var fixedSocket = allSockets.FirstOrDefault(s => s.Snapshot.CrackID == crackID);
-        if (fixedSocket) fixedSocket.MarkFixedServer();
-        RpcOnCrackFixed(crackID);
+        // Guard first, then publish accepted state/effects. Reentrant or duplicate calls see Fixed.
+        socket.MarkFixedServer();
         SyncWithFloodManager();
 
-        UpdateWaterLevelServerRpc(-activePhaseConfig.waterDrainage);
+        UpdateWaterLevelServer(-activePhaseConfig.waterDrainage);
 
         bool hasActiveThreats = activeCracks.Any(c => c.state == CrackState.Active || c.state == CrackState.Plated);
 
@@ -374,21 +398,7 @@ public class HullBreach_StationManager : NetworkBehaviour
             rollTimer = 0f;
 
         }
-    }
-
-    [ObserversRpc]
-    private void RpcOnCrackFixed(int crackID)
-    {
-        HullBreach_CrackSocket socket = allSockets.FirstOrDefault(s => s.currentCrackID == crackID);
-        if (socket != null)
-        {
-            Collider[] colliders = socket.GetComponentsInChildren<Collider>();
-            foreach (var col in colliders)
-            {
-                col.enabled = false;
-            }
-            socket.RpcOnCrackFixed();
-        }
+        return true;
     }
 
     private bool IsPlateValidForCrack(CrackZone zone, PlateMaterial material, int depth)
