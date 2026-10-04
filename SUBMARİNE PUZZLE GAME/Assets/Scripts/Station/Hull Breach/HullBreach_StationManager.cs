@@ -76,6 +76,7 @@ public class HullBreach_StationManager : NetworkBehaviour
         if (isRoundActive.value) return;
 
         activeCracks.Clear();
+        foreach (var socket in allSockets) if (socket) socket.ResetServer();
         currentDepth.value = Random.Range(200, 601);
         isRoundActive.value = true;
         rollTimer = 0f;
@@ -269,7 +270,7 @@ public class HullBreach_StationManager : NetworkBehaviour
 
         activeCracks.Add(newCrack);
 
-        socket.RpcActivateCrack(newCrack.crackID);
+        socket.ActivateCrackServer(newCrack.crackID);
         SyncWithFloodManager();
 
         Debug.Log($"<color=orange>[SERVER]</color> Yeni Çatlak Spawn Oldu! ID: {newCrack.crackID} | Kat: {socket.floorIndex} | Bölge: {socket.zone}");
@@ -282,32 +283,34 @@ public class HullBreach_StationManager : NetworkBehaviour
     [ServerRpc(requireOwnership: false)]
     public void CmdTryPlacePlate(int crackID, GameObject plateObj, HullBreach_CrackSocket socket, RPCInfo info = default)
     {
-        if (!isRoundActive.value) return;
+        // Kept for API compatibility. No request versions/source slot: cannot safely accept.
+        Debug.LogWarning("Use the exact inventory Hull placement request.");
+    }
 
-        int crackIndex = activeCracks.FindIndex(c => c.crackID == crackID);
-        if (crackIndex == -1) return;
-
-        CrackData crack = activeCracks[crackIndex];
-        if (crack.state != CrackState.Active) return;
-
-        HullBreach_PlateItem plateScript = plateObj.GetComponent<HullBreach_PlateItem>();
-        if (plateScript == null) return;
-
-        if (IsPlateValidForCrack(crack.zone, plateScript.plateMaterial, currentDepth.value))
+    internal bool TryPlacePlateServer(InventoryManager inventory, ItemLoot item, int sourceSlot,
+        HullBreach_CrackSocket socket, ulong socketVersion, int crackID)
+    {
+        if (!isServer || !isRoundActive.value || !allSockets.Contains(socket) ||
+            socket.stationManager != this || !socket.isSpawned || socketVersion == 0 ||
+            socket.Snapshot.Occupancy.Version != socketVersion || socket.Snapshot.CrackID != crackID ||
+            socket.Snapshot.State != CrackState.Active || socket.Snapshot.Occupancy.Occupant.Identity.HasValue) return false;
+        int index = activeCracks.FindIndex(c => c.crackID == crackID);
+        if (index < 0) return false;
+        var crack = activeCracks[index];
+        var plate = item.GetComponent<HullBreach_PlateItem>();
+        if (!plate || crack.state != CrackState.Active || crack.floorIndex != socket.floorIndex ||
+            crack.zone != socket.zone || crack.spawnPointIndex != socket.spawnPointIndex) return false;
+        if (!IsPlateValidForCrack(crack.zone, plate.plateMaterial, currentDepth.value))
         {
-            crack.state = CrackState.Plated;
-            activeCracks[crackIndex] = crack;
-
-            socket.RpcPlacePlateInSocket(plateObj, randomZRotation);
-            SyncWithFloodManager();
-
-            Debug.Log($"<color=green>[SERVER]</color> {plateScript.plateMaterial} plakası başarıyla yerleştirildi.");
+            TargetShowWarning(inventory.owner.Value, "msg_wrong_plate");
+            return false;
         }
-        else
-        {
-            Debug.LogWarning($"<color=orange>[SERVER]</color> Hatalı plaka denemesi!");
-            TargetShowWarning(info.sender, "msg_wrong_plate");
-        }
+        ulong stamp = inventory.ReleaseHeldServer(item, sourceSlot);
+        item.SetPossessionServer(ItemSharedLocation.Socket, socket, -1, stamp);
+        crack.state = CrackState.Plated; activeCracks[index] = crack;
+        socket.PlacePlateServer(item, randomZRotation, stamp);
+        SyncWithFloodManager();
+        return true;
     }
 
     [TargetRpc]
@@ -315,6 +318,28 @@ public class HullBreach_StationManager : NetworkBehaviour
     {
         InstanceHandler.GetInstance<GameViewManager>().ShowView<ModuleInfoView>(hideOthers: false);
         InstanceHandler.GetInstance<ModuleInfoView>().SetWarningText(message);
+    }
+
+    internal void ForgetPlateServer(int crackID)
+    {
+        if (!isServer) return;
+        int index = activeCracks.FindIndex(c => c.crackID == crackID);
+        if (index < 0 || activeCracks[index].state != CrackState.Plated) return;
+        var crack = activeCracks[index];
+        crack.state = CrackState.Active;
+        activeCracks[index] = crack;
+        SyncWithFloodManager();
+    }
+
+    internal void ForgetSocketServer(int crackID)
+    {
+        if (!isServer) return;
+        int index = activeCracks.FindIndex(c => c.crackID == crackID);
+        if (index < 0) return;
+        var crack = activeCracks[index];
+        crack.state = CrackState.Inactive;
+        activeCracks[index] = crack;
+        SyncWithFloodManager();
     }
 
     [ServerRpc(requireOwnership: false)]
@@ -334,6 +359,8 @@ public class HullBreach_StationManager : NetworkBehaviour
 
         Debug.Log($"<color=green>[SERVER]</color> Çatlak ID {crackID} tamamen kaynaklandı ve onarıldı!");
 
+        var fixedSocket = allSockets.FirstOrDefault(s => s.Snapshot.CrackID == crackID);
+        if (fixedSocket) fixedSocket.MarkFixedServer();
         RpcOnCrackFixed(crackID);
         SyncWithFloodManager();
 

@@ -20,6 +20,18 @@ public class HullBreach_ChargeStation : NetworkBehaviour
     [Header("Live State")]
     public HullBreach_DrillItem slottedDrill;
 
+    // Host occupancy; slottedDrill is a compatibility/presentation mirror.
+    private SyncVar<ItemSocketOccupancy> occupancy = new SyncVar<ItemSocketOccupancy>();
+    public ItemSocketOccupancy Occupancy => occupancy.value;
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (!asServer) return;
+
+        occupancy.value = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) };
+    }
+
     private Interactable interactable;
     private Collider stationCollider;
 
@@ -50,90 +62,35 @@ public class HullBreach_ChargeStation : NetworkBehaviour
 
     private void Update()
     {
-        if (!isServer) return;
-
-        if (slottedDrill != null)
+        ApplyOccupancy();
+        if (!isServer || slottedDrill == null || !Occupancy.Occupant.Matches(slottedDrill.GetComponent<ItemLoot>())) return;
+        if (slottedDrill.currentCharge < 100f)
         {
-            if (slottedDrill.transform.parent != stationDrillSlot || !slottedDrill.gameObject.activeSelf)
-            {
-                ServerHandleDrillRemoved();
-            }
-            else
-            {
-                if (slottedDrill.currentCharge < 100f)
-                {
-                    slottedDrill.currentCharge += chargeRate * Time.deltaTime;
-                    if (slottedDrill.currentCharge > 100f) slottedDrill.currentCharge = 100f;
-
-                    RpcUpdateChargeVisuals(slottedDrill.currentCharge);
-                }
-            }
+            slottedDrill.currentCharge = Mathf.Min(100f, slottedDrill.currentCharge + chargeRate * Time.deltaTime);
+            RpcUpdateChargeVisuals(slottedDrill.currentCharge);
         }
     }
 
 
     public void HandleInteraction()
     {
-        if (slottedDrill == null)
+        try
         {
-            TryInsertDrill();
+            if (slottedDrill == null) TryInsertDrill();
+        }
+        finally
+        {
+            // This is a one-shot socket action, including rejected or unready requests.
+            interactable.StopInteract();
         }
     }
 
     private void TryInsertDrill()
     {
-        InventoryManager inv = InventoryManager.LocalPlayer;
-        if (inv == null) return;
-
-        GameObject heldObj = inv.GetCurrentHeldObject();
-        if (heldObj == null) return;
-
-        HullBreach_DrillItem drill = heldObj.GetComponent<HullBreach_DrillItem>();
-        if (drill != null)
-        {
-            inv.ExtractCurrentHeldItem();
-            interactable.StopInteract();
-            CmdPlaceDrillInStation(drill.gameObject);
-        }
+        var inv = InventoryManager.LocalPlayer;
+        if (inv) inv.PlaceInChargeStation(this);
     }
 
-    private void ServerHandleDrillRemoved()
-    {
-        slottedDrill = null;
-        RpcClearStation();
-    }
-
-
-    [ServerRpc(requireOwnership: false)]
-    private void CmdPlaceDrillInStation(GameObject drillObj)
-    {
-        RpcPlaceDrillInStation(drillObj);
-    }
-
-    [ObserversRpc(runLocally: true)]
-    private void RpcPlaceDrillInStation(GameObject drillObj)
-    {
-        slottedDrill = drillObj.GetComponent<HullBreach_DrillItem>();
-
-        // Matkabı yuvaya oturt
-        drillObj.transform.SetParent(stationDrillSlot);
-        drillObj.transform.localPosition = Vector3.zero;
-        drillObj.transform.localRotation = Quaternion.identity;
-        drillObj.GetComponent<Collider>().enabled = true;
-        drillObj.SetActive(true);
-
-        Rigidbody rb = drillObj.GetComponent<Rigidbody>();
-        if (rb != null) rb.isKinematic = true;
-
-        UpdateStationState();
-    }
-
-    [ObserversRpc(runLocally: true)]
-    private void RpcClearStation()
-    {
-        slottedDrill = null;
-        UpdateStationState();
-    }
 
     [ObserversRpc]
     private void RpcUpdateChargeVisuals(float charge)
@@ -194,4 +151,73 @@ public class HullBreach_ChargeStation : NetworkBehaviour
 
         lastColorIndex = index;
     }
+    internal bool CanAcceptServer(ItemLoot item, ulong expected)
+    {
+        return isServer && isSpawned && expected != 0 && Occupancy.Version == expected &&
+            !Occupancy.Occupant.Identity.HasValue && item.GetComponent<HullBreach_DrillItem>() && stationDrillSlot != null;
+    }
+
+    internal bool CanReleaseServer(ItemLoot item, ulong expected)
+    {
+        return isServer && expected != 0 && Occupancy.Version == expected && Occupancy.Occupant.Matches(item);
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        if (asServer)
+        {
+            var item = Occupancy.Occupant.Resolve<ItemLoot>(this);
+            occupancy.value = new ItemSocketOccupancy { Version = ItemLoot.NextStateVersion(this) };
+            slottedDrill = null;
+            if (item && item.Possession.Location == ItemSharedLocation.Socket && item.Possession.Context.Matches(this))
+                Destroy(item.gameObject);
+        }
+        base.OnDespawned(asServer);
+    }
+
+    internal void OccupyServer(ItemLoot item, ulong stamp)
+    {
+        if (!isServer) return;
+        ItemIdentityHandle.TryCreate(item, out var handle);
+        occupancy.value = new ItemSocketOccupancy { Occupant = handle, Version = stamp };
+        slottedDrill = item.GetComponent<HullBreach_DrillItem>();
+        var nt = item.GetComponent<NetworkTransform>();
+        if (nt) { nt.RemoveOwnership(); nt.StopIgnoringParentChanges(); }
+        item.transform.SetParent(stationDrillSlot);
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
+        item.SetPhysicalState(ItemSharedLocation.Socket);
+        item.SetVisible(true);
+        UpdateStationState();
+    }
+
+    internal void ReleaseServer(ItemLoot item, ulong stamp)
+    {
+        if (!isServer || !Occupancy.Occupant.Matches(item)) return;
+        occupancy.value = new ItemSocketOccupancy { Version = stamp };
+        slottedDrill = null;
+        UpdateStationState();
+
+    }
+
+    internal void RefreshPresentation() { ApplyOccupancy(true); }
+
+    private void ApplyOccupancy(bool force = false)
+    {
+        var item = Occupancy.Occupant.Resolve<ItemLoot>(this);
+        if (Occupancy.Occupant.Identity.HasValue && (!item || item.Possession.Location != ItemSharedLocation.Socket ||
+            !item.Possession.Context.Matches(this))) return;
+        if (!force && slottedDrill == (item ? item.GetComponent<HullBreach_DrillItem>() : null)) return;
+        slottedDrill = item ? item.GetComponent<HullBreach_DrillItem>() : null;
+        if (item)
+        {
+            item.SetPhysicalState(ItemSharedLocation.Socket);
+            item.transform.SetParent(stationDrillSlot);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+            item.SetVisible(true);
+        }
+        UpdateStationState();
+    }
+
 }

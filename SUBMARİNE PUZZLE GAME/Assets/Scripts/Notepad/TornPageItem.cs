@@ -206,11 +206,13 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
 
     private void PlacePageOnSurface()
     {
+        var inventory = InventoryManager.LocalPlayer;
         if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
         {
             if (view.ShouldBlockAction(TutorialAction.AttachPage)) return;
-            view.OnActionPerformed(TutorialAction.AttachPage);
         }
+        if (!inventory || !inventory.ReleaseItemFromInventory(gameObject)) return;
+        if (view != null) view.OnActionPerformed(TutorialAction.AttachPage);
         isPlacementModeActive = false;
         isEquippedLocally = false;
         if (hologramObj != null)
@@ -234,12 +236,6 @@ public class TornPageItem : NetworkBehaviour, IInventoryItem
         transform.SetParent(null);
         transform.position = currentPlacePos;
         transform.rotation = currentPlaceRot;
-
-        if (InventoryManager.LocalPlayer != null)
-        {
-            InventoryManager.LocalPlayer.RemoveCurrentItem();
-        }
-
 
     }
 

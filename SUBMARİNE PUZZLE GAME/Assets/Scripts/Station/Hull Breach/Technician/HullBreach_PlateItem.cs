@@ -18,32 +18,28 @@ public class HullBreach_PlateItem : NetworkBehaviour, IInventoryItem
         myLoot = GetComponent<ItemLoot>();
     }
 
-    private void OnEnable()
+    internal HullBreach_FoundryController SourceFoundry { get; set; }
+
+    protected override void OnSpawned(bool asServer)
     {
-        ItemLoot.OnLootAttempt += HandleLootAttempt;
+        base.OnSpawned(asServer);
+        if (asServer) isLooted = false;
     }
 
-    private void OnDisable()
+    protected override void OnDespawned(bool asServer)
     {
-        ItemLoot.OnLootAttempt -= HandleLootAttempt;
+        if (asServer && SourceFoundry) SourceFoundry.ForgetPlateServer(this);
+        base.OnDespawned(asServer);
     }
 
-
-    private void HandleLootAttempt(ItemLoot attemptedLoot)
+    internal void NotifyPickupAcceptedServer()
     {
-        if (attemptedLoot != myLoot || isLooted) return;
-
+        if (!isServer || isLooted) return;
+        if (SourceFoundry && !SourceFoundry.IsCurrentPlate(this)) return;
         isLooted = true;
-        CmdNotifyTaken();
-    }
-
-    [ServerRpc(requireOwnership: false)]
-    private void CmdNotifyTaken()
-    {
         OnPlateTakenServer?.Invoke(this);
+        SourceFoundry = null;
     }
-
-
     public void OnEquip()
     {
         if (InstanceHandler.TryGetInstance<PromptView>(out var promptView))
