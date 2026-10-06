@@ -29,22 +29,97 @@ public class StressManager : NetworkBehaviour
     private float diceTimer = 0f;
     private float cooldownTimer = 0f;
 
+    private bool _earlySpawnReady;
+    private bool _spawnReady;
+    private bool _earlySubscriptionsActive;
+    private bool _spawnSubscriptionsActive;
+
     protected override void OnEarlySpawn()
     {
         base.OnEarlySpawn();
-        GlobalEvents.OnRegisterUtilityStation += RegisterStation;
-        GlobalEvents.OnAddStress += IncreaseStress;
-        GlobalEvents.OnReduceStress += DecreaseStress;
+        _earlySpawnReady = true;
+        SubscribeIfReady();
     }
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
         gameStats = GetComponent<GameStatistics>();
-        MainGameState.startGame += StartStressManager;
-        currentStress.onChanged += (newVal) => { InstanceHandler.GetInstance<MainGameView>().SetStressText(newVal); };
+        _spawnReady = true;
+        SubscribeIfReady();
+    }
 
+    private void OnEnable()
+    {
+        SubscribeIfReady();
+    }
 
+    private void OnDisable()
+    {
+        Unsubscribe();
+    }
+
+    private void SubscribeIfReady()
+    {
+        if (!isActiveAndEnabled) return;
+
+        // Station registration can precede this manager's full spawn.
+        if (_earlySpawnReady && !_earlySubscriptionsActive)
+        {
+            _earlySubscriptionsActive = true;
+            GlobalEvents.OnRegisterUtilityStation += RegisterStation;
+            GlobalEvents.OnAddStress += IncreaseStress;
+            GlobalEvents.OnReduceStress += DecreaseStress;
+        }
+
+        if (_spawnReady && !_spawnSubscriptionsActive)
+        {
+            _spawnSubscriptionsActive = true;
+            MainGameState.startGame += StartStressManager;
+            currentStress.onChanged += HandleStressChanged;
+        }
+    }
+
+    private void Unsubscribe()
+    {
+        if (_earlySubscriptionsActive)
+        {
+            _earlySubscriptionsActive = false;
+            GlobalEvents.OnRegisterUtilityStation -= RegisterStation;
+            GlobalEvents.OnAddStress -= IncreaseStress;
+            GlobalEvents.OnReduceStress -= DecreaseStress;
+        }
+
+        if (_spawnSubscriptionsActive)
+        {
+            _spawnSubscriptionsActive = false;
+            MainGameState.startGame -= StartStressManager;
+            currentStress.onChanged -= HandleStressChanged;
+        }
+    }
+
+    private void ResetSubscriptionLifetime()
+    {
+        _earlySpawnReady = false;
+        _spawnReady = false;
+        Unsubscribe();
+    }
+
+    protected override void OnDespawned()
+    {
+        ResetSubscriptionLifetime();
+        base.OnDespawned();
+    }
+
+    protected override void OnPoolReset()
+    {
+        ResetSubscriptionLifetime();
+        base.OnPoolReset();
+    }
+
+    private void HandleStressChanged(float newValue)
+    {
+        InstanceHandler.GetInstance<MainGameView>().SetStressText(newValue);
     }
 
     private void StartStressManager()
@@ -54,13 +129,8 @@ public class StressManager : NetworkBehaviour
 
     protected override void OnDestroy()
     {
+        ResetSubscriptionLifetime();
         base.OnDestroy();
-        GlobalEvents.OnRegisterUtilityStation -= RegisterStation;
-        GlobalEvents.OnAddStress -= IncreaseStress;
-        GlobalEvents.OnReduceStress -= DecreaseStress;
-        MainGameState.startGame -= StartStressManager;
-        currentStress.onChanged -= (newVal) => { InstanceHandler.GetInstance<MainGameView>().SetStressText(newVal); };
-
     }
 
 
