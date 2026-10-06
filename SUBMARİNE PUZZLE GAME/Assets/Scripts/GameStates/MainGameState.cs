@@ -21,9 +21,12 @@ public class MainGameState : StateNode
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        SettingsView.resumeGame += CloseSettingsView;
-        SettingsView.quitGame += QuitGame;
-        if (!asServer) return;
+        if (!asServer)
+        {
+            SettingsView.resumeGame += CloseSettingsView;
+            SettingsView.quitGame += QuitGame;
+            return;
+        }
         SettingsView.restartGame += RestartGame;
         if (isTutorial)
         {
@@ -127,10 +130,12 @@ public class MainGameState : StateNode
     public override void Exit(bool asServer)
     {
         base.Exit(asServer);
-        SettingsView.resumeGame -= CloseSettingsView;
-        SettingsView.quitGame -= QuitGame;
-
-        if (!asServer) return;
+        if (!asServer)
+        {
+            SettingsView.resumeGame -= CloseSettingsView;
+            SettingsView.quitGame -= QuitGame;
+            return;
+        }
         FloodManager.OnGameEnd -= HandleGameEnd;
         SettingsView.restartGame -= RestartGame;
         if (isTutorial)

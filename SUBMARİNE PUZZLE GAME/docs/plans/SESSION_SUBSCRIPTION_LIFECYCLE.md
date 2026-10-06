@@ -6,6 +6,8 @@ Initial unrelated changes: FMODStudioCache.asset and the Oswald Bold SDF, Roboto
 
 C04 and the FIRST module interaction teardown slice are **RESOLVED / RUNTIME VERIFIED** in their documented scopes. H01/M05 remain **PARTIALLY RESOLVED / HIGH**. Do not reopen those completed slices or claim a diagnosis of the unreproduced notebook incident.
 
+Current implementation boundary: the user's 2026-10-06 instruction narrows the FIRST slice to the paired Enter/Exit side correction only. Section 17 supersedes the broader A1 flags/enable-disable/despawn/destruction proposal and its verification requirements for this implementation; those remain deferred.
+
 ## 1. Problem and decision
 
 Some callbacks are owned by a state visit, some by a spawned manager and some by an object lifetime. Current code mixes these boundaries. A host adds two local MainGameState handlers per visit; retained managers keep spawned subscriptions after despawn; an anonymous StressManager handler cannot be removed by a second lambda expression; three overrides bypass their identity's destruction fallback.
@@ -173,3 +175,34 @@ Commit A1 separately with MainGameState and its authorized verification document
 Use host plus remote client and relevant role-swapped flows. Count actual handler invocations; merely seeing an idempotent HideView is insufficient proof of one callback. Use supported scene/session re-entry and installed network despawn APIs; no invented pooling/reconnect topology. Capture subscription identity, owner instance and invocation counts at transitions rather than per-frame logs. Unsubscribe any test observers and restore static fixtures. This plan contains no test-pass claims for A1.
 
 **FIRST slice design readiness: YES**, for MainGameState callback ownership only. Implementation/compilation/runtime readiness is not claimed. Stop after planning.
+
+## 17. Narrow MainGameState Enter/Exit implementation checkpoint — 2026-10-06
+
+Implementation baseline: current local main at df45c06, initially clean. The current user instruction supersedes the broader A1 lifetime proposal: this task implements only duplicate host resume/quit registration and matching Enter/Exit pairing in MainGameState.cs.
+
+Enter(false) now adds CloseSettingsView and QuitGame and returns; Enter(true) does not add local UI handlers. Exit(false) removes the same named pair and returns; Exit(true) retains existing server cleanup. Server restart/tutorial/game-end callbacks and publication order, progression, Update, settings/quit/restart bodies, scene/session/voice operations, authority and serialized/public API are unchanged. Installed PurrNet 1.19.1 dispatches one bool Enter/Exit per applicable side of a normal state visit; base StateNode Enter/Exit are empty. No private ownership flag is needed for these paired visits. No remove-then-add, counter, generation, framework or new lifecycle hook was added.
+
+Source verification passed: replacing just the two new client-side branches with their HEAD forms reproduces the entire baseline file exactly; each of the four add/remove operations occurs once and the named delegate pair matches. Host Enter(true)+Enter(false) yields one resume/quit registration, remote client Enter(false) one each, server-only Enter(true) zero local registrations; matching Exit returns owned membership to zero, and balanced repeated cycles cannot accumulate. One publisher invocation therefore has one owned handler rather than two; no Unity callback invocation or visible side-effect test was performed in this source check. git diff --check passed. No temporary verification files were created.
+
+Unity 6000.3.10f1 normal Editor Refresh compilation/PurrNet.Codegen.PostProcessor: PASS, with assembly reload and the resulting Assembly-CSharp.dll newer than the changed source. No standalone ILPP.Trigger was used. Unity regenerated FMODStudioCache.asset during refresh; that unrelated asset was left untouched and unstaged during implementation. git diff --check: PASS.
+
+**MainGameState subscription slice: RESOLVED / RUNTIME VERIFIED** within the paired Enter/Exit scope. Source root cause confirmed: adding local handlers before the side guard registered them twice on host; the client-only branch removes that duplicate registration. Earlier functional testing did not directly count callbacks, so its cardinality claim was premature. The final evidence below supersedes that claim: the user directly counted temporary Editor/Development-only handler-entry logs on 2026-10-06 (not a Codex runtime rerun). The two diagnostic logs and their conditional blocks were subsequently removed completely; the subscription fix and callback behavior remain unchanged.
+
+| Topology | Verification | Result |
+| --- | --- | --- |
+| Host | Resume: directly observed exactly 1 CloseSettingsView callback | PASS |
+| Host | Quit: directly observed exactly 1 QuitGame callback | PASS |
+| Host | No duplicate UI/state side effects | PASS |
+| Host | Repeated supported Enter/Exit cycles do not accumulate callbacks | PASS |
+| Remote client | Applicable resume/quit behavior remains correct | PASS |
+| Remote client | Resume: directly observed exactly 1 CloseSettingsView callback | PASS |
+| Remote client | Quit: directly observed exactly 1 QuitGame callback | PASS |
+| Remote client | Repeated supported state cycles do not accumulate callbacks | PASS |
+| General | Repeated testing showed no duplicate callback execution or accumulation; all functional host/client tests passed | PASS |
+| General | No console errors, runtime exceptions or duplicate side effects observed | PASS |
+
+This resolves only duplicate host resume/quit registration and matching supported Enter/Exit pairing. It does not certify independent Disable/despawn/destroy cleanup, duplicate unpaired Enter, partial server-entry exceptions or in-flight async cancellation. The broader planned verification matrix in section 16 remains deferred outside this narrow scope.
+
+Diagnostic cleanup verification: source diff contains only the intended Enter/Exit side correction; no diagnostic logs or conditional blocks remain. git diff --check PASS. Final Unity 6000.3.10f1 normal Assets → Refresh compilation and PurrNet codegen after diagnostic removal: PASS. The Editor log records successful compilation, PurrNet.Codegen.PostProcessor and completed assembly reload; Assembly-CSharp.dll is newer than the cleaned source. No standalone ILPP.Trigger was used. The focused checkpoint is ready to commit; unrelated asset changes remain untouched and unstaged.
+
+Deferred: StressManager subscription lifetime; StationController/PurrNet destruction cleanup; ContractManager retained inactive callbacks/base destruction; TutorialWaitState framework destruction/delayed progression; FloodManager and LevelManager despawn/service cleanup; remaining session/async lifecycle work, including broader MainGameState lifetime cleanup and inactive-state Escape/reset/async behavior. H01/M05 remain **PARTIALLY RESOLVED / HIGH**. C04 and the verified module teardown slice stay closed. Do not begin another slice automatically.
