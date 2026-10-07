@@ -46,30 +46,59 @@ public class FloodManager : NetworkBehaviour
     private int currentMainWaveIndex = 0;
 
     private float nextProbabilityCheckTime = 0f;
-
-
+    private bool ownsSpawnRegistrations;
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
+        if (ownsSpawnRegistrations) return;
+
         InstanceHandler.RegisterInstance(this);
 
         LevelManager.OnLevelStarted += StartFlood;
         GlobalEvents.OnAddFloodPenalty += AddPenalty;
         GlobalEvents.OnStationStatusChanged += HandleStationStatusChanged;
         currentWater.onChanged += OnWaterChanged;
+        ownsSpawnRegistrations = true;
+    }
 
+    protected override void OnDespawned()
+    {
+        base.OnDespawned();
+        ReleaseSpawnRegistrations();
+    }
+
+    protected override void OnPoolReset()
+    {
+        base.OnPoolReset();
+        ReleaseSpawnRegistrations();
     }
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
-        InstanceHandler.UnregisterInstance<FloodManager>();
+        try
+        {
+            base.OnDestroy();
+        }
+        finally
+        {
+            ReleaseSpawnRegistrations();
+        }
+    }
+
+    private void ReleaseSpawnRegistrations()
+    {
+        if (!ownsSpawnRegistrations) return;
+        ownsSpawnRegistrations = false;
+
+        // A replacement may have registered before this owner's teardown.
+        if (InstanceHandler.TryGetInstance<FloodManager>(out var current) && ReferenceEquals(current, this))
+            InstanceHandler.UnregisterInstance<FloodManager>();
+
         LevelManager.OnLevelStarted -= StartFlood;
         GlobalEvents.OnAddFloodPenalty -= AddPenalty;
         GlobalEvents.OnStationStatusChanged -= HandleStationStatusChanged;
         currentWater.onChanged -= OnWaterChanged;
-
     }
 
     public void UpdateHullBreachData(bool isActive, int activeCracks, int platedCracks, float ratePerCrack)
