@@ -15,29 +15,91 @@ public class LevelManager : NetworkBehaviour
     [Header("Debug Info")]
 
     public List<StationController> resultMains = new List<StationController>();
-
+    private bool ownsEarlySpawnRegistrations;
+    private bool ownsFullSpawnRegistrations;
 
     protected override void OnEarlySpawn()
     {
         base.OnEarlySpawn();
-        GlobalEvents.OnRegisterMainStation += RegisterMainStation;
-
+        AcquireEarlySpawnRegistrations();
     }
     protected override void OnSpawned()
     {
         base.OnSpawned();
-        MainGameState.startGame += StartLevel;
+        if (!AcquireFullSpawnRegistrations()) return;
+
         OnCurrentLevelData?.Invoke(currentLevelData.levelID);
+        if (!ownsFullSpawnRegistrations) return;
+
         if (InstanceHandler.TryGetInstance(out LevelView levelView)) levelView.SetLevelText(currentLevelData.levelID);
-        InstanceHandler.RegisterInstance(this);
+        if (ownsFullSpawnRegistrations) InstanceHandler.RegisterInstance(this);
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        base.OnDespawned(asServer);
+        // Early-only lifetimes may not reach the parameterless final hook.
+        if (!IsSpawned(!asServer)) ReleaseSpawnRegistrations();
+    }
+
+    protected override void OnDespawned()
+    {
+        base.OnDespawned();
+        ReleaseSpawnRegistrations();
+    }
+
+    protected override void OnPoolReset()
+    {
+        base.OnPoolReset();
+        ReleaseSpawnRegistrations();
     }
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
-        GlobalEvents.OnRegisterMainStation -= RegisterMainStation;
-        MainGameState.startGame -= StartLevel;
-        InstanceHandler.UnregisterInstance<LevelManager>();
+        try
+        {
+            base.OnDestroy();
+        }
+        finally
+        {
+            ReleaseSpawnRegistrations();
+        }
+    }
+
+    private void AcquireEarlySpawnRegistrations()
+    {
+        if (ownsEarlySpawnRegistrations) return;
+
+        GlobalEvents.OnRegisterMainStation += RegisterMainStation;
+        ownsEarlySpawnRegistrations = true;
+    }
+
+    private bool AcquireFullSpawnRegistrations()
+    {
+        if (ownsFullSpawnRegistrations) return false;
+
+        MainGameState.startGame += StartLevel;
+        ownsFullSpawnRegistrations = true;
+        return true;
+    }
+
+    private void ReleaseSpawnRegistrations()
+    {
+        if (ownsEarlySpawnRegistrations)
+        {
+            ownsEarlySpawnRegistrations = false;
+            GlobalEvents.OnRegisterMainStation -= RegisterMainStation;
+        }
+
+        if (ownsFullSpawnRegistrations)
+        {
+            ownsFullSpawnRegistrations = false;
+            MainGameState.startGame -= StartLevel;
+
+            // A replacement may have registered before this owner's teardown.
+            if (InstanceHandler.TryGetInstance<LevelManager>(out var current) && ReferenceEquals(current, this))
+                InstanceHandler.UnregisterInstance<LevelManager>();
+        }
     }
 
     public int GetCurrentLevelID()
