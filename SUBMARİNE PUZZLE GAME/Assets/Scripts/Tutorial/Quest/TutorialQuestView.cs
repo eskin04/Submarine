@@ -4,7 +4,6 @@ using DG.Tweening;
 using System.Collections.Generic;
 using PurrNet;
 using PurrLobby;
-using System.Threading;
 using FMODUnity;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
@@ -15,6 +14,7 @@ using UnityEngine.Localization.Settings;
 public class TutorialQuestView : View
 {
     public static event Action OnIntroSequenceCompleted;
+    internal static event Action<TutorialQuestView, int> IntroSequenceCompleted;
     public static event Action<TutorialAction> OnTaskUnlockedLocal;
 
     [Header("UI References")]
@@ -28,12 +28,21 @@ public class TutorialQuestView : View
     private TutorialQuestData currentQuestData;
     private bool isWaitingForPartner = false;
     private int completedTasksCount = 0;
-    private CancellationTokenSource sequenceCancellationToken;
+    private sealed class QuestSequence
+    {
+        public readonly ConcurrentQueue<string> Commands = new ConcurrentQueue<string>();
+        public bool IntroCompleted;
+    }
+
+    private QuestSequence activeSequence;
+    private int sequenceId;
+    private readonly List<Tween> sequenceTweens = new List<Tween>();
+    private Tween subtitleTween;
+    private Tween titleCleanupTween;
+    internal int SequenceId => sequenceId;
 
     private FMOD.Studio.EventInstance megaphoneInstance;
-    private FMOD.Studio.EVENT_CALLBACK markerCallback;
-
-    private ConcurrentQueue<string> fmodCommandQueue = new ConcurrentQueue<string>();
+    private static readonly FMOD.Studio.EVENT_CALLBACK markerCallback = MegaphoneCallback;
     private Dictionary<TutorialAction, bool> unlockedTasks = new Dictionary<TutorialAction, bool>();
 
     private Dictionary<TutorialAction, int> currentProgress = new Dictionary<TutorialAction, int>();
@@ -45,11 +54,11 @@ public class TutorialQuestView : View
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
-        markerCallback = new FMOD.Studio.EVENT_CALLBACK(MegaphoneCallback);
     }
 
     private void OnDestroy()
     {
+        CancelSequence();
         InstanceHandler.UnregisterInstance<TutorialQuestView>();
     }
 
@@ -61,12 +70,13 @@ public class TutorialQuestView : View
 
     private void OnDisable()
     {
+        CancelSequence();
         TutorialManager.OnPlayerProgressUpdated -= HandlePartnerProgress;
         LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
     }
 
     public override void OnShow() { }
-    public override void OnHide() { }
+    public override void OnHide() { CancelSequence(); }
 
     private void OnLanguageChanged(Locale newLocale)
     {
@@ -133,6 +143,10 @@ public class TutorialQuestView : View
 
     public void LoadQuest(TutorialQuestData newQuest)
     {
+        CancelSequence();
+        var sequence = new QuestSequence();
+        activeSequence = sequence;
+        sequenceId++;
         currentQuestData = newQuest;
         currentSubtitleIndex = -1;
 
@@ -142,8 +156,9 @@ public class TutorialQuestView : View
             oldTaskObjects.Add(child.gameObject);
         }
 
-        DOVirtual.DelayedCall(2.5f, () =>
+        TrackTween(DOVirtual.DelayedCall(2.5f, () =>
         {
+            if (!IsCurrentSequence(sequence)) return;
             foreach (var oldObj in oldTaskObjects)
             {
                 if (oldObj != null)
@@ -151,7 +166,10 @@ public class TutorialQuestView : View
                     var tmp = oldObj.GetComponent<TextMeshProUGUI>();
                     if (tmp != null)
                     {
-                        tmp.DOFade(0f, 0.5f).OnComplete(() => Destroy(oldObj));
+                        TrackTween(tmp.DOFade(0f, 0.5f).OnComplete(() =>
+                        {
+                            if (IsCurrentSequence(sequence) && oldObj != null) Destroy(oldObj);
+                        }));
                     }
                     else
                     {
@@ -159,16 +177,18 @@ public class TutorialQuestView : View
                     }
                 }
             }
-            DOVirtual.DelayedCall(0.3f, () =>
+            TrackTween(DOVirtual.DelayedCall(0.3f, () =>
             {
-                taskContainer.gameObject.SetActive(false);
-            });
+                if (IsCurrentSequence(sequence) && !sequence.IntroCompleted)
+                    taskContainer.gameObject.SetActive(false);
+            }));
 
-            if (taskContainer.childCount <= oldTaskObjects.Count && questTitleText != null)
+            if (!sequence.IntroCompleted && taskContainer.childCount <= oldTaskObjects.Count && questTitleText != null)
             {
-                questTitleText.DOFade(0f, 0.5f);
+                titleCleanupTween = questTitleText.DOFade(0f, 0.5f);
+                TrackTween(titleCleanupTween);
             }
-        });
+        }));
 
         activeTasks.Clear();
         currentProgress.Clear();
@@ -178,25 +198,88 @@ public class TutorialQuestView : View
         unlockedTasks.Clear();
         if (waitingStatusText != null) waitingStatusText.gameObject.SetActive(false);
 
-        if (megaphoneInstance.isValid())
-        {
-            megaphoneInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            megaphoneInstance.release();
-        }
-
-        fmodCommandQueue = new ConcurrentQueue<string>();
-
         if (!currentQuestData.megaphoneAudio.IsNull)
         {
             megaphoneInstance = RuntimeManager.CreateInstance(currentQuestData.megaphoneAudio);
-            megaphoneInstance.setCallback(markerCallback, FMOD.Studio.EVENT_CALLBACK_TYPE.TIMELINE_MARKER | FMOD.Studio.EVENT_CALLBACK_TYPE.STOPPED);
-            megaphoneInstance.start();
-            megaphoneInstance.release();
+            var handle = GCHandle.Alloc(sequence);
+            if (!CheckAudioResult(megaphoneInstance.setUserData(GCHandle.ToIntPtr(handle)), "setUserData"))
+            {
+                handle.Free();
+                ReleaseAudio(false);
+                return;
+            }
+            if (!CheckAudioResult(megaphoneInstance.setCallback(markerCallback,
+                FMOD.Studio.EVENT_CALLBACK_TYPE.TIMELINE_MARKER | FMOD.Studio.EVENT_CALLBACK_TYPE.STOPPED |
+                FMOD.Studio.EVENT_CALLBACK_TYPE.DESTROYED), "setCallback"))
+            {
+                megaphoneInstance.setUserData(IntPtr.Zero);
+                handle.Free();
+                ReleaseAudio(false);
+                return;
+            }
+            if (!CheckAudioResult(megaphoneInstance.start(), "start")) ReleaseAudio(true);
         }
         else
         {
-            fmodCommandQueue.Enqueue("AUDIO_STOPPED");
+            sequence.Commands.Enqueue("AUDIO_STOPPED");
         }
+    }
+
+    internal bool HasSequence(int id) => activeSequence != null && sequenceId == id;
+
+    internal void CancelQuest(int id)
+    {
+        if (HasSequence(id)) CancelSequence();
+    }
+
+    private bool IsCurrentSequence(QuestSequence sequence) => this != null &&
+        sequence != null && ReferenceEquals(activeSequence, sequence);
+
+    private void TrackTween(Tween tween)
+    {
+        sequenceTweens.RemoveAll(existing => existing == null || !existing.IsActive());
+        // Retained handles must never be recycled into a different quest's tween.
+        tween.SetRecyclable(false);
+        sequenceTweens.Add(tween);
+    }
+
+    private void CancelSequence()
+    {
+        // Invalidate first: queued native callbacks and killed tweens must not own a new quest.
+        var sequence = activeSequence;
+        activeSequence = null;
+        foreach (var tween in sequenceTweens) tween?.Kill(false);
+        sequenceTweens.Clear();
+        // Exit can interrupt the final task's green tween before its first visible update.
+        if (sequence != null)
+        {
+            foreach (var task in activeTasks.Values)
+            {
+                if (currentProgress.TryGetValue(task.actionType, out var progress) && progress >= task.requiredAmount &&
+                    taskUIElements.TryGetValue(task.actionType, out var tmp) && tmp != null)
+                    tmp.color = Color.green;
+            }
+        }
+        subtitleTween = null;
+        titleCleanupTween = null;
+        ReleaseAudio(true);
+    }
+
+    private void ReleaseAudio(bool stop)
+    {
+        var instance = megaphoneInstance;
+        megaphoneInstance.clearHandle();
+        if (!instance.isValid()) return;
+        if (stop) CheckAudioResult(instance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE), "stop");
+        CheckAudioResult(instance.release(), "release");
+        // The native DESTROYED callback owns the user-data GCHandle until FMOD is done with it.
+    }
+
+    private static bool CheckAudioResult(FMOD.RESULT result, string operation)
+    {
+        if (result == FMOD.RESULT.OK) return true;
+        Debug.LogError($"[Tutorial] Megaphone {operation} failed: {result}");
+        return false;
     }
 
     private void PopulateTasks()
@@ -227,45 +310,59 @@ public class TutorialQuestView : View
 
     private void Update()
     {
-        while (fmodCommandQueue.TryDequeue(out string command))
+        var sequence = activeSequence;
+        while (IsCurrentSequence(sequence) && sequence.Commands.TryDequeue(out string command))
         {
             if (command == "AUDIO_STOPPED")
             {
+                if (sequence.IntroCompleted) continue;
+                sequence.IntroCompleted = true;
+                ReleaseAudio(false);
+                subtitleTween?.Kill(false);
+                titleCleanupTween?.Kill(false);
                 currentSubtitleIndex = -1;
                 subtitleText.text = "";
                 if (questTitleText != null && currentQuestData != null)
                 {
                     questTitleText.text = currentQuestData.localizedQuestTitle.GetLocalizedString();
-                    questTitleText.DOFade(1f, 0.5f);
+                    TrackTween(questTitleText.DOFade(1f, 0.5f));
                 }
                 PopulateTasks();
                 taskContainer.gameObject.SetActive(true);
-                foreach (var task in activeTasks.Values)
+                foreach (var task in new List<QuestTask>(activeTasks.Values))
                 {
+                    if (!IsCurrentSequence(sequence)) break;
                     if (!task.isHiddenInitially)
                     {
                         AnimateTaskEntry(taskUIElements[task.actionType]);
                         OnTaskUnlockedLocal?.Invoke(task.actionType);
                     }
                 }
-                OnIntroSequenceCompleted?.Invoke();
+                if (!IsCurrentSequence(sequence)) continue;
+                IntroSequenceCompleted?.Invoke(this, sequenceId);
+                if (IsCurrentSequence(sequence)) OnIntroSequenceCompleted?.Invoke();
             }
-            else if (int.TryParse(command, out int markerIndex))
+            else if (!sequence.IntroCompleted && int.TryParse(command, out int markerIndex))
             {
-                if (currentQuestData.localizedIntroSubtitles != null && markerIndex < currentQuestData.localizedIntroSubtitles.Count)
+                var quest = currentQuestData;
+                if (quest.localizedIntroSubtitles != null && markerIndex >= 0 && markerIndex < quest.localizedIntroSubtitles.Count)
                 {
                     currentSubtitleIndex = markerIndex;
 
-                    subtitleText.DOFade(0, 0.3f).OnComplete(() =>
+                    subtitleTween?.Kill(false);
+                    subtitleTween = subtitleText.DOFade(0, 0.3f).OnComplete(() =>
                     {
-                        subtitleText.text = currentQuestData.localizedIntroSubtitles[markerIndex].GetLocalizedString();
-                        subtitleText.DOFade(1, 0.3f);
+                        if (!IsCurrentSequence(sequence)) return;
+                        subtitleText.text = quest.localizedIntroSubtitles[markerIndex].GetLocalizedString();
+                        subtitleTween = subtitleText.DOFade(1, 0.3f);
+                        TrackTween(subtitleTween);
                     });
+                    TrackTween(subtitleTween);
                 }
             }
         }
 
-        if (currentQuestData == null || canvasGroup.alpha == 0 || isWaitingForPartner) return;
+        if (!IsCurrentSequence(sequence) || currentQuestData == null || canvasGroup.alpha == 0 || isWaitingForPartner) return;
 
         if (unlockedTasks.ContainsKey(TutorialAction.WalkWASD) && unlockedTasks[TutorialAction.WalkWASD] && currentProgress[TutorialAction.WalkWASD] < activeTasks[TutorialAction.WalkWASD].requiredAmount)
         {
@@ -282,6 +379,8 @@ public class TutorialQuestView : View
 
     public void OnActionPerformed(TutorialAction actionType)
     {
+        var sequence = activeSequence;
+        if (!IsCurrentSequence(sequence) || !sequence.IntroCompleted) return;
         if (unlockedTasks.ContainsKey(actionType) && !unlockedTasks[actionType]) return;
         if (!activeTasks.ContainsKey(actionType) || currentProgress[actionType] >= activeTasks[actionType].requiredAmount) return;
 
@@ -293,28 +392,10 @@ public class TutorialQuestView : View
 
         if (currentProgress[actionType] >= task.requiredAmount)
         {
-            tmp.DOColor(Color.green, 0.3f);
-            tmp.transform.DOPunchScale(Vector3.one * 0.15f, 0.2f, 10, .5f);
+            TrackTween(tmp.DOColor(Color.green, 0.3f));
+            TrackTween(tmp.transform.DOPunchScale(Vector3.one * 0.15f, 0.2f, 10, .5f));
 
-            DOVirtual.DelayedCall(1.5f, () =>
-            {
-                foreach (var checkTask in activeTasks.Values)
-                {
-                    if (checkTask.isHiddenInitially && checkTask.revealsAfter == actionType)
-                    {
-                        if (!unlockedTasks[checkTask.actionType])
-                        {
-                            unlockedTasks[checkTask.actionType] = true;
-
-                            var revealedTmp = taskUIElements[checkTask.actionType];
-                            revealedTmp.gameObject.SetActive(true);
-
-                            AnimateTaskEntry(revealedTmp);
-                            OnTaskUnlockedLocal?.Invoke(checkTask.actionType);
-                        }
-                    }
-                }
-            });
+            TrackTween(DOVirtual.DelayedCall(1.5f, () => RevealTasks(sequence, actionType)));
 
             completedTasksCount++;
             if (TutorialManager.Instance != null)
@@ -323,6 +404,23 @@ public class TutorialQuestView : View
             }
 
             CheckAllTasksCompleted();
+        }
+    }
+
+    private void RevealTasks(QuestSequence sequence, TutorialAction actionType)
+    {
+        if (!IsCurrentSequence(sequence)) return;
+        foreach (var checkTask in new List<QuestTask>(activeTasks.Values))
+        {
+            if (!IsCurrentSequence(sequence)) return;
+            if (checkTask.isHiddenInitially && checkTask.revealsAfter == actionType && !unlockedTasks[checkTask.actionType])
+            {
+                unlockedTasks[checkTask.actionType] = true;
+                var revealedTmp = taskUIElements[checkTask.actionType];
+                revealedTmp.gameObject.SetActive(true);
+                AnimateTaskEntry(revealedTmp);
+                OnTaskUnlockedLocal?.Invoke(checkTask.actionType);
+            }
         }
     }
 
@@ -373,16 +471,17 @@ public class TutorialQuestView : View
 
     public bool IsTaskActive(TutorialAction actionType)
     {
-        return activeTasks.ContainsKey(actionType) && unlockedTasks.ContainsKey(actionType) && unlockedTasks[actionType];
+        return activeSequence != null && activeTasks.ContainsKey(actionType) && unlockedTasks.ContainsKey(actionType) && unlockedTasks[actionType];
     }
 
     public bool IsTaskCompleted(TutorialAction actionType)
     {
-        return activeTasks.ContainsKey(actionType) && currentProgress[actionType] >= activeTasks[actionType].requiredAmount;
+        return activeSequence != null && activeTasks.ContainsKey(actionType) && currentProgress[actionType] >= activeTasks[actionType].requiredAmount;
     }
 
     public bool ShouldBlockAction(TutorialAction actionType)
     {
+        if (activeSequence == null) return false;
         if (activeTasks.ContainsKey(actionType) && unlockedTasks.ContainsKey(actionType))
         {
             return !unlockedTasks[actionType];
@@ -394,16 +493,25 @@ public class TutorialQuestView : View
     [AOT.MonoPInvokeCallback(typeof(FMOD.Studio.EVENT_CALLBACK))]
     private static FMOD.RESULT MegaphoneCallback(FMOD.Studio.EVENT_CALLBACK_TYPE type, IntPtr instancePtr, IntPtr parameterPtr)
     {
-        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+        var instance = new FMOD.Studio.EventInstance(instancePtr);
+        var result = instance.getUserData(out var userData);
+        if (result != FMOD.RESULT.OK || userData == IntPtr.Zero) return result;
+        var handle = GCHandle.FromIntPtr(userData);
+        if (type == FMOD.Studio.EVENT_CALLBACK_TYPE.DESTROYED)
+        {
+            instance.setUserData(IntPtr.Zero);
+            handle.Free();
+        }
+        else if (handle.Target is QuestSequence sequence)
         {
             if (type == FMOD.Studio.EVENT_CALLBACK_TYPE.TIMELINE_MARKER)
             {
                 var parameter = (FMOD.Studio.TIMELINE_MARKER_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(FMOD.Studio.TIMELINE_MARKER_PROPERTIES));
-                view.fmodCommandQueue.Enqueue(parameter.name);
+                sequence.Commands.Enqueue(parameter.name);
             }
             else if (type == FMOD.Studio.EVENT_CALLBACK_TYPE.STOPPED)
             {
-                view.fmodCommandQueue.Enqueue("AUDIO_STOPPED");
+                sequence.Commands.Enqueue("AUDIO_STOPPED");
             }
         }
         return FMOD.RESULT.OK;
@@ -414,10 +522,10 @@ public class TutorialQuestView : View
         if (tmp == null) return;
 
         Color c = tmp.color; c.a = 0; tmp.color = c;
-        tmp.DOFade(1f, 0.6f).From(0).SetEase(Ease.OutQuad);
+        TrackTween(tmp.DOFade(1f, 0.6f).From(0).SetEase(Ease.OutQuad));
 
         Vector4 originalMargin = tmp.margin;
         tmp.margin = new Vector4(originalMargin.x + 50f, originalMargin.y, originalMargin.z, originalMargin.w);
-        DOTween.To(() => tmp.margin, x => tmp.margin = x, originalMargin, 0.6f).SetEase(Ease.OutQuad);
+        TrackTween(DOTween.To(() => tmp.margin, x => tmp.margin = x, originalMargin, 0.6f).SetEase(Ease.OutQuad));
     }
 }

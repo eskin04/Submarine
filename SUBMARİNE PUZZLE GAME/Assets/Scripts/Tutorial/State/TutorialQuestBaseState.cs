@@ -8,6 +8,9 @@ public abstract class TutorialQuestBaseState : StateNode
 {
     [Header("Quest Data")]
     public TutorialQuestData questData;
+    private TutorialQuestView introView;
+    private int introSequence;
+    private bool ownsQuestPresentation;
 
     public override void Enter(bool asServer)
     {
@@ -27,21 +30,27 @@ public abstract class TutorialQuestBaseState : StateNode
     [ObserversRpc(runLocally: true)]
     private void RpcStartQuestBase()
     {
-        TutorialQuestView.OnIntroSequenceCompleted += HandleIntroSequenceCompleted;
+        if (this == null || !isCurrentState || ownsQuestPresentation) return;
 
         var view = InstanceHandler.GetInstance<TutorialQuestView>();
         if (view != null && questData != null)
         {
             view.LoadQuest(questData);
+            introView = view;
+            introSequence = view.SequenceId;
+            ownsQuestPresentation = true;
+            TutorialQuestView.IntroSequenceCompleted += HandleIntroSequenceCompleted;
         }
 
         InstanceHandler.GetInstance<GameViewManager>()?.ShowView<TutorialQuestView>(hideOthers: false);
         Debug.Log($"[Tutorial] {gameObject.name} başladı.");
     }
 
-    private void HandleIntroSequenceCompleted()
+    private void HandleIntroSequenceCompleted(TutorialQuestView view, int sequence)
     {
-        TutorialQuestView.OnIntroSequenceCompleted -= HandleIntroSequenceCompleted;
+        if (this == null || !ownsQuestPresentation || !isCurrentState ||
+            view != introView || sequence != introSequence || !view.HasSequence(sequence)) return;
+        TutorialQuestView.IntroSequenceCompleted -= HandleIntroSequenceCompleted;
         OnQuestAudioFinished();
     }
 
@@ -90,10 +99,48 @@ public abstract class TutorialQuestBaseState : StateNode
     {
         base.Exit(asServer);
 
-        TutorialQuestView.OnIntroSequenceCompleted -= HandleIntroSequenceCompleted;
+        ReleaseIntro();
         if (asServer && TutorialManager.Instance != null)
         {
             TutorialManager.Instance.ResetReadyStates();
         }
+    }
+
+    public override void Exit()
+    {
+        ReleaseIntro();
+        base.Exit();
+    }
+
+    private void ReleaseIntro()
+    {
+        TutorialQuestView.IntroSequenceCompleted -= HandleIntroSequenceCompleted;
+        ownsQuestPresentation = false;
+        var view = introView;
+        introView = null;
+        if (view != null) view.CancelQuest(introSequence);
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        base.OnDespawned(asServer);
+        if (!IsSpawned(!asServer)) ReleaseIntro();
+    }
+
+    protected override void OnDespawned()
+    {
+        ReleaseIntro();
+        base.OnDespawned();
+    }
+
+    protected virtual void OnDisable()
+    {
+        ReleaseIntro();
+    }
+
+    protected override void OnDestroy()
+    {
+        try { base.OnDestroy(); }
+        finally { ReleaseIntro(); }
     }
 }
