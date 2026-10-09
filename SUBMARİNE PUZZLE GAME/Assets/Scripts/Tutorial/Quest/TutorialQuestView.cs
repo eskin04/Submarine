@@ -36,6 +36,12 @@ public class TutorialQuestView : View
 
     private QuestSequence activeSequence;
     private int sequenceId;
+    private TutorialManager questOwner;
+    private int originatingQuestIndex;
+    private ulong questEntryId;
+    private TutorialManager latestEntryOwner;
+    private ulong latestEntryId;
+    private int partnerCompletedTasks;
     private readonly List<Tween> sequenceTweens = new List<Tween>();
     private Tween subtitleTween;
     private Tween titleCleanupTween;
@@ -104,10 +110,7 @@ public class TutorialQuestView : View
 
         if (isWaitingForPartner && waitingStatusText != null && waitingStatusText.gameObject.activeSelf)
         {
-            int partnerProgress = (myRole == PlayerRole.Engineer)
-                ? TutorialManager.Instance.technicianTaskProgress.value
-                : TutorialManager.Instance.engineerTaskProgress.value;
-            UpdateWaitingTextUI(partnerProgress);
+            UpdateWaitingTextUI(partnerCompletedTasks);
         }
     }
 
@@ -141,9 +144,18 @@ public class TutorialQuestView : View
         Debug.Log($"<color=green>[Tutorial]</color> Player role set to: {myRole}");
     }
 
-    public void LoadQuest(TutorialQuestData newQuest)
+    public bool LoadQuest(TutorialQuestData newQuest, TutorialManager owner, int questIndex, ulong entryId)
     {
+        if (owner == null || owner != TutorialManager.Instance || !owner.isSpawned ||
+            newQuest == null || newQuest.questIndex != questIndex || entryId == 0 ||
+            owner.CurrentQuestState == null || owner.CurrentQuestState.questData != newQuest ||
+            (latestEntryOwner == owner && entryId <= latestEntryId)) return false;
         CancelSequence();
+        questOwner = owner;
+        originatingQuestIndex = questIndex;
+        questEntryId = entryId;
+        latestEntryOwner = owner;
+        latestEntryId = entryId;
         var sequence = new QuestSequence();
         activeSequence = sequence;
         sequenceId++;
@@ -206,7 +218,7 @@ public class TutorialQuestView : View
             {
                 handle.Free();
                 ReleaseAudio(false);
-                return;
+                return true;
             }
             if (!CheckAudioResult(megaphoneInstance.setCallback(markerCallback,
                 FMOD.Studio.EVENT_CALLBACK_TYPE.TIMELINE_MARKER | FMOD.Studio.EVENT_CALLBACK_TYPE.STOPPED |
@@ -215,7 +227,7 @@ public class TutorialQuestView : View
                 megaphoneInstance.setUserData(IntPtr.Zero);
                 handle.Free();
                 ReleaseAudio(false);
-                return;
+                return true;
             }
             if (!CheckAudioResult(megaphoneInstance.start(), "start")) ReleaseAudio(true);
         }
@@ -223,6 +235,25 @@ public class TutorialQuestView : View
         {
             sequence.Commands.Enqueue("AUDIO_STOPPED");
         }
+        return true;
+    }
+
+    public bool TryGetQuestContext(out TutorialManager owner, out int questIndex, out ulong entryId)
+    {
+        owner = questOwner;
+        questIndex = originatingQuestIndex;
+        entryId = questEntryId;
+        return MatchesQuestContext(owner, questIndex, entryId);
+    }
+
+    public bool MatchesQuestContext(TutorialManager owner, int questIndex, ulong entryId)
+    {
+        return activeSequence != null && owner != null && owner == questOwner &&
+            owner == TutorialManager.Instance && owner.isActiveAndEnabled && owner.isSpawned &&
+            entryId != 0 && questEntryId == entryId && originatingQuestIndex == questIndex &&
+            currentQuestData != null && currentQuestData.questIndex == questIndex &&
+            owner.CurrentQuestState != null && owner.CurrentQuestState.isActiveAndEnabled &&
+            owner.CurrentQuestState.questData == currentQuestData;
     }
 
     internal bool HasSequence(int id) => activeSequence != null && sequenceId == id;
@@ -248,6 +279,9 @@ public class TutorialQuestView : View
         // Invalidate first: queued native callbacks and killed tweens must not own a new quest.
         var sequence = activeSequence;
         activeSequence = null;
+        questOwner = null;
+        questEntryId = 0;
+        partnerCompletedTasks = 0;
         foreach (var tween in sequenceTweens) tween?.Kill(false);
         sequenceTweens.Clear();
         // Exit can interrupt the final task's green tween before its first visible update.
@@ -379,6 +413,13 @@ public class TutorialQuestView : View
 
     public void OnActionPerformed(TutorialAction actionType)
     {
+        if (!TryGetQuestContext(out var owner, out var questIndex, out var entryId)) return;
+        OnActionPerformed(actionType, owner, questIndex, entryId);
+    }
+
+    public void OnActionPerformed(TutorialAction actionType, TutorialManager owner, int questIndex, ulong entryId)
+    {
+        if (!MatchesQuestContext(owner, questIndex, entryId)) return;
         var sequence = activeSequence;
         if (!IsCurrentSequence(sequence) || !sequence.IntroCompleted) return;
         if (unlockedTasks.ContainsKey(actionType) && !unlockedTasks[actionType]) return;
@@ -398,12 +439,9 @@ public class TutorialQuestView : View
             TrackTween(DOVirtual.DelayedCall(1.5f, () => RevealTasks(sequence, actionType)));
 
             completedTasksCount++;
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.UpdateProgressServerRpc((int)myRole, completedTasksCount);
-            }
-
-            CheckAllTasksCompleted();
+            owner.UpdateProgressServerRpc(questIndex, entryId, (int)myRole, completedTasksCount);
+            if (IsCurrentSequence(sequence) && MatchesQuestContext(owner, questIndex, entryId))
+                CheckAllTasksCompleted(owner, questIndex, entryId);
         }
     }
 
@@ -424,7 +462,7 @@ public class TutorialQuestView : View
         }
     }
 
-    private void CheckAllTasksCompleted()
+    private void CheckAllTasksCompleted(TutorialManager owner, int questIndex, ulong entryId)
     {
         if (completedTasksCount < activeTasks.Count) return;
 
@@ -433,22 +471,18 @@ public class TutorialQuestView : View
         if (waitingStatusText != null)
         {
             waitingStatusText.gameObject.SetActive(true);
-            int partnerProgress = (myRole == PlayerRole.Engineer)
-                ? TutorialManager.Instance.technicianTaskProgress.value
-                : TutorialManager.Instance.engineerTaskProgress.value;
-
-            UpdateWaitingTextUI(partnerProgress);
+            UpdateWaitingTextUI(partnerCompletedTasks);
         }
 
-        if (TutorialManager.Instance != null)
-        {
-            TutorialManager.Instance.PlayerReadyServerRpc((int)myRole);
-        }
+        owner.PlayerReadyServerRpc(questIndex, entryId, (int)myRole);
     }
 
-    private void HandlePartnerProgress(PlayerRole role, int progress)
+    private void HandlePartnerProgress(TutorialManager owner, int questIndex, ulong entryId, PlayerRole role, int progress)
     {
-        if (isWaitingForPartner && role != myRole)
+        if (!MatchesQuestContext(owner, questIndex, entryId) || role == myRole ||
+            (role != PlayerRole.Engineer && role != PlayerRole.Technician)) return;
+        partnerCompletedTasks = progress;
+        if (isWaitingForPartner)
         {
             UpdateWaitingTextUI(progress);
         }

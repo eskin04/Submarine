@@ -11,36 +11,39 @@ public abstract class TutorialQuestBaseState : StateNode
     private TutorialQuestView introView;
     private int introSequence;
     private bool ownsQuestPresentation;
+    private TutorialManager admissionOwner;
+    private ulong admissionEntryId;
 
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
         if (!asServer) return;
-        if (TutorialManager.Instance != null)
-        {
-            TutorialManager.Instance.ResetReadyStates();
-        }
-
-        RpcStartQuestBase();
+        var owner = TutorialManager.Instance;
+        if (owner == null || !owner.BeginQuest(this, out var entryId)) return;
+        admissionOwner = owner;
+        admissionEntryId = entryId;
+        RpcStartQuestBase(owner, questData.questIndex, entryId);
         OnQuestStart();
 
 
     }
 
     [ObserversRpc(runLocally: true)]
-    private void RpcStartQuestBase()
+    private void RpcStartQuestBase(TutorialManager questOwner, int questIndex, ulong entryId)
     {
-        if (this == null || !isCurrentState || ownsQuestPresentation) return;
+        if (this == null || !isCurrentState || ownsQuestPresentation || questOwner == null ||
+            questOwner != TutorialManager.Instance || questOwner.CurrentQuestState != this ||
+            questData == null || questData.questIndex != questIndex || entryId == 0) return;
 
         var view = InstanceHandler.GetInstance<TutorialQuestView>();
-        if (view != null && questData != null)
+        if (view != null && view.LoadQuest(questData, questOwner, questIndex, entryId))
         {
-            view.LoadQuest(questData);
             introView = view;
             introSequence = view.SequenceId;
             ownsQuestPresentation = true;
             TutorialQuestView.IntroSequenceCompleted += HandleIntroSequenceCompleted;
         }
+        else return;
 
         InstanceHandler.GetInstance<GameViewManager>()?.ShowView<TutorialQuestView>(hideOthers: false);
         Debug.Log($"[Tutorial] {gameObject.name} başladı.");
@@ -61,49 +64,32 @@ public abstract class TutorialQuestBaseState : StateNode
 
     public virtual void CheckCompletion()
     {
-        if (TutorialManager.Instance == null) return;
+        var owner = admissionOwner;
+        var entryId = admissionEntryId;
+        if (owner == null || questData == null || !owner.MatchesAdmission(questData.questIndex, entryId)) return;
+        bool ready = owner.isSoloTestMode
+            ? owner.isEngineerReady.value || owner.isTechnicianReady.value
+            : owner.isEngineerReady.value && owner.isTechnicianReady.value;
+        if (!ready || !owner.TryReserveCompletion(this, entryId)) return;
 
-
-        bool engineerReady = TutorialManager.Instance.isEngineerReady.value;
-        bool technicianReady = TutorialManager.Instance.isTechnicianReady.value;
-        Debug.Log($"<color=blue>[Tutorial]</color> Engineer Ready: {engineerReady}, Technician Ready: {technicianReady}");
-
-        if (TutorialManager.Instance.isSoloTestMode)
+        if (questData.questIndex == 6)
         {
-            if (engineerReady || technicianReady)
-            {
-                Debug.Log($"<color=yellow>[Tutorial]</color> Solo Test Modu aktif. Makine Next yapıyor!");
-                if (questData.questIndex == 6)
-                {
-                    MainGameState.OnTutorialFinished?.Invoke();
-                    return;
-                }
-                machine.Next();
-            }
+            MainGameState.OnTutorialFinished?.Invoke();
+            return;
         }
-        else
+        // Next queues work until LateUpdate; ownership stays reserved in that interval.
+        if (!machine.Next())
         {
-            if (engineerReady && technicianReady)
-            {
-                Debug.Log($"<color=green>[Tutorial]</color> İki oyuncu da hazır. Görev tamamlandı!");
-                if (questData.questIndex == 6)
-                {
-                    MainGameState.OnTutorialFinished?.Invoke();
-                    return;
-                }
-                machine.Next();
-            }
+            owner.ReleaseCompletion(this, entryId);
+            Debug.LogWarning("[Tutorial] Current quest transition was rejected.");
         }
     }
     public override void Exit(bool asServer)
     {
+        if (asServer) ReleaseAdmission();
         base.Exit(asServer);
 
         ReleaseIntro();
-        if (asServer && TutorialManager.Instance != null)
-        {
-            TutorialManager.Instance.ResetReadyStates();
-        }
     }
 
     public override void Exit()
@@ -121,25 +107,38 @@ public abstract class TutorialQuestBaseState : StateNode
         if (view != null) view.CancelQuest(introSequence);
     }
 
+    private void ReleaseAdmission()
+    {
+        var owner = admissionOwner;
+        var entryId = admissionEntryId;
+        admissionOwner = null;
+        admissionEntryId = 0;
+        if (owner != null) owner.EndQuest(this, entryId);
+    }
+
     protected override void OnDespawned(bool asServer)
     {
+        if (asServer) ReleaseAdmission();
         base.OnDespawned(asServer);
         if (!IsSpawned(!asServer)) ReleaseIntro();
     }
 
     protected override void OnDespawned()
     {
+        ReleaseAdmission();
         ReleaseIntro();
         base.OnDespawned();
     }
 
     protected virtual void OnDisable()
     {
+        ReleaseAdmission();
         ReleaseIntro();
     }
 
     protected override void OnDestroy()
     {
+        ReleaseAdmission();
         try { base.OnDestroy(); }
         finally { ReleaseIntro(); }
     }

@@ -71,13 +71,17 @@ public class TutorialInputManager : NetworkBehaviour
     }
 
     [ServerRpc(requireOwnership: false)]
-    public void CompleteTaskForPlayerServerRpc(int targetRoleInt, int actionTypeInt)
+    public void CompleteTaskForPlayerServerRpc(TutorialManager questOwner, int questIndex, ulong entryId,
+        int targetRoleInt, int actionTypeInt)
     {
-        CompleteTaskForPlayerObserverRpc(targetRoleInt, actionTypeInt);
+        if (questOwner == null || !questOwner.CanAwardTask(questIndex, entryId,
+            (PlayerRole)targetRoleInt, (TutorialAction)actionTypeInt)) return;
+        CompleteTaskForPlayerObserverRpc(questOwner, questIndex, entryId, targetRoleInt, actionTypeInt);
     }
 
     [ObserversRpc]
-    private void CompleteTaskForPlayerObserverRpc(int targetRoleInt, int actionTypeInt)
+    private void CompleteTaskForPlayerObserverRpc(TutorialManager questOwner, int questIndex, ulong entryId,
+        int targetRoleInt, int actionTypeInt)
     {
         PlayerRole targetRole = (PlayerRole)targetRoleInt;
         TutorialAction actionType = (TutorialAction)actionTypeInt;
@@ -86,7 +90,7 @@ public class TutorialInputManager : NetworkBehaviour
         {
             if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
             {
-                view.OnActionPerformed(actionType);
+                view.OnActionPerformed(actionType, questOwner, questIndex, entryId);
             }
         }
     }

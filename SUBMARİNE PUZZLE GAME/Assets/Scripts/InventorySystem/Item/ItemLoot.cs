@@ -72,6 +72,8 @@ public class ItemLoot : NetworkBehaviour
     private NetworkTransform networkTransform;
     private Rigidbody body;
     private Collider lootCollider;
+    private Transform settlingLiftParent;
+    private bool liftTransportSecured;
 
     private void Awake()
     {
@@ -127,8 +129,16 @@ public class ItemLoot : NetworkBehaviour
         }
         else
         {
-            if (current.Location == ItemSharedLocation.World)
-                transform.SetParent(networkTransform && networkTransform.parent ? networkTransform.parent.transform : null);
+            if (current.Location == ItemSharedLocation.World && !isServer)
+            {
+                // The nearest network identity may be the lift root, while the
+                // accepted parent is its moving child. Preserve PurrNet's path.
+                if (networkTransform) networkTransform.StartIgnoringParentChanges();
+                if (networkTransform && networkTransform.parent)
+                    HierarchyPool.WalkThePath(networkTransform.parent.transform, transform,
+                        networkTransform.invertedPathToNearestParent, true);
+                else transform.SetParent(null);
+            }
             if (!(current.Location == ItemSharedLocation.Detached && GetComponent<TornPageItem>()))
                 SetPhysicalState(current.Location);
             SetVisible(true);
@@ -139,8 +149,22 @@ public class ItemLoot : NetworkBehaviour
     {
         bool world = location == ItemSharedLocation.World;
         bool detached = location == ItemSharedLocation.Detached;
+        var liftParent = world && transform.parent && transform.parent.GetComponentInParent<LiftManager>()
+            ? transform.parent : null;
+        bool beginSettling = liftParent && settlingLiftParent != liftParent;
+        if (settlingLiftParent != liftParent)
+        {
+            settlingLiftParent = liftParent;
+            liftTransportSecured = false;
+        }
         // Establish the physics writer before NT re-enable can publish/apply a pose.
-        if (body) { body.isKinematic = !world || !isServer; body.useGravity = world && isServer; }
+        if (body)
+        {
+            body.isKinematic = !world || liftTransportSecured || !isServer;
+            body.useGravity = world && !liftTransportSecured && isServer;
+            // A deposited body must actually fall before sleep can secure it.
+            if (beginSettling && isServer) body.WakeUp();
+        }
         if (networkTransform)
         {
             if (world) networkTransform.StopIgnoringParentChanges();
@@ -152,6 +176,20 @@ public class ItemLoot : NetworkBehaviour
         CanBeLooted = world || detached ||
             (location == ItemSharedLocation.Socket && !GetComponent<HullBreach_PlateItem>());
         enabled = true;
+    }
+
+    internal bool TrySecureLiftTransport(Transform carrier)
+    {
+        if (!isServer || Possession.Location != ItemSharedLocation.World || transform.parent != carrier)
+            return true; // No longer cargo owned by this lift.
+        if (settlingLiftParent != carrier) SetPhysicalState(ItemSharedLocation.World);
+        if (!body || liftTransportSecured) return true;
+        if (!body.IsSleeping()) return false;
+        // Preserve the physics-settled pose; no pivot snap or timer is involved.
+        liftTransportSecured = true;
+        body.isKinematic = true;
+        body.useGravity = false;
+        return true;
     }
 
     private void Update()
@@ -219,6 +257,8 @@ public class ItemLoot : NetworkBehaviour
         displayedPossession.Context.Resolve<InventoryManager>(this)?.ApplyItemRelease(this, displayedPossession.Slot);
         displayedPossession = default;
         previewVersion = 0;
+        settlingLiftParent = null;
+        liftTransportSecured = false;
         base.OnDespawned(asServer);
     }
 

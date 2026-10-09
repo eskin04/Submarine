@@ -61,6 +61,12 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
     {
         if (isAnimating || overrideManager == null) return;
 
+        TutorialManager questOwner = null;
+        int questIndex = 0;
+        ulong entryId = 0;
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var originView))
+            originView.TryGetQuestContext(out questOwner, out questIndex, out entryId);
+
         overrideManager.RequestEngineerDoorOpenRPC(stayOpenTime);
 
         if (switchHandle != null)
@@ -69,11 +75,12 @@ public class EngineerLockDown_DoorSwitch : MonoBehaviour
             if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
             {
                 leverIndicator?.Hide();
-                view.OnActionPerformed(TutorialAction.OpenDoorLever);
+                view.OnActionPerformed(TutorialAction.OpenDoorLever, questOwner, questIndex, entryId);
 
                 if (TutorialInputManager.Instance != null && PlayerStats.LocalInstance != null)
                 {
-                    TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)PlayerRole.Engineer, (int)TutorialAction.WaitDoorOpen);
+                    TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc(questOwner, questIndex, entryId,
+                        (int)PlayerRole.Engineer, (int)TutorialAction.WaitDoorOpen);
                 }
             }
             Vector3 targetRotation = new Vector3(pulledRotation.x, originalRotation.y, originalRotation.z);

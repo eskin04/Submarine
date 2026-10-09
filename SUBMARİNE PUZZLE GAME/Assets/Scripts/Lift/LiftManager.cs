@@ -45,6 +45,8 @@ public class LiftManager : NetworkBehaviour
     private int currentFloorIndex = 0;
     private bool isElevatorTutorialLocked = false;
     private bool isButtonTutorialLocked = false;
+    private bool isLiftTravelPending;
+    private Coroutine settlingWait;
 
     void Awake()
     {
@@ -136,8 +138,31 @@ public class LiftManager : NetworkBehaviour
         }
     }
 
+    private void HandleLightState(bool _)
+    {
+        // Transfers publish after the server commits possession and parenting.
+        // Replica hierarchies may still show the removed item when the RPC arrives.
+        if (isServer) RpcApplyLightState(HasLiftCargo());
+    }
+
+    private bool HasLiftCargo()
+    {
+        foreach (var item in lift.GetComponentsInChildren<ItemLoot>(true))
+            if (item.isSpawned && item.Possession.Location == ItemSharedLocation.World &&
+                item.transform.parent == lift.transform) return true;
+        return false;
+    }
+
+    private void LateUpdate()
+    {
+        // Despawn/teardown can remove cargo without the pickup transfer event.
+        if (!isServer) return;
+        bool occupied = HasLiftCargo();
+        if (liftLight.enabled != occupied) RpcApplyLightState(occupied);
+    }
+
     [ObserversRpc(runLocally: true)]
-    private void HandleLightState(bool isInLift)
+    private void RpcApplyLightState(bool isInLift)
     {
         if (liftLight.enabled == isInLift)
             return;
@@ -155,18 +180,28 @@ public class LiftManager : NetworkBehaviour
         }
         else
         {
-            if (lift.GetComponentInChildren<ItemLoot>())
-                return;
             liftLight.enabled = false;
             if (liftFrameIndicators != null && liftFrameIndicators.Length > currentFloorIndex)
                 liftFrameIndicators[currentFloorIndex]?.Hide();
         }
     }
 
-    [ObserversRpc(runLocally: true)]
     private void HandleLiftButtonPressed(int targetFloorIndex)
     {
-        if (currentFloorIndex == targetFloorIndex) return;
+        TutorialManager questOwner = null;
+        int questIndex = 0;
+        ulong entryId = 0;
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
+            view.TryGetQuestContext(out questOwner, out questIndex, out entryId);
+        RpcHandleLiftButtonPressed(targetFloorIndex, questOwner, questIndex, entryId);
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void RpcHandleLiftButtonPressed(int targetFloorIndex, TutorialManager questOwner, int questIndex, ulong entryId)
+    {
+        if (currentFloorIndex == targetFloorIndex || isLiftTravelPending) return;
+        isLiftTravelPending = true;
+        lift.GetComponent<Interactable>().SetInteractable(false);
 
         SetAllButtonsInteractability(false);
         liftDoors[currentFloorIndex].ToggleDoor(false);
@@ -184,7 +219,7 @@ public class LiftManager : NetworkBehaviour
             {
                 if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var view))
                 {
-                    view.OnActionPerformed(TutorialAction.SendElevatorItem);
+                    view.OnActionPerformed(TutorialAction.SendElevatorItem, questOwner, questIndex, entryId);
                 }
             }
         }
@@ -192,21 +227,67 @@ public class LiftManager : NetworkBehaviour
         if (isServer && TutorialInputManager.Instance != null)
         {
             PlayerRole targetRole = currentFloorIndex == 0 ? PlayerRole.Engineer : PlayerRole.Technician;
-            TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc((int)targetRole, (int)TutorialAction.WaitForPartner);
+            TutorialInputManager.Instance.CompleteTaskForPlayerServerRpc(questOwner, questIndex, entryId,
+                (int)targetRole, (int)TutorialAction.WaitForPartner);
         }
 
+        if (isServer) settlingWait = StartCoroutine(WaitForSettledCargo(targetFloorIndex));
+    }
+
+    private System.Collections.IEnumerator WaitForSettledCargo(int targetFloorIndex)
+    {
+        while (isSpawned && isServer)
+        {
+            bool settled = true;
+            foreach (var item in lift.GetComponentsInChildren<ItemLoot>())
+                if (!item.TrySecureLiftTransport(lift.transform)) settled = false;
+            if (settled)
+            {
+                settlingWait = null;
+                RpcStartLiftTravel(targetFloorIndex);
+                yield break;
+            }
+            yield return null;
+        }
+        settlingWait = null;
+        isLiftTravelPending = false;
+    }
+
+    [ObserversRpc(runLocally: true)]
+    private void RpcStartLiftTravel(int targetFloorIndex)
+    {
         float targetY = targetFloorIndex == 0 ? liftDownPosition : liftUpPosition;
         StartLiftAudio();
 
         lift.transform.DOLocalMoveY(targetY, liftSpeed).SetEase(Ease.InOutSine).SetDelay(0.3f).OnComplete(() =>
         {
             currentFloorIndex = targetFloorIndex;
+            isLiftTravelPending = false;
             HandleLiftArrival();
 
             liftDoors[currentFloorIndex].ToggleDoor(true);
 
             UpdateButtonInteractability(currentFloorIndex);
+            ToggleInteractLift(InventoryManager.LocalPlayer != null && InventoryManager.LocalPlayer.GetCurrentHeldObject() != null);
         });
+    }
+
+    private void OnDisable()
+    {
+        CancelSettlingWait();
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        if (asServer) CancelSettlingWait();
+        base.OnDespawned(asServer);
+    }
+
+    private void CancelSettlingWait()
+    {
+        if (settlingWait != null) StopCoroutine(settlingWait);
+        settlingWait = null;
+        isLiftTravelPending = false;
     }
 
     private void UpdateButtonInteractability(int currentFloor)
@@ -253,11 +334,12 @@ public class LiftManager : NetworkBehaviour
             lift.GetComponent<Interactable>().SetInteractable(false);
             return;
         }
-        lift.GetComponent<Interactable>().SetInteractable(isEquipped);
+        lift.GetComponent<Interactable>().SetInteractable(isEquipped && !isLiftTravelPending);
     }
 
     public void LiftInteract()
     {
+        if (isLiftTravelPending) return;
 
         OnDropItemToLıft?.Invoke(lift.transform, xPosRange);
         lift.GetComponent<Interactable>().StopInteract();
