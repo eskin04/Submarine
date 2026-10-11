@@ -7,6 +7,7 @@ public class GameViewManager : MonoBehaviour
 {
     [SerializeField] private List<View> views = new List<View>();
     [SerializeField] private View defaultView;
+    private bool initialized;
 
     void Awake()
     {
@@ -17,12 +18,20 @@ public class GameViewManager : MonoBehaviour
             HideViewInternal(view);
         }
         ShowViewInternal(defaultView);
+        initialized = true;
+        TutorialManager.Instance?.TryPresentCurrentQuest();
     }
 
     private void OnDestroy()
     {
 
-        InstanceHandler.UnregisterInstance<GameViewManager>();
+        if (InstanceHandler.TryGetInstance<GameViewManager>(out var current) && ReferenceEquals(current, this))
+            InstanceHandler.UnregisterInstance<GameViewManager>();
+    }
+
+    internal bool CanPresent(View view)
+    {
+        return initialized && isActiveAndEnabled && view != null && view.canvasGroup != null && views.Contains(view);
     }
 
     public bool IsViewActive<T>() where T : View

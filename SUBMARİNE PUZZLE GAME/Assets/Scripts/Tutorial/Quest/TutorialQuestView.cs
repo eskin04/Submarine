@@ -25,6 +25,10 @@ public class TutorialQuestView : View
     public TextMeshProUGUI waitingStatusText;
 
     private PlayerRole myRole;
+    private bool hasPlayerRole;
+    internal bool HasPlayerRole => hasPlayerRole && PlayerStats.LocalInstance != null &&
+        PlayerStats.LocalInstance.isSpawned && PlayerStats.LocalInstance.isOwner &&
+        PlayerStats.LocalInstance.Role == myRole;
     private TutorialQuestData currentQuestData;
     private bool isWaitingForPartner = false;
     private int completedTasksCount = 0;
@@ -65,13 +69,16 @@ public class TutorialQuestView : View
     private void OnDestroy()
     {
         CancelSequence();
-        InstanceHandler.UnregisterInstance<TutorialQuestView>();
+        if (InstanceHandler.TryGetInstance<TutorialQuestView>(out var current) && ReferenceEquals(current, this))
+            InstanceHandler.UnregisterInstance<TutorialQuestView>();
     }
 
     private void OnEnable()
     {
         TutorialManager.OnPlayerProgressUpdated += HandlePartnerProgress;
         LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+        var player = PlayerStats.LocalInstance;
+        if (player != null && player.isSpawned && player.isOwner) SetPlayerRole(player.Role);
     }
 
     private void OnDisable()
@@ -140,15 +147,19 @@ public class TutorialQuestView : View
 
     public void SetPlayerRole(PlayerRole role)
     {
+        if (role != PlayerRole.Engineer && role != PlayerRole.Technician) return;
         myRole = role;
+        hasPlayerRole = true;
         Debug.Log($"<color=green>[Tutorial]</color> Player role set to: {myRole}");
+        TutorialManager.Instance?.TryPresentCurrentQuest();
     }
 
     public bool LoadQuest(TutorialQuestData newQuest, TutorialManager owner, int questIndex, ulong entryId)
     {
-        if (owner == null || owner != TutorialManager.Instance || !owner.isSpawned ||
+        if (!isActiveAndEnabled || !HasPlayerRole || owner == null || owner != TutorialManager.Instance || !owner.isSpawned ||
             newQuest == null || newQuest.questIndex != questIndex || entryId == 0 ||
             owner.CurrentQuestState == null || owner.CurrentQuestState.questData != newQuest ||
+            !owner.MatchesPresentationContext(owner.CurrentQuestState, questIndex, entryId) ||
             (latestEntryOwner == owner && entryId <= latestEntryId)) return false;
         CancelSequence();
         questOwner = owner;

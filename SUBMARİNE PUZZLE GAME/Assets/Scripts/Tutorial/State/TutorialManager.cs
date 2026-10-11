@@ -25,6 +25,9 @@ public class TutorialManager : NetworkBehaviour
     private ulong activeEntryId;
     private TutorialQuestBaseState admittedState;
     private bool completionReserved;
+    private bool rejectedDuplicate;
+    private int presentationQuestIndex = -1;
+    private ulong presentationEntryId;
 
     public TutorialQuestBaseState CurrentQuestState
     {
@@ -37,10 +40,87 @@ public class TutorialManager : NetworkBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (!TryClaimInstance())
+        {
+            rejectedDuplicate = true;
+            Destroy(gameObject);
+            return;
+        }
 
         stateMachine = GetComponent<StateMachine>();
+    }
+
+    private bool TryClaimInstance()
+    {
+        if (rejectedDuplicate || (Instance != null && !ReferenceEquals(Instance, this))) return false;
+        Instance = this;
+        return true;
+    }
+
+    private void ReleaseInstance()
+    {
+        if (stateMachine != null)
+        {
+            stateMachine.onStateChanged -= HandlePresentationStateChanged;
+            stateMachine.onReceivedNewData -= TryPresentCurrentQuest;
+        }
+        presentationQuestIndex = -1;
+        presentationEntryId = 0;
+        if (ReferenceEquals(Instance, this)) Instance = null;
+    }
+
+    protected override void OnEarlySpawn(bool asServer)
+    {
+        base.OnEarlySpawn(asServer);
+        // Retained respawn does not rerun Awake; reclaim before state-machine entry.
+        if (TryClaimInstance())
+        {
+            stateMachine.onStateChanged -= HandlePresentationStateChanged;
+            stateMachine.onStateChanged += HandlePresentationStateChanged;
+            stateMachine.onReceivedNewData -= TryPresentCurrentQuest;
+            stateMachine.onReceivedNewData += TryPresentCurrentQuest;
+        }
+    }
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        TryPresentCurrentQuest();
+    }
+
+    private void HandlePresentationStateChanged(StateNode previous, StateNode current)
+    {
+        TryPresentCurrentQuest();
+    }
+
+    // One buffered snapshot per manager, not a separate obsolete start for every state node.
+    [ObserversRpc(runLocally: true, bufferLast: true)]
+    private void RpcQuestPresentationContext(int questIndex, ulong entryId)
+    {
+        if (!isSpawned || Instance != this || entryId == 0 || entryId < presentationEntryId) return;
+        if (entryId == presentationEntryId)
+        {
+            // A cleared entry is a tombstone: a duplicate start cannot resurrect it.
+            if (questIndex >= 0 && presentationQuestIndex != questIndex) return;
+        }
+        presentationQuestIndex = questIndex;
+        presentationEntryId = entryId;
+        TryPresentCurrentQuest();
+    }
+
+    internal bool MatchesPresentationContext(TutorialQuestBaseState state, int questIndex, ulong entryId)
+    {
+        return Instance == this && isActiveAndEnabled && isSpawned && state != null &&
+            CurrentQuestState == state && state.isActiveAndEnabled && state.questData != null &&
+            state.questData.questIndex == questIndex && presentationQuestIndex == questIndex &&
+            entryId != 0 && presentationEntryId == entryId;
+    }
+
+    internal void TryPresentCurrentQuest()
+    {
+        var state = CurrentQuestState;
+        if (MatchesPresentationContext(state, presentationQuestIndex, presentationEntryId))
+            state.TryStartPresentation(this, presentationQuestIndex, presentationEntryId);
     }
 
     internal bool BeginQuest(TutorialQuestBaseState state, out ulong entryId)
@@ -62,6 +142,7 @@ public class TutorialManager : NetworkBehaviour
         completionReserved = false;
         entryId = activeEntryId;
         ResetReadyStates();
+        RpcQuestPresentationContext(state.questData.questIndex, entryId);
         return true;
     }
 
@@ -69,7 +150,11 @@ public class TutorialManager : NetworkBehaviour
     {
         if (entryId == 0 || admittedState != state || activeEntryId != entryId) return;
         InvalidateAdmission();
-        if (IsSpawned(true) && isServer) ResetReadyStates();
+        if (IsSpawned(true) && isServer)
+        {
+            RpcQuestPresentationContext(-1, entryId);
+            ResetReadyStates();
+        }
     }
 
     internal bool MatchesAdmission(int questIndex, ulong entryId)
@@ -174,12 +259,15 @@ public class TutorialManager : NetworkBehaviour
     protected override void OnDespawned(bool asServer)
     {
         if (asServer) InvalidateAdmission();
+        // PurrNet clears this side's flag after the hook; the opposite side may still be valid.
+        if (!IsSpawned(!asServer)) ReleaseInstance();
         base.OnDespawned(asServer);
     }
 
     protected override void OnDespawned()
     {
         InvalidateAdmission();
+        ReleaseInstance();
         base.OnDespawned();
     }
 
@@ -188,6 +276,7 @@ public class TutorialManager : NetworkBehaviour
     protected override void OnDestroy()
     {
         InvalidateAdmission();
+        ReleaseInstance();
         base.OnDestroy();
     }
 }

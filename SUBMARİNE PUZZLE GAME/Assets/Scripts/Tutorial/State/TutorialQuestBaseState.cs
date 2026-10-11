@@ -17,26 +17,32 @@ public abstract class TutorialQuestBaseState : StateNode
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);
-        if (!asServer) return;
+        if (!asServer)
+        {
+            TutorialManager.Instance?.TryPresentCurrentQuest();
+            return;
+        }
         var owner = TutorialManager.Instance;
         if (owner == null || !owner.BeginQuest(this, out var entryId)) return;
         admissionOwner = owner;
         admissionEntryId = entryId;
-        RpcStartQuestBase(owner, questData.questIndex, entryId);
         OnQuestStart();
 
 
     }
 
-    [ObserversRpc(runLocally: true)]
-    private void RpcStartQuestBase(TutorialManager questOwner, int questIndex, ulong entryId)
+    internal void TryStartPresentation(TutorialManager questOwner, int questIndex, ulong entryId)
     {
         if (this == null || !isCurrentState || ownsQuestPresentation || questOwner == null ||
             questOwner != TutorialManager.Instance || questOwner.CurrentQuestState != this ||
-            questData == null || questData.questIndex != questIndex || entryId == 0) return;
+            questData == null || questData.questIndex != questIndex ||
+            !questOwner.MatchesPresentationContext(this, questIndex, entryId)) return;
 
-        var view = InstanceHandler.GetInstance<TutorialQuestView>();
-        if (view != null && view.LoadQuest(questData, questOwner, questIndex, entryId))
+        if (!InstanceHandler.TryGetInstance<TutorialQuestView>(out var view) || view == null ||
+            !view.isActiveAndEnabled || !view.HasPlayerRole ||
+            !InstanceHandler.TryGetInstance<GameViewManager>(out var ui) || ui == null ||
+            !ui.CanPresent(view)) return;
+        if (view.LoadQuest(questData, questOwner, questIndex, entryId))
         {
             introView = view;
             introSequence = view.SequenceId;
@@ -45,7 +51,7 @@ public abstract class TutorialQuestBaseState : StateNode
         }
         else return;
 
-        InstanceHandler.GetInstance<GameViewManager>()?.ShowView<TutorialQuestView>(hideOthers: false);
+        ui.ShowView<TutorialQuestView>(hideOthers: false);
         Debug.Log($"[Tutorial] {gameObject.name} başladı.");
     }
 

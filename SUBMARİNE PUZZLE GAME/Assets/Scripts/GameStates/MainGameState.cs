@@ -10,13 +10,42 @@ public class MainGameState : StateNode
     public static Action startGame;
     [Header("Tutorial")]
     public static Action startTutorial;
-    public static bool isTutorialStartedFlag = false;
+    private static MainGameState tutorialStartOwner;
+    public static bool isTutorialStartedFlag => tutorialStartOwner != null &&
+        tutorialStartOwner.isActiveAndEnabled && tutorialStartOwner.IsSpawned(true) &&
+        tutorialStartOwner.isServer && tutorialStartOwner.isCurrentState && tutorialStartOwner.isTutorial;
     public static Action OnTutorialFinished;
     public bool isTutorial = false;
     [PurrScene, SerializeField] private string lobbyScene;
 
     private bool _isRestarting = false;
     private bool _isSettingsMenuOpen = false;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetTutorialStartSession() { tutorialStartOwner = null; }
+
+    private void ReleaseTutorialStart()
+    {
+        if (ReferenceEquals(tutorialStartOwner, this)) tutorialStartOwner = null;
+    }
+
+    protected override void OnEarlySpawn(bool asServer)
+    {
+        base.OnEarlySpawn(asServer);
+        if (asServer) ReleaseTutorialStart();
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        if (asServer) ReleaseTutorialStart();
+        base.OnDespawned(asServer);
+    }
+
+    protected override void OnDestroy()
+    {
+        ReleaseTutorialStart();
+        base.OnDestroy();
+    }
 
     public override void Enter(bool asServer)
     {
@@ -31,8 +60,8 @@ public class MainGameState : StateNode
         if (isTutorial)
         {
             OnTutorialFinished += FinishTutorial;
+            tutorialStartOwner = this;
             startTutorial?.Invoke();
-            isTutorialStartedFlag = true;
             return;
         }
         startGame?.Invoke();
@@ -129,6 +158,7 @@ public class MainGameState : StateNode
 
     public override void Exit(bool asServer)
     {
+        if (asServer) ReleaseTutorialStart();
         base.Exit(asServer);
         if (!asServer)
         {

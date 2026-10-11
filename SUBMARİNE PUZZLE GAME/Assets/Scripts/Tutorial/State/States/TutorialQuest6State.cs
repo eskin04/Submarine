@@ -13,28 +13,32 @@ public class TutorialQuest6State : TutorialQuestBaseState
     private bool ownsLocalVisit;
     private bool ownsServerVisit;
     private bool completionPublished;
+    private bool breakdownPublished;
 
     public override void Enter(bool asServer)
     {
-        if (asServer)
+        if (asServer && !ownsServerVisit)
         {
             ReleaseVisit();
             ownsServerVisit = true;
             completionPublished = false;
+            breakdownPublished = false;
         }
         base.Enter(asServer);
     }
 
     public override void Enter()
     {
-        ReleaseBreakdown();
         if (!isCurrentState || completionPublished) return;
-        ownsLocalVisit = true;
         if (TutorialInputManager.Instance != null)
         {
             TutorialInputManager.Instance.UnlockRadio();
         }
 
+        // Both peers enter the state, but only the server publishes shared effects.
+        if (!ownsServerVisit || !IsSpawned(true) || !isServer ||
+            pendingBreakdown != null || breakdownPublished) return;
+        ownsLocalVisit = true;
         pendingBreakdown = StartCoroutine(BreakdownRoutine(machine));
     }
 
@@ -43,9 +47,11 @@ public class TutorialQuest6State : TutorialQuestBaseState
         yield return new WaitForSeconds(3f);
         if (this == null) yield break;
         pendingBreakdown = null;
-        if (!ownsLocalVisit || completionPublished || owner == null || machine != owner || owner.currentStateNode != this)
+        if (!ownsLocalVisit || !ownsServerVisit || !IsSpawned(true) || !isServer ||
+            breakdownPublished || completionPublished || owner == null || machine != owner || owner.currentStateNode != this)
             yield break;
 
+        breakdownPublished = true;
         RpcTriggerImpactEffect();
         if (overrideStationController != null)
         {

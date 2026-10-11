@@ -13,21 +13,65 @@ public class TutorialInputManager : NetworkBehaviour
     public static event Action<bool> OnNotebookInteractStateChanged;
     public static event Action<bool> OnEngineerLeverInteractStateChanged;
 
+    private bool rejectedDuplicate;
+
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (!TryClaimInstance())
+        {
+            rejectedDuplicate = true;
+            Destroy(gameObject);
+        }
+    }
+
+    private bool TryClaimInstance()
+    {
+        if (rejectedDuplicate || (Instance != null && !ReferenceEquals(Instance, this))) return false;
+        Instance = this;
+        return true;
+    }
+
+    private void ReleaseInstance()
+    {
+        CancelInvoke(nameof(LockInitialInteractions));
+        if (ReferenceEquals(Instance, this)) Instance = null;
+    }
+
+    protected override void OnEarlySpawn(bool asServer)
+    {
+        base.OnEarlySpawn(asServer);
+        TryClaimInstance();
     }
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
+        if (rejectedDuplicate || !ReferenceEquals(Instance, this)) return;
         if (isServer)
         {
             CanUseRadio.value = false;
         }
 
         Invoke(nameof(LockInitialInteractions), 0.5f);
+    }
+
+    protected override void OnDespawned(bool asServer)
+    {
+        // Keep registration until both host sides have ended, including early-spawn teardown.
+        if (!IsSpawned(!asServer)) ReleaseInstance();
+        base.OnDespawned(asServer);
+    }
+
+    protected override void OnDespawned()
+    {
+        ReleaseInstance();
+        base.OnDespawned();
+    }
+
+    protected override void OnDestroy()
+    {
+        ReleaseInstance();
+        base.OnDestroy();
     }
 
     public void LockInitialInteractions()
